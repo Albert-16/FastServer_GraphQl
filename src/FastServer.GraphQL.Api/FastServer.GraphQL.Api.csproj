@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FastServer.GraphQL.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" Version="14.0.0" />
+    <PackageReference Include="HotChocolate.Data" Version="14.0.0" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="14.0.0" />
+    <PackageReference Include="HotChocolate.Diagnostics" Version="14.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FastServer.Application\FastServer.Application.csproj" />
+    <ProjectReference Include="..\FastServer.Infrastructure\FastServer.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
