@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet run)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet --list-sdks:*)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5000)",
+      "Bash(docker:*)",
+      "Bash(psql:*)",
+      "Bash(where:*)",
+      "Bash(sqlcmd:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(rd /s /q \"Data\\\\Migrations\\\\SqlServer\")",
+      "Bash(dotnet ef database update:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet run:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(ping:*)",
+      "Bash(timeout /t 10)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(dotnet add:*)",
+      "Bash(dotnet new:*)",
+      "Bash(timeout /t 5)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(Get-Process -Name \"FastServer.GraphQL.Api\" -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)"
+    ]
+  }
+}

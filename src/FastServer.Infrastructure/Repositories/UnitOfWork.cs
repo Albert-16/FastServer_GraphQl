@@ -16,6 +16,9 @@ public class UnitOfWork : IUnitOfWork
     private ILogMicroserviceRepository? _logMicroservices;
     private ILogServicesContentRepository? _logServicesContents;
 
+    // Diccionario para cachear repositorios genéricos
+    private readonly Dictionary<Type, object> _repositories = new();
+
     public UnitOfWork(DbContext context)
     {
         _context = context;
@@ -29,6 +32,19 @@ public class UnitOfWork : IUnitOfWork
 
     public ILogServicesContentRepository LogServicesContents =>
         _logServicesContents ??= new LogServicesContentRepository(_context);
+
+    /// <summary>
+    /// Obtiene un repositorio genérico para cualquier entidad
+    /// </summary>
+    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
+    {
+        var type = typeof(TEntity);
+        if (!_repositories.ContainsKey(type))
+        {
+            _repositories[type] = new Repository<TEntity>(_context);
+        }
+        return (IRepository<TEntity>)_repositories[type];
+    }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

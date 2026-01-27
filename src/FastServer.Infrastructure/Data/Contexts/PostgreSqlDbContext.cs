@@ -1,5 +1,6 @@
 using FastServer.Domain.Entities;
 using FastServer.Infrastructure.Data.Configurations;
+using FastServer.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Infrastructure.Data.Contexts;
@@ -9,8 +10,11 @@ namespace FastServer.Infrastructure.Data.Contexts;
 /// </summary>
 public class PostgreSqlDbContext : DbContext
 {
-    public PostgreSqlDbContext(DbContextOptions<PostgreSqlDbContext> options) : base(options)
+    private readonly bool _seedData;
+
+    public PostgreSqlDbContext(DbContextOptions<PostgreSqlDbContext> options, bool seedData = false) : base(options)
     {
+        _seedData = seedData;
     }
 
     public DbSet<LogServicesHeader> LogServicesHeaders => Set<LogServicesHeader>();
@@ -31,5 +35,11 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.ApplyConfiguration(new LogServicesHeaderHistoricoConfiguration());
         modelBuilder.ApplyConfiguration(new LogMicroserviceHistoricoConfiguration());
         modelBuilder.ApplyConfiguration(new LogServicesContentHistoricoConfiguration());
+
+        // Aplicar datos de prueba si está habilitado
+        if (_seedData)
+        {
+            DatabaseSeeder.Seed(modelBuilder);
+        }
     }
 }

@@ -4,35 +4,87 @@ using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
+using FastServer.Domain;
 
 namespace FastServer.Application.Services;
 
 /// <summary>
-/// Implementación del servicio de LogServicesHeader
+/// Servicio de aplicación para gestionar logs de cabecera (LogServicesHeader).
+/// Proporciona operaciones CRUD y consultas especializadas con soporte multi-base de datos.
 /// </summary>
+/// <remarks>
+/// Este servicio implementa la lógica de negocio para los logs de servicios.
+/// Características principales:
+/// - Soporte para múltiples orígenes de datos (PostgreSQL y SQL Server)
+/// - Mapeo automático entre entidades y DTOs usando AutoMapper
+/// - Paginación de resultados para optimizar rendimiento
+/// - Filtrado avanzado de logs por múltiples criterios
+/// - Uso del patrón Unit of Work para garantizar transaccionalidad
+///
+/// Flujo típico de una operación:
+/// 1. El servicio recibe una solicitud (con o sin especificación de origen de datos)
+/// 2. Crea un UnitOfWork para el origen de datos apropiado
+/// 3. Ejecuta la operación a través de los repositorios
+/// 4. Mapea el resultado de entidad a DTO
+/// 5. Retorna el DTO al cliente
+/// </remarks>
 public class LogServicesHeaderService : ILogServicesHeaderService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
     private readonly DataSourceType _defaultDataSource;
 
+    /// <summary>
+    /// Inicializa una nueva instancia del servicio LogServicesHeaderService.
+    /// </summary>
+    /// <param name="dataSourceFactory">Fábrica para crear unidades de trabajo por origen de datos</param>
+    /// <param name="mapper">Mapeador para convertir entre entidades y DTOs</param>
+    /// <param name="dataSourceSettings">Configuración del origen de datos predeterminado</param>
+    /// <remarks>
+    /// El origen de datos predeterminado se obtiene de dataSourceSettings, que está
+    /// configurado en appsettings.json. Esto permite que las queries sin especificar
+    /// dataSource usen automáticamente la base de datos configurada.
+    /// </remarks>
     public LogServicesHeaderService(
         IDataSourceFactory dataSourceFactory,
         IMapper mapper,
-        DataSourceType defaultDataSource = DataSourceType.PostgreSQL)
+        DataSourceSettings dataSourceSettings)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
-        _defaultDataSource = defaultDataSource;
+        _defaultDataSource = dataSourceSettings.DefaultDataSource;
     }
 
+    /// <summary>
+    /// Obtiene un log por su identificador único.
+    /// </summary>
+    /// <param name="id">Identificador del log a buscar</param>
+    /// <param name="dataSource">Origen de datos opcional. Si es null, usa el predeterminado</param>
+    /// <param name="cancellationToken">Token para cancelar la operación</param>
+    /// <returns>El log encontrado o null si no existe</returns>
     public async Task<LogServicesHeaderDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
     {
+        // Crear UnitOfWork con el origen de datos especificado o el predeterminado
         using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
+
+        // Buscar la entidad en el repositorio
         var entity = await uow.LogServicesHeaders.GetByIdAsync(id, cancellationToken);
+
+        // Mapear a DTO y retornar (null si no se encontró)
         return entity == null ? null : _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
+    /// <summary>
+    /// Obtiene un log con todos sus detalles relacionados (microservicios y contenidos).
+    /// </summary>
+    /// <param name="id">Identificador del log a buscar</param>
+    /// <param name="dataSource">Origen de datos opcional. Si es null, usa el predeterminado</param>
+    /// <param name="cancellationToken">Token para cancelar la operación</param>
+    /// <returns>El log con sus relaciones o null si no existe</returns>
+    /// <remarks>
+    /// Este método carga las relaciones de navegación (LogMicroservices y LogServicesContents)
+    /// mediante eager loading para evitar múltiples consultas a la base de datos.
+    /// </remarks>
     public async Task<LogServicesHeaderDto?> GetWithDetailsAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
     {
         using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);

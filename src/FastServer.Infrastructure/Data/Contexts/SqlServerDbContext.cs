@@ -1,11 +1,11 @@
-using FastServer.Domain.Entities;
-using FastServer.Infrastructure.Data.Configurations;
+using FastServer.Domain.Entities.Microservices;
+using FastServer.Infrastructure.Data.Configurations.Microservices;
 using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Infrastructure.Data.Contexts;
 
 /// <summary>
-/// Contexto de base de datos SQL Server
+/// Contexto de base de datos SQL Server - Microservices Management
 /// </summary>
 public class SqlServerDbContext : DbContext
 {
@@ -13,23 +13,25 @@ public class SqlServerDbContext : DbContext
     {
     }
 
-    public DbSet<LogServicesHeader> LogServicesHeaders => Set<LogServicesHeader>();
-    public DbSet<LogMicroservice> LogMicroservices => Set<LogMicroservice>();
-    public DbSet<LogServicesContent> LogServicesContents => Set<LogServicesContent>();
-    public DbSet<LogServicesHeaderHistorico> LogServicesHeadersHistorico => Set<LogServicesHeaderHistorico>();
-    public DbSet<LogMicroserviceHistorico> LogMicroservicesHistorico => Set<LogMicroserviceHistorico>();
-    public DbSet<LogServicesContentHistorico> LogServicesContentsHistorico => Set<LogServicesContentHistorico>();
+    public DbSet<EventType> EventTypes => Set<EventType>();
+    public DbSet<User> Users => Set<User>();
+    public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
+    public DbSet<MicroserviceRegister> MicroserviceRegisters => Set<MicroserviceRegister>();
+    public DbSet<MicroservicesCluster> MicroservicesClusters => Set<MicroservicesCluster>();
+    public DbSet<MicroserviceCoreConnector> MicroserviceCoreConnectors => Set<MicroserviceCoreConnector>();
+    public DbSet<CoreConnectorCredential> CoreConnectorCredentials => Set<CoreConnectorCredential>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Aplicar configuraciones para SQL Server
-        modelBuilder.ApplyConfiguration(new LogServicesHeaderSqlServerConfiguration());
-        modelBuilder.ApplyConfiguration(new LogMicroserviceSqlServerConfiguration());
-        modelBuilder.ApplyConfiguration(new LogServicesContentSqlServerConfiguration());
-        modelBuilder.ApplyConfiguration(new LogServicesHeaderHistoricoSqlServerConfiguration());
-        modelBuilder.ApplyConfiguration(new LogMicroserviceHistoricoSqlServerConfiguration());
-        modelBuilder.ApplyConfiguration(new LogServicesContentHistoricoSqlServerConfiguration());
+        // Aplicar configuraciones para microservicios
+        modelBuilder.ApplyConfiguration(new EventTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new ActivityLogConfiguration());
+        modelBuilder.ApplyConfiguration(new MicroserviceRegisterConfiguration());
+        modelBuilder.ApplyConfiguration(new MicroservicesClusterConfiguration());
+        modelBuilder.ApplyConfiguration(new MicroserviceCoreConnectorConfiguration());
+        modelBuilder.ApplyConfiguration(new CoreConnectorCredentialConfiguration());
     }
 }

@@ -8,7 +8,7 @@ namespace FastServer.Infrastructure.Repositories;
 /// <summary>
 /// Implementación genérica de repositorio
 /// </summary>
-public class Repository<T> : IRepository<T> where T : BaseEntity
+public class Repository<T> : IRepository<T> where T : class
 {
     protected readonly DbContext _context;
     protected readonly DbSet<T> _dbSet;
@@ -19,9 +19,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         _dbSet = context.Set<T>();
     }
 
-    public virtual async Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+    public virtual async Task<T?> GetByIdAsync(object id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FirstOrDefaultAsync(e => e.LogId == id, cancellationToken);
+        return await _dbSet.FindAsync(new[] { id }, cancellationToken);
     }
 
     public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -63,9 +63,10 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return Task.CompletedTask;
     }
 
-    public virtual async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> ExistsAsync(object id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.AnyAsync(e => e.LogId == id, cancellationToken);
+        var entity = await _dbSet.FindAsync(new[] { id }, cancellationToken);
+        return entity != null;
     }
 
     public virtual async Task<int> CountAsync(CancellationToken cancellationToken = default)

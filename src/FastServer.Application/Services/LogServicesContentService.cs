@@ -4,6 +4,7 @@ using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
+using FastServer.Domain;
 
 namespace FastServer.Application.Services;
 
@@ -19,11 +20,11 @@ public class LogServicesContentService : ILogServicesContentService
     public LogServicesContentService(
         IDataSourceFactory dataSourceFactory,
         IMapper mapper,
-        DataSourceType defaultDataSource = DataSourceType.PostgreSQL)
+        DataSourceSettings dataSourceSettings)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
-        _defaultDataSource = defaultDataSource;
+        _defaultDataSource = dataSourceSettings.DefaultDataSource;
     }
 
     public async Task<LogServicesContentDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
