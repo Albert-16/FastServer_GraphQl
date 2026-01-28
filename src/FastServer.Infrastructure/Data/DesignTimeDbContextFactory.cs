@@ -15,12 +15,12 @@ public class PostgreSqlDbContextFactory : IDesignTimeDbContextFactory<PostgreSql
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Development.json", optional: true)
+           // .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
         var connectionString = configuration.GetConnectionString("PostgreSQL")
-            ?? "Host=localhost;Database=FastServerLogs;Username=postgres;Password=postgres";
+            ?? "Host=localhost;Database=FastServerLogs;Username=postgres;Password=Souma";
 
         var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlDbContext>();
         optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
@@ -28,7 +28,7 @@ public class PostgreSqlDbContextFactory : IDesignTimeDbContextFactory<PostgreSql
             npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "public");
         });
 
-        return new PostgreSqlDbContext(optionsBuilder.Options, seedData: true);
+        return new PostgreSqlDbContext(optionsBuilder.Options);
     }
 }
 
@@ -42,12 +42,12 @@ public class SqlServerDbContextFactory : IDesignTimeDbContextFactory<SqlServerDb
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Development.json", optional: true)
+          //  .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
         var connectionString = configuration.GetConnectionString("SqlServer")
-            ?? "Server=localhost;Database=FastServerLogs;Trusted_Connection=True;TrustServerCertificate=True";
+            ?? "Server=DESKTOP-9C0B00C\\SQLEXPRESS;Database=FastServerLogs_Dev;Integrated Security=True;TrustServerCertificate=True";
 
         var optionsBuilder = new DbContextOptionsBuilder<SqlServerDbContext>();
         optionsBuilder.UseSqlServer(connectionString, sqlOptions =>

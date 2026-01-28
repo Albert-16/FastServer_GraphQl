@@ -138,8 +138,10 @@ public class LogServicesContentMutation
         var dto = new CreateLogServicesContentDto
         {
             LogId = input.LogId,
-            LogServicesContentText = input.LogServicesContentText,
-            ContentNo = input.ContentNo
+            LogServicesDate = input.LogServicesDate,
+            LogServicesLogLevel = input.LogServicesLogLevel,
+            LogServicesState = input.LogServicesState,
+            LogServicesContentText = input.LogServicesContentText
         };
 
         return await service.CreateAsync(dto, input.DataSource, cancellationToken);

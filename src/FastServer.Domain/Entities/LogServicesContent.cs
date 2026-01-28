@@ -6,15 +6,22 @@ namespace FastServer.Domain.Entities;
 public class LogServicesContent : BaseEntity
 {
     /// <summary>
+    /// Fecha del log de servicio
+    /// </summary>
+    public string? LogServicesDate { get; set; }
+
+    /// <summary>
+    /// Nivel del log (INFO, WARN, ERROR, etc.)
+    /// </summary>
+    public string? LogServicesLogLevel { get; set; }
+
+    /// <summary>
+    /// Estado del log de servicio
+    /// </summary>
+    public string? LogServicesState { get; set; }
+
+    /// <summary>
     /// Texto del contenido del log
     /// </summary>
     public string? LogServicesContentText { get; set; }
-
-    /// <summary>
-    /// Número de secuencia del contenido
-    /// </summary>
-    public string? ContentNo { get; set; }
-
-    // Relación de navegación
-    public virtual LogServicesHeader? LogServicesHeader { get; set; }
 }

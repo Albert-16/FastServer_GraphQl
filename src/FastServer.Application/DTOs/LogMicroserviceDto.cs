@@ -6,6 +6,8 @@ namespace FastServer.Application.DTOs;
 public record LogMicroserviceDto
 {
     public long LogId { get; init; }
+    public DateTime? LogDate { get; init; }
+    public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
 }
 
@@ -15,5 +17,7 @@ public record LogMicroserviceDto
 public record CreateLogMicroserviceDto
 {
     public long LogId { get; init; }
+    public DateTime? LogDate { get; init; }
+    public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
 }

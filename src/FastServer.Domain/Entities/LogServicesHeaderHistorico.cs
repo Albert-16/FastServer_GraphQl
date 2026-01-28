@@ -27,7 +27,4 @@ public class LogServicesHeaderHistorico : BaseEntity
     public string? UserId { get; set; }
     public string? SessionId { get; set; }
     public Guid? RequestId { get; set; }
-
-    public virtual ICollection<LogMicroserviceHistorico> LogMicroservices { get; set; } = new List<LogMicroserviceHistorico>();
-    public virtual ICollection<LogServicesContentHistorico> LogServicesContents { get; set; } = new List<LogServicesContentHistorico>();
 }

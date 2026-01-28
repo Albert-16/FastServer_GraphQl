@@ -10,11 +10,9 @@ namespace FastServer.Infrastructure.Data.Contexts;
 /// </summary>
 public class PostgreSqlDbContext : DbContext
 {
-    private readonly bool _seedData;
 
-    public PostgreSqlDbContext(DbContextOptions<PostgreSqlDbContext> options, bool seedData = false) : base(options)
+    public PostgreSqlDbContext(DbContextOptions<PostgreSqlDbContext> options) : base(options)
     {
-        _seedData = seedData;
     }
 
     public DbSet<LogServicesHeader> LogServicesHeaders => Set<LogServicesHeader>();
@@ -36,10 +34,7 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.ApplyConfiguration(new LogMicroserviceHistoricoConfiguration());
         modelBuilder.ApplyConfiguration(new LogServicesContentHistoricoConfiguration());
 
-        // Aplicar datos de prueba si está habilitado
-        if (_seedData)
-        {
-            DatabaseSeeder.Seed(modelBuilder);
-        }
+        // Aplicar datos de prueba (siempre para migraciones)
+        DatabaseSeeder.Seed(modelBuilder);
     }
 }

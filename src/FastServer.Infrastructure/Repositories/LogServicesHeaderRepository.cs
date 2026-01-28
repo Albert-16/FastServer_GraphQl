@@ -69,9 +69,8 @@ public class LogServicesHeaderRepository : Repository<LogServicesHeader>, ILogSe
         long id,
         CancellationToken cancellationToken = default)
     {
+        // Sin propiedades de navegación, este método es equivalente a GetByIdAsync
         return await _dbSet
-            .Include(x => x.LogMicroservices)
-            .Include(x => x.LogServicesContents)
             .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
     }
 

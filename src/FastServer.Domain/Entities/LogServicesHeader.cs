@@ -106,8 +106,4 @@ public class LogServicesHeader : BaseEntity
     /// ID de la solicitud
     /// </summary>
     public long? RequestId { get; set; }
-
-    // Relaciones de navegación
-    public virtual ICollection<LogMicroservice> LogMicroservices { get; set; } = new List<LogMicroservice>();
-    public virtual ICollection<LogServicesContent> LogServicesContents { get; set; } = new List<LogServicesContent>();
 }

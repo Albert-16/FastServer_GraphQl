@@ -96,16 +96,6 @@ public class LogServicesHeaderHistoricoConfiguration : IEntityTypeConfiguration<
         builder.Property(e => e.RequestId)
             .HasColumnName("fastserver_request_id");
 
-        builder.HasMany(e => e.LogMicroservices)
-            .WithOne(e => e.LogServicesHeader)
-            .HasForeignKey(e => e.LogId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(e => e.LogServicesContents)
-            .WithOne(e => e.LogServicesHeader)
-            .HasForeignKey(e => e.LogId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasIndex(e => e.LogDateIn);
         builder.HasIndex(e => e.LogState);
     }

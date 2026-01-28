@@ -16,9 +16,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
 
         CreateMap<CreateLogServicesHeaderDto, LogServicesHeader>()
-            .ForMember(dest => dest.LogId, opt => opt.Ignore())
-            .ForMember(dest => dest.LogMicroservices, opt => opt.Ignore())
-            .ForMember(dest => dest.LogServicesContents, opt => opt.Ignore());
+            .ForMember(dest => dest.LogId, opt => opt.Ignore());
 
         CreateMap<LogServicesHeaderHistorico, LogServicesHeaderDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId))
@@ -28,8 +26,7 @@ public class MappingProfile : Profile
         CreateMap<LogMicroservice, LogMicroserviceDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
 
-        CreateMap<CreateLogMicroserviceDto, LogMicroservice>()
-            .ForMember(dest => dest.LogServicesHeader, opt => opt.Ignore());
+        CreateMap<CreateLogMicroserviceDto, LogMicroservice>();
 
         CreateMap<LogMicroserviceHistorico, LogMicroserviceDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
@@ -38,8 +35,7 @@ public class MappingProfile : Profile
         CreateMap<LogServicesContent, LogServicesContentDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
 
-        CreateMap<CreateLogServicesContentDto, LogServicesContent>()
-            .ForMember(dest => dest.LogServicesHeader, opt => opt.Ignore());
+        CreateMap<CreateLogServicesContentDto, LogServicesContent>();
 
         CreateMap<LogServicesContentHistorico, LogServicesContentDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));

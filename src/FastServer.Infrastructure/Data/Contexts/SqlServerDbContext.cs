@@ -1,5 +1,6 @@
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Infrastructure.Data.Configurations.Microservices;
+using FastServer.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Infrastructure.Data.Contexts;
@@ -20,6 +21,7 @@ public class SqlServerDbContext : DbContext
     public DbSet<MicroservicesCluster> MicroservicesClusters => Set<MicroservicesCluster>();
     public DbSet<MicroserviceCoreConnector> MicroserviceCoreConnectors => Set<MicroserviceCoreConnector>();
     public DbSet<CoreConnectorCredential> CoreConnectorCredentials => Set<CoreConnectorCredential>();
+    public DbSet<MicroserviceMethod> MicroserviceMethods => Set<MicroserviceMethod>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,5 +35,9 @@ public class SqlServerDbContext : DbContext
         modelBuilder.ApplyConfiguration(new MicroservicesClusterConfiguration());
         modelBuilder.ApplyConfiguration(new MicroserviceCoreConnectorConfiguration());
         modelBuilder.ApplyConfiguration(new CoreConnectorCredentialConfiguration());
+        modelBuilder.ApplyConfiguration(new MicroserviceMethodConfiguration());
+
+        // Aplicar datos de prueba (siempre para migraciones)
+        MicroservicesSeeder.Seed(modelBuilder);
     }
 }

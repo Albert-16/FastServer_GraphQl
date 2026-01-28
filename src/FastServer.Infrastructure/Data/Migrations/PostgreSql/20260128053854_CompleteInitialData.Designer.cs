@@ -9,18 +9,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
+namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20260124033920_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260128053854_CompleteInitialData")]
+    partial class CompleteInitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,8 +28,20 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
             modelBuilder.Entity("FastServer.Domain.Entities.LogMicroservice", b =>
                 {
                     b.Property<long>("LogId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
+
+                    b.Property<DateTime?>("LogDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fastserver_log_date");
+
+                    b.Property<string>("LogLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_log_level");
 
                     b.Property<string>("LogMicroserviceText")
                         .HasColumnType("text")
@@ -45,55 +57,36 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
                         new
                         {
                             LogId = 1L,
+                            LogDate = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            LogLevel = "INFO",
                             LogMicroserviceText = "[AuthService] Inicio de autenticación para usuario: admin"
                         },
                         new
                         {
                             LogId = 2L,
-                            LogMicroserviceText = "[CustomerService] Consultando lista de clientes con filtro activo"
-                        },
-                        new
-                        {
-                            LogId = 3L,
-                            LogMicroserviceText = "[OrderService] Error: No se pudo conectar con InventoryService después de 3 reintentos"
-                        },
-                        new
-                        {
-                            LogId = 4L,
+                            LogDate = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            LogLevel = "INFO",
                             LogMicroserviceText = "[ProductService] Búsqueda ejecutada: 'laptop gaming' - 15 resultados encontrados"
-                        },
-                        new
-                        {
-                            LogId = 5L,
-                            LogMicroserviceText = "[ReportService] Generando reporte mensual de ventas - Timeout alcanzado en agregación de datos"
-                        },
-                        new
-                        {
-                            LogId = 7L,
-                            LogMicroserviceText = "[PaymentService] Pago procesado exitosamente - Monto: $1,250.00 - Método: Tarjeta de crédito"
-                        },
-                        new
-                        {
-                            LogId = 8L,
-                            LogMicroserviceText = "[NotificationService] Envío de notificación cancelado por solicitud del usuario"
-                        },
-                        new
-                        {
-                            LogId = 9L,
-                            LogMicroserviceText = "[InventoryService] Actualización de stock completada - 50 productos modificados"
-                        },
-                        new
-                        {
-                            LogId = 10L,
-                            LogMicroserviceText = "[BatchService] Procesamiento por lotes iniciado - 1000 registros pendientes"
                         });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.LogMicroserviceHistorico", b =>
                 {
                     b.Property<long>("LogId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
+
+                    b.Property<DateTime?>("LogDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fastserver_log_date");
+
+                    b.Property<string>("LogLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_log_level");
 
                     b.Property<string>("LogMicroserviceText")
                         .IsRequired()
@@ -105,24 +98,53 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
                     b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogMicroservice_Historico", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            LogId = 1L,
+                            LogDate = new DateTime(2024, 12, 15, 10, 0, 0, 0, DateTimeKind.Utc),
+                            LogLevel = "INFO",
+                            LogMicroserviceText = "[AuthService] Autenticación histórica exitosa para usuario: admin"
+                        },
+                        new
+                        {
+                            LogId = 2L,
+                            LogDate = new DateTime(2024, 12, 15, 10, 10, 0, 0, DateTimeKind.Utc),
+                            LogLevel = "INFO",
+                            LogMicroserviceText = "[ProductService] Búsqueda histórica ejecutada: 'gaming keyboard' - 12 resultados"
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.LogServicesContent", b =>
                 {
                     b.Property<long>("LogId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
 
-                    b.Property<string>("ContentNo")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("fastserver_no");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
 
                     b.Property<string>("LogServicesContentText")
                         .HasColumnType("text")
                         .HasColumnName("fastserver_logservices_content_text");
 
-                    b.HasKey("LogId", "ContentNo");
+                    b.Property<string>("LogServicesDate")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("fastserver_logservices_date");
+
+                    b.Property<string>("LogServicesLogLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_logservices_log_level");
+
+                    b.Property<string>("LogServicesState")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_logservices_state");
+
+                    b.HasKey("LogId");
 
                     b.HasIndex("LogId");
 
@@ -132,55 +154,72 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
                         new
                         {
                             LogId = 1L,
-                            ContentNo = "001",
-                            LogServicesContentText = "{\"username\": \"admin\", \"timestamp\": \"2025-01-01T10:00:00Z\", \"ip\": \"192.168.1.100\"}"
+                            LogServicesContentText = "{\"username\": \"admin\", \"timestamp\": \"2025-01-01T10:00:00Z\", \"ip\": \"192.168.1.100\"}",
+                            LogServicesDate = "2025-01-01 10:00:00",
+                            LogServicesLogLevel = "INFO",
+                            LogServicesState = "SUCCESS"
                         },
                         new
                         {
-                            LogId = 3L,
-                            ContentNo = "001",
-                            LogServicesContentText = "{\"orderId\": null, \"error\": \"ConnectionRefused\", \"service\": \"InventoryService\", \"retries\": 3}"
-                        },
-                        new
-                        {
-                            LogId = 5L,
-                            ContentNo = "001",
-                            LogServicesContentText = "{\"reportType\": \"MonthlySales\", \"month\": \"December\", \"year\": 2024, \"status\": \"timeout\"}"
-                        },
-                        new
-                        {
-                            LogId = 7L,
-                            ContentNo = "001",
-                            LogServicesContentText = "{\"transactionId\": \"PAY-12345\", \"amount\": 1250.00, \"currency\": \"USD\", \"method\": \"credit_card\"}"
-                        },
-                        new
-                        {
-                            LogId = 9L,
-                            ContentNo = "001",
-                            LogServicesContentText = "{\"warehouseId\": \"WH-001\", \"productsUpdated\": 50, \"operation\": \"stock_adjustment\"}"
+                            LogId = 2L,
+                            LogServicesContentText = "{\"searchTerm\": \"laptop gaming\", \"resultsCount\": 15, \"executionTime\": \"320ms\"}",
+                            LogServicesDate = "2025-01-01 10:05:00",
+                            LogServicesLogLevel = "INFO",
+                            LogServicesState = "SUCCESS"
                         });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.LogServicesContentHistorico", b =>
                 {
                     b.Property<long>("LogId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
 
-                    b.Property<string>("ContentNo")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("fastserver_no");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
 
                     b.Property<string>("LogServicesContentText")
                         .HasColumnType("text")
                         .HasColumnName("fastserver_logservices_content_text");
 
-                    b.HasKey("LogId", "ContentNo");
+                    b.Property<string>("LogServicesDate")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("fastserver_logservices_date");
+
+                    b.Property<string>("LogServicesLogLevel")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_logservices_log_level");
+
+                    b.Property<string>("LogServicesState")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_logservices_state");
+
+                    b.HasKey("LogId");
 
                     b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogServices_Content_Historico", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            LogId = 1L,
+                            LogServicesContentText = "{\"username\": \"admin\", \"timestamp\": \"2024-12-15T10:00:00Z\", \"ip\": \"192.168.1.50\", \"archived\": true}",
+                            LogServicesDate = "2024-12-15 10:00:00",
+                            LogServicesLogLevel = "INFO",
+                            LogServicesState = "SUCCESS"
+                        },
+                        new
+                        {
+                            LogId = 2L,
+                            LogServicesContentText = "{\"searchTerm\": \"gaming keyboard\", \"resultsCount\": 12, \"executionTime\": \"280ms\", \"archived\": true}",
+                            LogServicesDate = "2024-12-15 10:10:00",
+                            LogServicesLogLevel = "INFO",
+                            LogServicesState = "SUCCESS"
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.LogServicesHeader", b =>
@@ -326,154 +365,16 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
                             HttpMethod = "GET",
                             IpFs = "192.168.1.101",
                             LogDateIn = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 5, 0, 85, DateTimeKind.Utc),
-                            LogMethodName = "GetCustomerList",
-                            LogMethodUrl = "/api/customers/list",
-                            LogState = "Completed",
-                            MicroserviceName = "CustomerService",
-                            RequestDuration = 85L,
-                            SessionId = "SES-002",
-                            TransactionId = "TRX-002-2025",
-                            TypeProcess = "Query",
-                            UserId = "user001"
-                        },
-                        new
-                        {
-                            LogId = 3L,
-                            ErrorCode = "ORD-500",
-                            ErrorDescription = "Error de conexión con el servicio de inventario",
-                            HttpMethod = "POST",
-                            IpFs = "192.168.1.102",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 10, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 10, 5, 200, DateTimeKind.Utc),
-                            LogMethodName = "CreateOrder",
-                            LogMethodUrl = "/api/orders/create",
-                            LogState = "Failed",
-                            MicroserviceName = "OrderService",
-                            RequestDuration = 5200L,
-                            SessionId = "SES-003",
-                            TransactionId = "TRX-003-2025",
-                            TypeProcess = "Transaction",
-                            UserId = "user002"
-                        },
-                        new
-                        {
-                            LogId = 4L,
-                            HttpMethod = "GET",
-                            IpFs = "192.168.1.103",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 15, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 15, 0, 320, DateTimeKind.Utc),
+                            LogDateOut = new DateTime(2025, 1, 1, 10, 5, 0, 320, DateTimeKind.Utc),
                             LogMethodName = "SearchProducts",
                             LogMethodUrl = "/api/products/search",
                             LogState = "Completed",
                             MicroserviceName = "ProductService",
                             RequestDuration = 320L,
-                            SessionId = "SES-004",
-                            TransactionId = "TRX-004-2025",
+                            SessionId = "SES-002",
+                            TransactionId = "TRX-002-2025",
                             TypeProcess = "Query",
-                            UserId = "user003"
-                        },
-                        new
-                        {
-                            LogId = 5L,
-                            ErrorCode = "RPT-408",
-                            ErrorDescription = "Tiempo de espera agotado generando reporte mensual",
-                            HttpMethod = "POST",
-                            IpFs = "192.168.1.100",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 20, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 20, 30, 500, DateTimeKind.Utc),
-                            LogMethodName = "GenerateReport",
-                            LogMethodUrl = "/api/reports/generate",
-                            LogState = "Timeout",
-                            MicroserviceName = "ReportService",
-                            RequestDuration = 30500L,
-                            SessionId = "SES-005",
-                            TransactionId = "TRX-005-2025",
-                            TypeProcess = "Report",
-                            UserId = "admin"
-                        },
-                        new
-                        {
-                            LogId = 6L,
-                            HttpMethod = "GET",
-                            IpFs = "192.168.1.200",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 25, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 25, 0, 45, DateTimeKind.Utc),
-                            LogMethodName = "HealthCheck",
-                            LogMethodUrl = "/api/health",
-                            LogState = "Completed",
-                            MicroserviceName = "HealthService",
-                            RequestDuration = 45L,
-                            TransactionId = "TRX-006-2025",
-                            TypeProcess = "Health"
-                        },
-                        new
-                        {
-                            LogId = 7L,
-                            HttpMethod = "POST",
-                            IpFs = "192.168.1.104",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 30, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 30, 1, 850, DateTimeKind.Utc),
-                            LogMethodName = "ProcessPayment",
-                            LogMethodUrl = "/api/payments/process",
-                            LogState = "Completed",
-                            MicroserviceName = "PaymentService",
-                            RequestDuration = 1850L,
-                            SessionId = "SES-006",
-                            TransactionId = "TRX-007-2025",
-                            TypeProcess = "Transaction",
-                            UserId = "user004"
-                        },
-                        new
-                        {
-                            LogId = 8L,
-                            ErrorCode = "NTF-499",
-                            ErrorDescription = "Operación cancelada por el usuario",
-                            HttpMethod = "POST",
-                            IpFs = "192.168.1.50",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 35, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 35, 0, 125, DateTimeKind.Utc),
-                            LogMethodName = "SendNotification",
-                            LogMethodUrl = "/api/notifications/send",
-                            LogState = "Cancelled",
-                            MicroserviceName = "NotificationService",
-                            RequestDuration = 125L,
-                            TransactionId = "TRX-008-2025",
-                            TypeProcess = "Notification",
-                            UserId = "system"
-                        },
-                        new
-                        {
-                            LogId = 9L,
-                            HttpMethod = "PUT",
-                            IpFs = "192.168.1.105",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 40, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 40, 2, 100, DateTimeKind.Utc),
-                            LogMethodName = "UpdateInventory",
-                            LogMethodUrl = "/api/inventory/update",
-                            LogState = "Completed",
-                            MicroserviceName = "InventoryService",
-                            RequestDuration = 2100L,
-                            SessionId = "SES-007",
-                            TransactionId = "TRX-009-2025",
-                            TypeProcess = "Update",
-                            UserId = "warehouse001"
-                        },
-                        new
-                        {
-                            LogId = 10L,
-                            HttpMethod = "POST",
-                            IpFs = "192.168.1.60",
-                            LogDateIn = new DateTime(2025, 1, 1, 10, 45, 0, 0, DateTimeKind.Utc),
-                            LogDateOut = new DateTime(2025, 1, 1, 10, 45, 0, 95, DateTimeKind.Utc),
-                            LogMethodName = "ProcessBatch",
-                            LogMethodUrl = "/api/batch/process",
-                            LogState = "InProgress",
-                            MicroserviceName = "BatchService",
-                            RequestDuration = 95L,
-                            TransactionId = "TRX-010-2025",
-                            TypeProcess = "Batch",
-                            UserId = "scheduler"
+                            UserId = "user001"
                         });
                 });
 
@@ -589,64 +490,42 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSQL
                     b.HasIndex("LogState");
 
                     b.ToTable("FastServer_LogServices_Header_Historico", (string)null);
-                });
 
-            modelBuilder.Entity("FastServer.Domain.Entities.LogMicroservice", b =>
-                {
-                    b.HasOne("FastServer.Domain.Entities.LogServicesHeader", "LogServicesHeader")
-                        .WithMany("LogMicroservices")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LogServicesHeader");
-                });
-
-            modelBuilder.Entity("FastServer.Domain.Entities.LogMicroserviceHistorico", b =>
-                {
-                    b.HasOne("FastServer.Domain.Entities.LogServicesHeaderHistorico", "LogServicesHeader")
-                        .WithMany("LogMicroservices")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LogServicesHeader");
-                });
-
-            modelBuilder.Entity("FastServer.Domain.Entities.LogServicesContent", b =>
-                {
-                    b.HasOne("FastServer.Domain.Entities.LogServicesHeader", "LogServicesHeader")
-                        .WithMany("LogServicesContents")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LogServicesHeader");
-                });
-
-            modelBuilder.Entity("FastServer.Domain.Entities.LogServicesContentHistorico", b =>
-                {
-                    b.HasOne("FastServer.Domain.Entities.LogServicesHeaderHistorico", "LogServicesHeader")
-                        .WithMany("LogServicesContents")
-                        .HasForeignKey("LogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LogServicesHeader");
-                });
-
-            modelBuilder.Entity("FastServer.Domain.Entities.LogServicesHeader", b =>
-                {
-                    b.Navigation("LogMicroservices");
-
-                    b.Navigation("LogServicesContents");
-                });
-
-            modelBuilder.Entity("FastServer.Domain.Entities.LogServicesHeaderHistorico", b =>
-                {
-                    b.Navigation("LogMicroservices");
-
-                    b.Navigation("LogServicesContents");
+                    b.HasData(
+                        new
+                        {
+                            LogId = 1L,
+                            HttpMethod = "POST",
+                            IpFs = "192.168.1.50",
+                            LogDateIn = new DateTime(2024, 12, 15, 10, 0, 0, 0, DateTimeKind.Utc),
+                            LogDateOut = new DateTime(2024, 12, 15, 10, 0, 0, 145, DateTimeKind.Utc),
+                            LogMethodName = "AuthenticateUser",
+                            LogMethodUrl = "/api/users/authenticate",
+                            LogState = "Completed",
+                            MicroserviceName = "AuthService",
+                            RequestDuration = 145L,
+                            SessionId = "SES-HIST-001",
+                            TransactionId = "TRX-HIST-001-2024",
+                            TypeProcess = "Authentication",
+                            UserId = "admin"
+                        },
+                        new
+                        {
+                            LogId = 2L,
+                            HttpMethod = "GET",
+                            IpFs = "192.168.1.51",
+                            LogDateIn = new DateTime(2024, 12, 15, 10, 10, 0, 0, DateTimeKind.Utc),
+                            LogDateOut = new DateTime(2024, 12, 15, 10, 10, 0, 280, DateTimeKind.Utc),
+                            LogMethodName = "SearchProducts",
+                            LogMethodUrl = "/api/products/search",
+                            LogState = "Completed",
+                            MicroserviceName = "ProductService",
+                            RequestDuration = 280L,
+                            SessionId = "SES-HIST-002",
+                            TransactionId = "TRX-HIST-002-2024",
+                            TypeProcess = "Query",
+                            UserId = "user001"
+                        });
                 });
 #pragma warning restore 612, 618
         }

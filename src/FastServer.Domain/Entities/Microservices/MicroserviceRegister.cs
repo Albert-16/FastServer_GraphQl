@@ -43,4 +43,5 @@ public class MicroserviceRegister : BaseMicroserviceEntity
     // Navegación
     public virtual MicroservicesCluster? MicroserviceCluster { get; set; }
     public virtual ICollection<MicroserviceCoreConnector> MicroserviceCoreConnectors { get; set; } = new List<MicroserviceCoreConnector>();
+    public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
 }

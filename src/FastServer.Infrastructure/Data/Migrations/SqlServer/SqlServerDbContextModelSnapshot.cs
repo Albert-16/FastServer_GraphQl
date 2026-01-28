@@ -17,7 +17,7 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -70,6 +70,30 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("UserId");
 
                     b.ToTable("activity_logs", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            ActivityLogId = new Guid("10000000-0000-0000-0000-000000000001"),
+                            ActivityLogDescription = "AuthService registered successfully",
+                            ActivityLogEntityId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ActivityLogEntityName = "MicroserviceRegister",
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            EventTypeId = 1L,
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = new Guid("00000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            ActivityLogId = new Guid("10000000-0000-0000-0000-000000000002"),
+                            ActivityLogDescription = "ProductService configuration updated",
+                            ActivityLogEntityId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ActivityLogEntityName = "MicroserviceRegister",
+                            CreateAt = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            EventTypeId = 2L,
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
+                            UserId = new Guid("00000000-0000-0000-0000-000000000002")
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.CoreConnectorCredential", b =>
@@ -109,6 +133,26 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("CoreConnectorCredentialUser");
 
                     b.ToTable("core_connector_credentials", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            CoreConnectorCredentialId = 1L,
+                            CoreConnectorCredentialKey = "api_key_001",
+                            CoreConnectorCredentialPass = "encrypted_pass_001",
+                            CoreConnectorCredentialUser = "auth_service_user",
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            CoreConnectorCredentialId = 2L,
+                            CoreConnectorCredentialKey = "api_key_002",
+                            CoreConnectorCredentialPass = "encrypted_pass_002",
+                            CoreConnectorCredentialUser = "product_service_user",
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.EventType", b =>
@@ -138,6 +182,22 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("EventTypeDescription");
 
                     b.ToTable("event_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            EventTypeId = 1L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            EventTypeDescription = "Microservice Registration",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            EventTypeId = 2L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            EventTypeDescription = "Configuration Change",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceCoreConnector", b =>
@@ -172,6 +232,92 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("MicroserviceId");
 
                     b.ToTable("microservice_core_connector", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MicroserviceCoreConnectorId = 1L,
+                            CoreConnectorCredentialId = 1L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceId = 1L,
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            MicroserviceCoreConnectorId = 2L,
+                            CoreConnectorCredentialId = 2L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceId = 2L,
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceMethod", b =>
+                {
+                    b.Property<long>("MicroserviceMethodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("microservice_method_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MicroserviceMethodId"));
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("create_at");
+
+                    b.Property<long>("MicroserviceId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("microservice_id");
+
+                    b.Property<bool?>("MicroserviceMethodDelete")
+                        .HasColumnType("bit")
+                        .HasColumnName("microservice_method_delete");
+
+                    b.Property<string>("MicroserviceMethodName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("microservice_method_name");
+
+                    b.Property<string>("MicroserviceMethodUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("microservice_method_url");
+
+                    b.Property<DateTime?>("ModifyAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("modify_at");
+
+                    b.HasKey("MicroserviceMethodId");
+
+                    b.HasIndex("MicroserviceId");
+
+                    b.HasIndex("MicroserviceMethodDelete");
+
+                    b.HasIndex("MicroserviceMethodName");
+
+                    b.ToTable("microservice_methods", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MicroserviceMethodId = 1L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceId = 1L,
+                            MicroserviceMethodDelete = false,
+                            MicroserviceMethodName = "AuthenticateUser",
+                            MicroserviceMethodUrl = "/api/users/authenticate",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            MicroserviceMethodId = 2L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceId = 2L,
+                            MicroserviceMethodDelete = false,
+                            MicroserviceMethodName = "SearchProducts",
+                            MicroserviceMethodUrl = "/api/products/search",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
@@ -227,6 +373,30 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("MicroserviceName");
 
                     b.ToTable("microservice_registers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MicroserviceId = 1L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceActive = true,
+                            MicroserviceClusterId = 1L,
+                            MicroserviceCoreConnection = true,
+                            MicroserviceDeleted = false,
+                            MicroserviceName = "AuthService",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            MicroserviceId = 2L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceActive = true,
+                            MicroserviceClusterId = 1L,
+                            MicroserviceCoreConnection = true,
+                            MicroserviceDeleted = false,
+                            MicroserviceName = "ProductService",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesCluster", b =>
@@ -282,6 +452,30 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("MicroservicesClusterName");
 
                     b.ToTable("microservices_clusters", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MicroservicesClusterId = 1L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroservicesClusterActive = true,
+                            MicroservicesClusterDeleted = false,
+                            MicroservicesClusterName = "Production Cluster",
+                            MicroservicesClusterServerIp = "10.0.1.100",
+                            MicroservicesClusterServerName = "prod-cluster-01",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            MicroservicesClusterId = 2L,
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroservicesClusterActive = true,
+                            MicroservicesClusterDeleted = false,
+                            MicroservicesClusterName = "Development Cluster",
+                            MicroservicesClusterServerIp = "10.0.2.100",
+                            MicroservicesClusterServerName = "dev-cluster-01",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.User", b =>
@@ -329,6 +523,28 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("UserPeoplesoft");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            UserActive = true,
+                            UserEmail = "admin@fastserver.com",
+                            UserName = "Admin User",
+                            UserPeoplesoft = "PS001"
+                        },
+                        new
+                        {
+                            UserId = new Guid("00000000-0000-0000-0000-000000000002"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            UserActive = true,
+                            UserEmail = "developer@fastserver.com",
+                            UserName = "Developer User",
+                            UserPeoplesoft = "PS002"
+                        });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.ActivityLog", b =>
@@ -365,6 +581,17 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.Navigation("MicroserviceRegister");
                 });
 
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceMethod", b =>
+                {
+                    b.HasOne("FastServer.Domain.Entities.Microservices.MicroserviceRegister", "MicroserviceRegister")
+                        .WithMany("MicroserviceMethods")
+                        .HasForeignKey("MicroserviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MicroserviceRegister");
+                });
+
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
                 {
                     b.HasOne("FastServer.Domain.Entities.Microservices.MicroservicesCluster", "MicroserviceCluster")
@@ -388,6 +615,8 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
                 {
                     b.Navigation("MicroserviceCoreConnectors");
+
+                    b.Navigation("MicroserviceMethods");
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesCluster", b =>

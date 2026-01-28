@@ -18,6 +18,14 @@ public class LogMicroserviceConfiguration : IEntityTypeConfiguration<LogMicroser
         builder.Property(e => e.LogId)
             .HasColumnName("fastserver_log_id");
 
+        builder.Property(e => e.LogDate)
+            .HasColumnName("fastserver_log_date")
+            .HasColumnType("timestamp with time zone");
+
+        builder.Property(e => e.LogLevel)
+            .HasColumnName("fastserver_log_level")
+            .HasMaxLength(50);
+
         builder.Property(e => e.LogMicroserviceText)
             .HasColumnName("fastserver_logmicroservice_text")
             .HasColumnType("text");

@@ -13,19 +13,26 @@ public class LogServicesContentHistoricoConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("FastServer_LogServices_Content_Historico");
 
-        builder.HasKey(e => new { e.LogId, e.ContentNo });
+        builder.HasKey(e => e.LogId);
 
         builder.Property(e => e.LogId)
             .HasColumnName("fastserver_log_id");
 
+        builder.Property(e => e.LogServicesDate)
+            .HasColumnName("fastserver_logservices_date")
+            .HasMaxLength(255);
+
+        builder.Property(e => e.LogServicesLogLevel)
+            .HasColumnName("fastserver_logservices_log_level")
+            .HasMaxLength(50);
+
+        builder.Property(e => e.LogServicesState)
+            .HasColumnName("fastserver_logservices_state")
+            .HasMaxLength(50);
+
         builder.Property(e => e.LogServicesContentText)
             .HasColumnName("fastserver_logservices_content_text")
             .HasColumnType("text");
-
-        builder.Property(e => e.ContentNo)
-            .HasColumnName("fastserver_no")
-            .HasMaxLength(50)
-            .IsRequired();
 
         builder.HasIndex(e => e.LogId);
     }

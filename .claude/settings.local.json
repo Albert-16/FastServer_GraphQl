@@ -29,7 +29,19 @@
       "Bash(timeout /t 5)",
       "Bash(timeout /t 10 /nobreak)",
       "Bash(Get-Process -Name \"FastServer.GraphQL.Api\" -ErrorAction SilentlyContinue)",
-      "Bash(Stop-Process -Force)"
+      "Bash(Stop-Process -Force)",
+      "Bash(findstr:*)",
+      "Bash(timeout /t 8 /nobreak)",
+      "Bash(tasklist:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(dotnet ef database drop:*)",
+      "Bash(grep:*)",
+      "Bash(powershell:*)",
+      "Bash(dotnet ef dbcontext info:*)",
+      "Bash(dotnet script:*)",
+      "Bash(timeout /t 15)"
     ]
   }
 }

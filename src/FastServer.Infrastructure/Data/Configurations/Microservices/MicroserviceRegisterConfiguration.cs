@@ -55,6 +55,11 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasForeignKey(c => c.MicroserviceId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(e => e.MicroserviceMethods)
+            .WithOne(m => m.MicroserviceRegister)
+            .HasForeignKey(m => m.MicroserviceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Índices
         builder.HasIndex(e => e.MicroserviceName);
         builder.HasIndex(e => e.MicroserviceActive);

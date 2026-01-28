@@ -28,9 +28,6 @@ public record LogServicesHeaderDto
     public string? UserId { get; init; }
     public string? SessionId { get; init; }
     public long? RequestId { get; init; }
-
-    public ICollection<LogMicroserviceDto> LogMicroservices { get; init; } = new List<LogMicroserviceDto>();
-    public ICollection<LogServicesContentDto> LogServicesContents { get; init; } = new List<LogServicesContentDto>();
 }
 
 /// <summary>

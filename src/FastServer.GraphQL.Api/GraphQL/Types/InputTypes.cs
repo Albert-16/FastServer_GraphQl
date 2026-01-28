@@ -60,8 +60,10 @@ public class CreateLogMicroserviceInput
 public class CreateLogServicesContentInput
 {
     public long LogId { get; set; }
+    public string? LogServicesDate { get; set; }
+    public string? LogServicesLogLevel { get; set; }
+    public string? LogServicesState { get; set; }
     public string? LogServicesContentText { get; set; }
-    public string? ContentNo { get; set; }
     public DataSourceType? DataSource { get; set; }
 }
 

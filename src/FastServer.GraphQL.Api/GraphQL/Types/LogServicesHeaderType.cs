@@ -97,14 +97,6 @@ public class LogServicesHeaderType : ObjectType<LogServicesHeaderDto>
         descriptor.Field(x => x.RequestId)
             .Name("requestId")
             .Description("ID de la solicitud");
-
-        descriptor.Field(x => x.LogMicroservices)
-            .Name("logMicroservices")
-            .Description("Logs de microservicios asociados");
-
-        descriptor.Field(x => x.LogServicesContents)
-            .Name("logServicesContents")
-            .Description("Contenidos de logs asociados");
     }
 }
 
@@ -142,13 +134,21 @@ public class LogServicesContentType : ObjectType<LogServicesContentDto>
             .Name("logId")
             .Description("Identificador del log");
 
+        descriptor.Field(x => x.LogServicesDate)
+            .Name("logServicesDate")
+            .Description("Fecha del log de servicio");
+
+        descriptor.Field(x => x.LogServicesLogLevel)
+            .Name("logServicesLogLevel")
+            .Description("Nivel del log");
+
+        descriptor.Field(x => x.LogServicesState)
+            .Name("logServicesState")
+            .Description("Estado del log de servicio");
+
         descriptor.Field(x => x.LogServicesContentText)
             .Name("logServicesContentText")
             .Description("Texto del contenido del log");
-
-        descriptor.Field(x => x.ContentNo)
-            .Name("contentNo")
-            .Description("Número de secuencia del contenido");
     }
 }
 
