@@ -1,99 +1,16 @@
-// =====================================================
-// NUEVO: Método para cargar el rol del usuario
-// =====================================================
-private async Task LoadUserRole()
-{
-    try
-    {
-        // Obtener roles desde AppStateService
-        var userRoles = AppStateService.UserInformation?.Roles;
-        
-        // Verificar si es Gerente, Director o Subdirector
-        _isManager = userRoles?.Any(r => 
-            r.ToLower() == "gerente" || 
-            r.ToLower() == "director" || 
-            r.ToLower() == "subdirector") ?? false;
-        
-        StateHasChanged();
-    }
-    catch (Exception ex)
-    {
-        logger?.LogError($"Error al cargar el rol del usuario: {ex.Message}");
-        _isManager = false;
-    }
-}
-
-
-// Variables para el control de bloqueo/desbloqueo
-private bool _isManager = false;
-private bool _isLoadingWorkEnabled = false;
-
-
-
-// Método para cambiar el estado de Work_enabled
-private async Task OnWorkEnabledChanged(bool newValue)
-{
-    if (_isLoadingWorkEnabled) return;
-    
-    try
-    {
-        _isLoadingWorkEnabled = true;
-        StateHasChanged();
-
-        ModelBase.Work_enabled = newValue;
-        await UpdateWorks(ModelBase);
-        TarjetaWork?.ChangeState(ModelBase);
-
-        logger?.LogInformation($"Work_enabled actualizado a: {newValue}");
-    }
-    catch (Exception ex)
-    {
-        ModelBase.Work_enabled = !newValue; // Revertir si falla
-        logger?.LogError($"Error al actualizar Work_enabled: {ex.Message}");
-    }
-    finally
-    {
-        _isLoadingWorkEnabled = false;
-        StateHasChanged();
-    }
-}
-
-// Propiedad para obtener el estado actual
-private bool GetWorkEnabled() => ModelBase?.Work_enabled ?? false;
-
-
-
-
-protected override async Task OnInitializedAsync()
-{
-    // AGREGAR ESTA LÍNEA
-    await LoadUserRole();
-
-    Task.Run(async () =>
-    {
-        await Task.Delay(1500);
-        await YooptaEditor.SetContentAsync(ModelBase.Base_description, elementId: "yooptaeditor");
-    });
-}
-
-
 <tr>
     <td>
         <div class="d-flex align-items-center">
-            <Icons Name="loader" Width="17" Height="17"></Icons>
-            <span class="">Estado</span>
+            <Icons Name="chart-no-axes-combined" Width="17" Height="17"></Icons>
+            <span class="">Finalización</span>
         </div>
     </td>
     <td class="td-input">
-        <Tagstate @ref="TagstateComponents" StateId="@GetWorkState()" Led="true" />
+
+        <ProgressBar @ref="ProgressBarComponets" Value="@GetWorkProgress()" />
+
     </td>
 </tr>
-
-
-
-
-
-
 
 @* Toggle de Habilitación - Solo para Gerentes *@
 @if (_isManager)
@@ -102,7 +19,7 @@ protected override async Task OnInitializedAsync()
         <td>
             <div class="d-flex align-items-center">
                 <Icons Name="@(GetWorkEnabled() ? "lock-open" : "lock")" Width="17" Height="17"></Icons>
-                <span class="">Habilitación</span>
+                <span class="">Estado del Trabajo</span>
             </div>
         </td>
         <td class="td-input">
@@ -127,104 +44,4 @@ protected override async Task OnInitializedAsync()
             </div>
         </td>
     </tr>
-}
-
-
-
-
-
-/* =====================================================
-   Toggle de Habilitación/Bloqueo - Solo Gerentes
-   ===================================================== */
-
-.work-enabled-toggle {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 44px;
-    height: 24px;
-    margin: 0;
-    cursor: pointer;
-}
-
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: all 0.3s ease;
-    border-radius: 24px;
-}
-
-.toggle-slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: all 0.3s ease;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-switch input:checked + .toggle-slider {
-    background-color: #ED1C24;
-}
-
-.toggle-switch input:checked + .toggle-slider:before {
-    transform: translateX(20px);
-}
-
-.toggle-switch:hover .toggle-slider {
-    background-color: #b3b3b3;
-}
-
-.toggle-switch:hover input:checked + .toggle-slider {
-    background-color: #c41920;
-}
-
-.toggle-switch input:disabled + .toggle-slider {
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.toggle-status {
-    font-size: 13px;
-    font-weight: 500;
-    min-width: 80px;
-}
-
-.status-enabled {
-    color: #ED1C24;
-}
-
-.status-disabled {
-    color: #707070;
-}
-
-.loading-indicator {
-    color: #999;
-    font-style: italic;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
 }
