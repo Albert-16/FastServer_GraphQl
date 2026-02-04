@@ -1,47 +1,648 @@
-<tr>
-    <td>
-        <div class="d-flex align-items-center">
-            <Icons Name="chart-no-axes-combined" Width="17" Height="17"></Icons>
-            <span class="">Finalización</span>
-        </div>
-    </td>
-    <td class="td-input">
+/* =============================================
+   VALIDAR WORK - DISEÑO PROFESIONAL
+   Prefijo: vw- (validar work)
+   ============================================= */
 
-        <ProgressBar @ref="ProgressBarComponets" Value="@GetWorkProgress()" />
+/* TOP BAR */
+.vw-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 24px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
 
-    </td>
-</tr>
+.vw-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
 
-@* Toggle de Habilitación - Solo para Gerentes *@
-@if (_isManager)
-{
-    <tr>
-        <td>
-            <div class="d-flex align-items-center">
-                <Icons Name="@(GetWorkEnabled() ? "lock-open" : "lock")" Width="17" Height="17"></Icons>
-                <span class="">Estado del Trabajo</span>
-            </div>
-        </td>
-        <td class="td-input">
-            <div class="work-enabled-toggle">
-                <label class="toggle-switch">
-                    <input type="checkbox" 
-                           checked="@GetWorkEnabled()" 
-                           disabled="@_isLoadingWorkEnabled"
-                           @onchange="@(e => OnWorkEnabledChanged((bool)e.Value))" />
-                    <span class="toggle-slider"></span>
-                </label>
-                <span class="toggle-status @(GetWorkEnabled() ? "status-enabled" : "status-disabled")">
-                    @if (_isLoadingWorkEnabled)
-                    {
-                        <span class="loading-indicator">Guardando...</span>
-                    }
-                    else
-                    {
-                        @(GetWorkEnabled() ? "Habilitado" : "Bloqueado")
-                    }
-                </span>
-            </div>
-        </td>
-    </tr>
+.vw-back-btn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+    border-color: #cbd5e1;
+}
+
+.vw-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.vw-breadcrumb-current {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+/* MAIN CONTAINER */
+.vw-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* PAGE HEADER */
+.vw-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.vw-page-header-left {
+    flex: 1;
+    min-width: 200px;
+}
+
+.vw-page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.025em;
+}
+
+.vw-page-description {
+    color: #64748b;
+    font-size: 0.9375rem;
+    margin: 0;
+}
+
+/* BADGES */
+.vw-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    flex-shrink: 0;
+}
+
+.vw-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.vw-badge-yellow {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.vw-badge-green {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.vw-badge-red {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* GRID LAYOUT */
+.vw-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+.vw-main-column {
+    min-width: 0;
+}
+
+.vw-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* CARDS */
+.vw-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.vw-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.vw-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vw-card-icon-blue {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.vw-card-icon-purple {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.vw-card-icon-emerald {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.vw-card-header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.vw-card-header-text h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 2px 0;
+}
+
+.vw-card-header-text span {
+    font-size: 0.8125rem;
+    color: #64748b;
+}
+
+.vw-card-body {
+    padding: 24px;
+}
+
+/* PROJECT INFO */
+.vw-project-info {
+    margin-bottom: 20px;
+}
+
+.vw-project-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.vw-project-id {
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+}
+
+/* DESCRIPTION AREA */
+.vw-description-area {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.vw-description-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.vw-description-content {
+    min-height: 150px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+/* INFO GRID */
+.vw-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.vw-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.vw-info-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+.vw-info-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.vw-info-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.vw-info-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin-top: 2px;
+}
+
+.vw-text-red {
+    color: #dc2626;
+}
+
+/* DROPDOWN / SELECT */
+.vw-select-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.vw-dropdown-wrapper {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.vw-dropdown-trigger {
+    width: 100%;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.vw-dropdown-trigger:hover {
+    border-color: #cbd5e1;
+}
+
+.vw-dropdown-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.vw-dropdown-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    flex-shrink: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+.vw-avatar-selected {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.vw-dropdown-text {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vw-text-selected {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.vw-dropdown-chevron {
+    color: #94a3b8;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.vw-rotated {
+    transform: rotate(180deg);
+}
+
+/* DROPDOWN MENU */
+.vw-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px -4px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+}
+
+.vw-dropdown-menu.vw-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.vw-dropdown-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #94a3b8;
+}
+
+.vw-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    color: #1e293b;
+    outline: none;
+}
+
+.vw-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.vw-dropdown-list {
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.vw-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.vw-dropdown-item:hover {
+    background: #f8fafc;
+}
+
+.vw-item-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vw-item-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.vw-item-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vw-item-code {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+}
+
+/* LEADER DISPLAY (Read-only) */
+.vw-leader-display {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.vw-leader-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.vw-leader-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.vw-leader-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.vw-leader-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+/* REJECTED INFO */
+.vw-rejected-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    text-align: center;
+    color: #dc2626;
+}
+
+.vw-rejected-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fee2e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vw-rejected-info span {
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+/* ACTION BUTTONS */
+.vw-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vw-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+}
+
+.vw-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.vw-btn-accept {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.vw-btn-accept:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    transform: translateY(-1px);
+}
+
+.vw-btn-reject {
+    background: white;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.vw-btn-reject:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+/* HELP TEXT */
+.vw-help-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-align: center;
+    margin: 12px 0 0 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .vw-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .vw-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .vw-container {
+        padding: 20px 16px;
+    }
+    
+    .vw-topbar {
+        padding: 12px 16px;
+    }
+    
+    .vw-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .vw-page-title {
+        font-size: 1.5rem;
+    }
+    
+    .vw-card-body {
+        padding: 16px;
+    }
+    
+    .vw-card-header {
+        padding: 16px;
+    }
+    
+    .vw-info-grid {
+        grid-template-columns: 1fr;
+    }
 }
