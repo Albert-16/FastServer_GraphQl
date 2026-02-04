@@ -1,0 +1,361 @@
+@page "/validar-work/{Id}/{IdNotification}/{IdNotificationUser}"
+
+@using ManageAdmin.GraphQL.SDK
+@using ManageAdmin.FrontEnd.Components.Toast;
+@using ManageAdmin.FrontEnd.Components;
+@using ManageAdmin.FrontEnd.Components.Loaders;
+@using ManageAdmin.Extensions;
+
+@inject IManageAdmin manageAdmin;
+@inject IJSRuntime jS;
+@inject NavigationManager navigationManager;
+@inject ToastService ToastService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject YooptaEditorService YooptaEditor
+
+@implements IDisposable;
+<ValidateStateToken url="/" />
+
+@if (Work != null)
+{
+    <!-- Top Navigation Bar -->
+    <div class="vw-topbar">
+        <button class="vw-back-btn" @onclick="@(() => navigationManager.NavigateTo("/"))">
+            <Icons Name="arrow-left" Height="16" Width="16" />
+        </button>
+        <div class="vw-breadcrumb">
+            <span>Proyectos</span>
+            <Icons Name="chevron-right" Height="14" Width="14" />
+            <span class="vw-breadcrumb-current">Revisión de Proyecto</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="vw-container">
+        
+        <!-- Page Header -->
+        <div class="vw-page-header">
+            <div class="vw-page-header-left">
+                <h1 class="vw-page-title">Revisión de Proyecto</h1>
+                <p class="vw-page-description">Evalúa los detalles del proyecto y asigna un líder técnico</p>
+            </div>
+            <div class="vw-badge @GetBadgeClass()">
+                <span class="vw-badge-dot"></span>
+                @GetBadgeText()
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="vw-grid">
+            
+            <!-- Main Column -->
+            <div class="vw-main-column">
+                
+                <!-- Project Details Card -->
+                <div class="vw-card">
+                    <div class="vw-card-header">
+                        <div class="vw-card-icon vw-card-icon-blue">
+                            <Icons Name="folder" Height="22" Width="22" />
+                        </div>
+                        <div class="vw-card-header-text">
+                            <h3>Detalles del Proyecto</h3>
+                            <span>Información general y descripción</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vw-card-body">
+                        <!-- Project Name & ID -->
+                        <div class="vw-project-info">
+                            <h2 class="vw-project-name">@Work.Work_name</h2>
+                            <span class="vw-project-id">ID: @Work.Work_id</span>
+                        </div>
+
+                        <!-- Description Area (Yoopta Editor) -->
+                        <div class="vw-description-area">
+                            <div class="vw-description-label">
+                                <Icons Name="file-text" Height="14" Width="14" />
+                                <span>Descripción</span>
+                            </div>
+                            <div class="vw-description-content">
+                                <yoopta-editor id="yooptaeditor"></yoopta-editor>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div class="vw-info-grid">
+                            <div class="vw-info-item">
+                                <div class="vw-info-icon">
+                                    <Icons Name="clock" Height="16" Width="16" />
+                                </div>
+                                <div class="vw-info-text">
+                                    <span class="vw-info-label">Estado</span>
+                                    @if (AuthorizationRequestState == "Rechazado")
+                                    {
+                                        <span class="vw-info-value vw-text-red">Rechazado por @AuthorizationRequest.User.User_name</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="vw-info-value">@AuthorizationRequestState</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="vw-info-item">
+                                <div class="vw-info-icon">
+                                    <Icons Name="calendar" Height="16" Width="16" />
+                                </div>
+                                <div class="vw-info-text">
+                                    <span class="vw-info-label">Fecha de Inicio</span>
+                                    <span class="vw-info-value">@Work.Work_start_date?.ToString("dd MMM yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="vw-info-item">
+                                <div class="vw-info-icon">
+                                    <Icons Name="calendar" Height="16" Width="16" />
+                                </div>
+                                <div class="vw-info-text">
+                                    <span class="vw-info-label">Fecha de Finalización</span>
+                                    <span class="vw-info-value">@Work.Work_end_date?.ToString("dd MMM yyyy")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="vw-sidebar">
+                
+                <!-- Leader Assignment Card -->
+                @if (Gerente && NotificationUser.Notification_user_seen == false)
+                {
+                    <div class="vw-card">
+                        <div class="vw-card-header">
+                            <div class="vw-card-icon vw-card-icon-purple">
+                                <Icons Name="users" Height="22" Width="22" />
+                            </div>
+                            <div class="vw-card-header-text">
+                                <h3>Asignar Líder</h3>
+                                <span>Líder técnico del proyecto</span>
+                            </div>
+                        </div>
+                        
+                        <div class="vw-card-body">
+                            <label class="vw-select-label">Seleccionar líder técnico</label>
+                            
+                            <div class="vw-dropdown-wrapper">
+                                <button id="boton" class="vw-dropdown-trigger" @onclick="ShowModal">
+                                    <div class="vw-dropdown-left">
+                                        <div class="vw-dropdown-avatar @(String.IsNullOrEmpty(LiderName) ? "" : "vw-avatar-selected")">
+                                            @if (String.IsNullOrEmpty(LiderName))
+                                            {
+                                                <Icons Name="user" Height="16" Width="16" />
+                                            }
+                                            else
+                                            {
+                                                <span>@GetInitials(LiderName)</span>
+                                            }
+                                        </div>
+                                        <span class="vw-dropdown-text @(String.IsNullOrEmpty(LiderName) ? "" : "vw-text-selected")">
+                                            @(String.IsNullOrEmpty(LiderName) ? "Buscar y seleccionar..." : LiderName)
+                                        </span>
+                                    </div>
+                                    <span class="vw-dropdown-chevron @(IsModalVisible ? "vw-rotated" : "")">
+                                        <Icons Name="chevron-down" Height="16" Width="16" />
+                                    </span>
+                                </button>
+
+                                <!-- Dropdown Menu -->
+                                <div @ref="modal" class="vw-dropdown-menu @(IsModalVisible ? "vw-show" : "")">
+                                    <div class="vw-dropdown-search">
+                                        <Icons Name="search" Height="16" Width="16" />
+                                        <input @oninput="searchUsuario" 
+                                               class="vw-search-input" 
+                                               placeholder="Buscar por nombre o código..." 
+                                               type="text" />
+                                    </div>
+                                    <div class="vw-dropdown-list">
+                                        @if (UsuariosSearch.Count != 0)
+                                        {
+                                            @foreach (var user in UsuariosSearch)
+                                            {
+                                                <div class="vw-dropdown-item" @onclick="@(() => { selectedLider(user.User_id.ToString(), user.User_name); })">
+                                                    <div class="vw-item-avatar">
+                                                        @GetInitials(user.User_name)
+                                                    </div>
+                                                    <div class="vw-item-info">
+                                                        <span class="vw-item-name">@user.User_name</span>
+                                                        <span class="vw-item-code">@user.User_peoplesoft</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @foreach (var user in Usuarios)
+                                            {
+                                                <div class="vw-dropdown-item" @onclick="@(() => { selectedLider(user.User_id.ToString(), user.User_name); })">
+                                                    <div class="vw-item-avatar">
+                                                        @GetInitials(user.User_name)
+                                                    </div>
+                                                    <div class="vw-item-info">
+                                                        <span class="vw-item-name">@user.User_name</span>
+                                                        <span class="vw-item-code">@user.User_peoplesoft</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            @if (AuthorizationRequestState != "Rechazado")
+                            {
+                                <div class="vw-actions">
+                                    <button class="vw-btn vw-btn-accept" @onclick="acceptProject" disabled="@IsLoad">
+                                        @if (IsLoad)
+                                        {
+                                            <Loader Visible="true" />
+                                        }
+                                        else
+                                        {
+                                            <Icons Name="check-circle" Height="18" Width="18" />
+                                            <span>Aceptar Proyecto</span>
+                                        }
+                                    </button>
+                                    <button class="vw-btn vw-btn-reject" @onclick="rejectProject" disabled="@IsLoad">
+                                        @if (IsLoad)
+                                        {
+                                            <Loader Style="border-top: 2px solid #dc2626;" Visible="true" />
+                                        }
+                                        else
+                                        {
+                                            <Icons Name="x-circle" Height="18" Width="18" />
+                                            <span>Rechazar Proyecto</span>
+                                        }
+                                    </button>
+                                </div>
+                                <p class="vw-help-text">Debes seleccionar un líder técnico antes de aceptar</p>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Leader Info Card (Read-only) -->
+                    <div class="vw-card">
+                        <div class="vw-card-header">
+                            <div class="vw-card-icon vw-card-icon-purple">
+                                <Icons Name="user-check" Height="22" Width="22" />
+                            </div>
+                            <div class="vw-card-header-text">
+                                <h3>Líder Técnico</h3>
+                                <span>Asignado al proyecto</span>
+                            </div>
+                        </div>
+                        
+                        <div class="vw-card-body">
+                            @if (AuthorizationRequestState != "Rechazado")
+                            {
+                                <div class="vw-leader-display">
+                                    <div class="vw-leader-avatar">
+                                        @if (!String.IsNullOrEmpty(Lider))
+                                        {
+                                            @GetInitials(Lider)
+                                        }
+                                        else
+                                        {
+                                            <Icons Name="user" Height="20" Width="20" />
+                                        }
+                                    </div>
+                                    <div class="vw-leader-info">
+                                        <span class="vw-leader-label">Líder asignado</span>
+                                        <span class="vw-leader-name">
+                                            @(String.IsNullOrEmpty(Lider) ? "Pendiente de selección por parte del Gerente" : Lider)
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="vw-rejected-info">
+                                    <div class="vw-rejected-icon">
+                                        <Icons Name="x-circle" Height="24" Width="24" />
+                                    </div>
+                                    <span>Proyecto rechazado</span>
+                                </div>
+                            }
+
+                            <!-- Action Buttons for Manager -->
+                            @if (isManager && AuthorizationRequestState != "Rechazado")
+                            {
+                                <div class="vw-actions">
+                                    <button class="vw-btn vw-btn-accept" @onclick="acceptProject" disabled="@IsLoad">
+                                        @if (IsLoad)
+                                        {
+                                            <Loader Visible="true" />
+                                        }
+                                        else
+                                        {
+                                            <Icons Name="check-circle" Height="18" Width="18" />
+                                            <span>Aceptar Proyecto</span>
+                                        }
+                                    </button>
+                                    <button class="vw-btn vw-btn-reject" @onclick="rejectProject" disabled="@IsLoad">
+                                        @if (IsLoad)
+                                        {
+                                            <Loader Style="border-top: 2px solid #dc2626;" Visible="true" />
+                                        }
+                                        else
+                                        {
+                                            <Icons Name="x-circle" Height="18" Width="18" />
+                                            <span>Rechazar Proyecto</span>
+                                        }
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+}
+
+<ToastContainer Position="bottom-right"></ToastContainer>
+
+@code {
+    private string GetBadgeClass()
+    {
+        return AuthorizationRequestState switch
+        {
+            "Rechazado" => "vw-badge-red",
+            "Aprobado" => "vw-badge-green",
+            _ => "vw-badge-yellow"
+        };
+    }
+
+    private string GetBadgeText()
+    {
+        return AuthorizationRequestState switch
+        {
+            "Rechazado" => "Rechazado",
+            "Aprobado" => "Aprobado",
+            _ => "Pendiente"
+        };
+    }
+
+    private string GetInitials(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return "??";
+        
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        else if (parts.Length == 1 && parts[0].Length >= 2)
+            return parts[0].Substring(0, 2).ToUpper();
+        else
+            return name.Length >= 2 ? name.Substring(0, 2).ToUpper() : name.ToUpper();
+    }
+}
