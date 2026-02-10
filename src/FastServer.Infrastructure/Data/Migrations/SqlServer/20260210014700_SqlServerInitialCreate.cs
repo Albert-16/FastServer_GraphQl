@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 {
     /// <inheritdoc />
-    public partial class CompleteInitialData : Migration
+    public partial class SqlServerInitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -74,6 +74,12 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     user_active = table.Column<bool>(type: "bit", nullable: true),
                     user_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     user_email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    password_hash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    last_login = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    password_changed_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    email_confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    refresh_token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    refresh_token_expiry_time = table.Column<DateTime>(type: "datetime2", nullable: true),
                     create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
                     modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -219,11 +225,11 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
             migrationBuilder.InsertData(
                 table: "users",
-                columns: new[] { "user_id", "create_at", "modify_at", "user_active", "user_email", "user_name", "user_peoplesoft" },
+                columns: new[] { "user_id", "create_at", "email_confirmed", "last_login", "modify_at", "password_changed_at", "password_hash", "refresh_token", "refresh_token_expiry_time", "user_active", "user_email", "user_name", "user_peoplesoft" },
                 values: new object[,]
                 {
-                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), true, "admin@fastserver.com", "Admin User", "PS001" },
-                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), true, "developer@fastserver.com", "Developer User", "PS002" }
+                    { new Guid("00000000-0000-0000-0000-000000000001"), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), true, null, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", null, null, true, "admin@fastserver.com", "Admin User", "PS001" },
+                    { new Guid("00000000-0000-0000-0000-000000000002"), new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), true, null, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, "$2a$11$VRjNO0ZRwK7x1Z.XfJcKAOKs7ggzwhPB3QVpLp2PF3cxyMq7R5rHu", null, null, true, "developer@fastserver.com", "Developer User", "PS002" }
                 });
 
             migrationBuilder.InsertData(
@@ -283,9 +289,17 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_core_connector_credentials_core_connector_credential_user",
+                name: "IX_ActivityLog_UserId_CreateAt_Desc",
+                table: "activity_logs",
+                columns: new[] { "user_id", "create_at" },
+                descending: new[] { false, true });
+
+            migrationBuilder.CreateIndex(
+                name: "UX_CoreConnectorCredential_User",
                 table: "core_connector_credentials",
-                column: "core_connector_credential_user");
+                column: "core_connector_credential_user",
+                unique: true,
+                filter: "[core_connector_credential_user] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_event_types_event_type_description",
@@ -308,19 +322,9 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 column: "microservice_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_microservice_methods_microservice_method_delete",
-                table: "microservice_methods",
-                column: "microservice_method_delete");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_microservice_methods_microservice_method_name",
                 table: "microservice_methods",
                 column: "microservice_method_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_microservice_registers_microservice_active",
-                table: "microservice_registers",
-                column: "microservice_active");
 
             migrationBuilder.CreateIndex(
                 name: "IX_microservice_registers_microservice_cluster_id",
@@ -328,34 +332,19 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 column: "microservice_cluster_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_microservice_registers_microservice_deleted",
-                table: "microservice_registers",
-                column: "microservice_deleted");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_microservice_registers_microservice_name",
                 table: "microservice_registers",
                 column: "microservice_name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_microservices_clusters_microservices_cluster_active",
-                table: "microservices_clusters",
-                column: "microservices_cluster_active");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_microservices_clusters_microservices_cluster_deleted",
-                table: "microservices_clusters",
-                column: "microservices_cluster_deleted");
+                name: "IX_MicroserviceRegister_ClusterId_Name",
+                table: "microservice_registers",
+                columns: new[] { "microservice_cluster_id", "microservice_name" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_microservices_clusters_microservices_cluster_name",
                 table: "microservices_clusters",
                 column: "microservices_cluster_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_users_user_active",
-                table: "users",
-                column: "user_active");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_user_email",

@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20260128053854_CompleteInitialData")]
-    partial class CompleteInitialData
+    [Migration("20260210013959_PostgreSqlInitialCreate")]
+    partial class PostgreSqlInitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -48,8 +48,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                         .HasColumnName("fastserver_logmicroservice_text");
 
                     b.HasKey("LogId");
-
-                    b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogMicroservice", (string)null);
 
@@ -94,8 +92,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                         .HasColumnName("fastserver_logmicroservice_text");
 
                     b.HasKey("LogId");
-
-                    b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogMicroservice_Historico", (string)null);
 
@@ -145,8 +141,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                         .HasColumnName("fastserver_logservices_state");
 
                     b.HasKey("LogId");
-
-                    b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogServices_Content", (string)null);
 
@@ -198,8 +192,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                         .HasColumnName("fastserver_logservices_state");
 
                     b.HasKey("LogId");
-
-                    b.HasIndex("LogId");
 
                     b.ToTable("FastServer_LogServices_Content_Historico", (string)null);
 
@@ -331,13 +323,17 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
 
                     b.HasIndex("LogDateIn");
 
-                    b.HasIndex("LogState");
-
                     b.HasIndex("MicroserviceName");
 
                     b.HasIndex("TransactionId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("LogDateIn", "MicroserviceName")
+                        .HasDatabaseName("IX_LogServicesHeader_LogDateIn_MicroserviceName");
+
+                    b.HasIndex("UserId", "LogDateIn")
+                        .HasDatabaseName("IX_LogServicesHeader_UserId_LogDateIn");
 
                     b.ToTable("FastServer_LogServices_Header", (string)null);
 
@@ -486,8 +482,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                     b.HasKey("LogId");
 
                     b.HasIndex("LogDateIn");
-
-                    b.HasIndex("LogState");
 
                     b.ToTable("FastServer_LogServices_Header_Historico", (string)null);
 

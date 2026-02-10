@@ -45,7 +45,11 @@
       "Bash(python:*)",
       "Bash(timeout:*)",
       "Bash(dotnet clean:*)",
-      "Bash(Stop-Process -Id 2848 -Force -ErrorAction SilentlyContinue)"
+      "Bash(Stop-Process -Id 2848 -Force -ErrorAction SilentlyContinue)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\" -Recurse -Filter \"*.cs\")",
+      "Bash(Select-Object FullName)",
+      "Bash(powershell.exe:*)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\\\\SqlServer\\\\*.cs\" -Force)"
     ]
   }
 }

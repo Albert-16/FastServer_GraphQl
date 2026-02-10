@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
 {
     /// <inheritdoc />
-    public partial class CompleteInitialData : Migration
+    public partial class PostgreSqlInitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,34 +195,9 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogMicroservice_fastserver_log_id",
-                table: "FastServer_LogMicroservice",
-                column: "fastserver_log_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogMicroservice_Historico_fastserver_log_id",
-                table: "FastServer_LogMicroservice_Historico",
-                column: "fastserver_log_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogServices_Content_fastserver_log_id",
-                table: "FastServer_LogServices_Content",
-                column: "fastserver_log_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogServices_Content_Historico_fastserver_log_id",
-                table: "FastServer_LogServices_Content_Historico",
-                column: "fastserver_log_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FastServer_LogServices_Header_fastserver_log_date_in",
                 table: "FastServer_LogServices_Header",
                 column: "fastserver_log_date_in");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogServices_Header_fastserver_log_state",
-                table: "FastServer_LogServices_Header",
-                column: "fastserver_log_state");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FastServer_LogServices_Header_fastserver_microservice_name",
@@ -240,14 +215,19 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
                 column: "fastserver_user_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LogServicesHeader_LogDateIn_MicroserviceName",
+                table: "FastServer_LogServices_Header",
+                columns: new[] { "fastserver_log_date_in", "fastserver_microservice_name" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LogServicesHeader_UserId_LogDateIn",
+                table: "FastServer_LogServices_Header",
+                columns: new[] { "fastserver_user_id", "fastserver_log_date_in" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FastServer_LogServices_Header_Historico_fastserver_log_date~",
                 table: "FastServer_LogServices_Header_Historico",
                 column: "fastserver_log_date_in");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FastServer_LogServices_Header_Historico_fastserver_log_state",
-                table: "FastServer_LogServices_Header_Historico",
-                column: "fastserver_log_state");
         }
 
         /// <inheritdoc />
