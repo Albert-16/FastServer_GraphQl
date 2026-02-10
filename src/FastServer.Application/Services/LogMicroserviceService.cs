@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.LogMicroserviceEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Domain.Enums;
@@ -16,15 +18,18 @@ public class LogMicroserviceService : ILogMicroserviceService
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
     private readonly DataSourceType _defaultDataSource;
+    private readonly ILogMicroserviceEventPublisher _eventPublisher;
 
     public LogMicroserviceService(
         IDataSourceFactory dataSourceFactory,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings)
+        DataSourceSettings dataSourceSettings,
+        ILogMicroserviceEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
         _defaultDataSource = dataSourceSettings.DefaultDataSource;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<LogMicroserviceDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
@@ -54,7 +59,19 @@ public class LogMicroserviceService : ILogMicroserviceService
         var entity = _mapper.Map<LogMicroservice>(dto);
         var created = await uow.LogMicroservices.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<LogMicroserviceDto>(created);
+
+        var result = _mapper.Map<LogMicroserviceDto>(created);
+
+        await _eventPublisher.PublishLogMicroserviceCreatedAsync(new LogMicroserviceCreatedEvent
+        {
+            LogId = result.LogId,
+            LogDate = result.LogDate,
+            LogLevel = result.LogLevel,
+            LogMicroserviceText = result.LogMicroserviceText,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return result;
     }
 
     public async Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
@@ -67,6 +84,13 @@ public class LogMicroserviceService : ILogMicroserviceService
 
         await uow.LogMicroservices.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        await _eventPublisher.PublishLogMicroserviceDeletedAsync(new LogMicroserviceDeletedEvent
+        {
+            LogId = id,
+            DeletedAt = DateTime.UtcNow
+        });
+
         return true;
     }
 }

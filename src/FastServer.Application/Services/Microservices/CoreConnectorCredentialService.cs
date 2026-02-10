@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.CoreConnectorCredentialEvents;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
@@ -13,11 +15,16 @@ public class CoreConnectorCredentialService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
+    private readonly ICoreConnectorCredentialEventPublisher _eventPublisher;
 
-    public CoreConnectorCredentialService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public CoreConnectorCredentialService(
+        IDataSourceFactory dataSourceFactory,
+        IMapper mapper,
+        ICoreConnectorCredentialEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<CoreConnectorCredentialDto?> GetByIdAsync(
@@ -63,7 +70,23 @@ public class CoreConnectorCredentialService
         await repository.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<CoreConnectorCredentialDto>(entity);
+        var result = _mapper.Map<CoreConnectorCredentialDto>(entity);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new CoreConnectorCredentialCreatedEvent
+        {
+            CoreConnectorCredentialId = result.CoreConnectorCredentialId,
+            CoreConnectorCredentialUser = result.CoreConnectorCredentialUser,
+            CoreConnectorCredentialPass = password, // Usar el password original ya que el DTO no lo expone
+            CoreConnectorCredentialKey = result.CoreConnectorCredentialKey,
+            MicroserviceActive = null,
+            MicroserviceDeleted = null,
+            DeleteAt = null,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishCoreConnectorCredentialCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<CoreConnectorCredentialDto?> UpdateAsync(
@@ -88,7 +111,23 @@ public class CoreConnectorCredentialService
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<CoreConnectorCredentialDto>(entity);
+        var result = _mapper.Map<CoreConnectorCredentialDto>(entity);
+
+        // Crear evento con los campos correctos
+        var updatedEvent = new CoreConnectorCredentialUpdatedEvent
+        {
+            CoreConnectorCredentialId = result.CoreConnectorCredentialId,
+            CoreConnectorCredentialUser = result.CoreConnectorCredentialUser,
+            CoreConnectorCredentialPass = password, // Usar el password original ya que el DTO no lo expone
+            CoreConnectorCredentialKey = result.CoreConnectorCredentialKey,
+            MicroserviceActive = null,
+            MicroserviceDeleted = null,
+            DeleteAt = null,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishCoreConnectorCredentialUpdatedAsync(updatedEvent);
+
+        return result;
     }
 
     public async Task<bool> DeleteAsync(
@@ -104,6 +143,15 @@ public class CoreConnectorCredentialService
 
         await repository.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new CoreConnectorCredentialDeletedEvent
+        {
+            CoreConnectorCredentialId = entity.CoreConnectorCredentialId,
+            CoreConnectorCredentialUser = entity.CoreConnectorCredentialUser,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishCoreConnectorCredentialDeletedAsync(deletedEvent);
 
         return true;
     }

@@ -17,7 +17,7 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -68,6 +68,10 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                     b.HasIndex("EventTypeId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "CreateAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("IX_ActivityLog_UserId_CreateAt_Desc");
 
                     b.ToTable("activity_logs", (string)null);
 
@@ -130,7 +134,10 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
                     b.HasKey("CoreConnectorCredentialId");
 
-                    b.HasIndex("CoreConnectorCredentialUser");
+                    b.HasIndex("CoreConnectorCredentialUser")
+                        .IsUnique()
+                        .HasDatabaseName("UX_CoreConnectorCredential_User")
+                        .HasFilter("[core_connector_credential_user] IS NOT NULL");
 
                     b.ToTable("core_connector_credentials", (string)null);
 
@@ -291,8 +298,6 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
                     b.HasIndex("MicroserviceId");
 
-                    b.HasIndex("MicroserviceMethodDelete");
-
                     b.HasIndex("MicroserviceMethodName");
 
                     b.ToTable("microservice_methods", (string)null);
@@ -364,13 +369,12 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
                     b.HasKey("MicroserviceId");
 
-                    b.HasIndex("MicroserviceActive");
-
                     b.HasIndex("MicroserviceClusterId");
 
-                    b.HasIndex("MicroserviceDeleted");
-
                     b.HasIndex("MicroserviceName");
+
+                    b.HasIndex("MicroserviceClusterId", "MicroserviceName")
+                        .HasDatabaseName("IX_MicroserviceRegister_ClusterId_Name");
 
                     b.ToTable("microservice_registers", (string)null);
 
@@ -445,10 +449,6 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
                     b.HasKey("MicroservicesClusterId");
 
-                    b.HasIndex("MicroservicesClusterActive");
-
-                    b.HasIndex("MicroservicesClusterDeleted");
-
                     b.HasIndex("MicroservicesClusterName");
 
                     b.ToTable("microservices_clusters", (string)null);
@@ -489,9 +489,37 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("datetime2")
                         .HasColumnName("create_at");
 
+                    b.Property<bool>("EmailConfirmed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("email_confirmed");
+
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_login");
+
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("modify_at");
+
+                    b.Property<DateTime?>("PasswordChangedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("password_changed_at");
+
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("refresh_token");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("refresh_token_expiry_time");
 
                     b.Property<bool?>("UserActive")
                         .HasColumnType("bit")
@@ -514,8 +542,6 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("UserActive");
-
                     b.HasIndex("UserEmail")
                         .IsUnique()
                         .HasFilter("[user_email] IS NOT NULL");
@@ -529,7 +555,9 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         {
                             UserId = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            EmailConfirmed = true,
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            PasswordHash = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
                             UserActive = true,
                             UserEmail = "admin@fastserver.com",
                             UserName = "Admin User",
@@ -539,7 +567,9 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         {
                             UserId = new Guid("00000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            EmailConfirmed = true,
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            PasswordHash = "$2a$11$VRjNO0ZRwK7x1Z.XfJcKAOKs7ggzwhPB3QVpLp2PF3cxyMq7R5rHu",
                             UserActive = true,
                             UserEmail = "developer@fastserver.com",
                             UserName = "Developer User",

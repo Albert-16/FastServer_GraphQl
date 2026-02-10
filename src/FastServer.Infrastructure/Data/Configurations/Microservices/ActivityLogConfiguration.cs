@@ -53,10 +53,15 @@ public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Índices
+        // Índices simples
         builder.HasIndex(e => e.EventTypeId);
         builder.HasIndex(e => e.UserId);
         builder.HasIndex(e => e.CreateAt);
         builder.HasIndex(e => e.ActivityLogEntityName);
+
+        // Índice compuesto para búsquedas por usuario con ordenamiento descendente
+        builder.HasIndex(e => new { e.UserId, e.CreateAt })
+            .IsDescending(false, true)
+            .HasDatabaseName("IX_ActivityLog_UserId_CreateAt_Desc");
     }
 }

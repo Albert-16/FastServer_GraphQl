@@ -100,6 +100,8 @@ public class LogMicroserviceMutation
         var dto = new CreateLogMicroserviceDto
         {
             LogId = input.LogId,
+            LogDate = input.LogDate,
+            LogLevel = input.LogLevel,
             LogMicroserviceText = input.LogMicroserviceText
         };
 

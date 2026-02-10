@@ -34,6 +34,27 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("user_email")
             .HasMaxLength(255);
 
+        builder.Property(e => e.PasswordHash)
+            .HasColumnName("password_hash")
+            .HasMaxLength(500);
+
+        builder.Property(e => e.LastLogin)
+            .HasColumnName("last_login");
+
+        builder.Property(e => e.PasswordChangedAt)
+            .HasColumnName("password_changed_at");
+
+        builder.Property(e => e.EmailConfirmed)
+            .HasColumnName("email_confirmed")
+            .HasDefaultValue(false);
+
+        builder.Property(e => e.RefreshToken)
+            .HasColumnName("refresh_token")
+            .HasMaxLength(500);
+
+        builder.Property(e => e.RefreshTokenExpiryTime)
+            .HasColumnName("refresh_token_expiry_time");
+
         builder.Property(e => e.CreateAt)
             .HasColumnName("create_at");
 
@@ -49,6 +70,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Índices
         builder.HasIndex(e => e.UserEmail).IsUnique();
         builder.HasIndex(e => e.UserPeoplesoft);
-        builder.HasIndex(e => e.UserActive);
+        // Índice en UserActive eliminado - baja selectividad (booleano)
     }
 }

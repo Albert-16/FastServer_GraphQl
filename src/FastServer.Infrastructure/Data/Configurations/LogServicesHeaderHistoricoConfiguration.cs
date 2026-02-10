@@ -96,7 +96,8 @@ public class LogServicesHeaderHistoricoConfiguration : IEntityTypeConfiguration<
         builder.Property(e => e.RequestId)
             .HasColumnName("fastserver_request_id");
 
+        // Índices
         builder.HasIndex(e => e.LogDateIn);
-        builder.HasIndex(e => e.LogState);
+        // Índice en LogState eliminado - baja selectividad (pocos valores distintos)
     }
 }

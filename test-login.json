@@ -1,0 +1,3 @@
+{
+  "query": "mutation { login(input: { email: \"admin@fastserver.com\", password: \"Admin123!\" }) { accessToken refreshToken userId email name } }"
+}

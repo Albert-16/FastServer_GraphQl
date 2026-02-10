@@ -3,6 +3,7 @@ using FastServer.Domain.Enums;
 using FastServer.GraphQL.Api.GraphQL;
 using FastServer.GraphQL.Api.GraphQL.Mutations;
 using FastServer.GraphQL.Api.GraphQL.Queries;
+using FastServer.GraphQL.Api.GraphQL.Subscriptions;
 using FastServer.GraphQL.Api.GraphQL.Types;
 using FastServer.Infrastructure;
 using FastServer.Infrastructure.Data;
@@ -113,12 +114,13 @@ builder.Services.ConfigureDefaultDataSource(dataSourceType);
 // CONFIGURACIÓN DE GRAPHQL CON HOT CHOCOLATE
 // ========================================
 
-// Configurar servidor GraphQL con todas las queries, mutations y tipos
+// Configurar servidor GraphQL con todas las queries, mutations, subscriptions y tipos
 builder.Services
     .AddGraphQLServer()
     // Tipos raíz de GraphQL
     .AddQueryType<Query>()                       // Query raíz (punto de entrada para consultas)
     .AddMutationType<Mutation>()                 // Mutation raíz (punto de entrada para modificaciones)
+    .AddSubscriptionType<Subscription>()         // Subscription raíz (punto de entrada para suscripciones en tiempo real)
 
     // Extensiones de queries (se unen al tipo Query raíz)
     .AddTypeExtension<LogServicesQuery>()        // Queries para LogServicesHeader
@@ -131,6 +133,16 @@ builder.Services
     .AddTypeExtension<LogMicroserviceMutation>() // Mutations para LogMicroservice
     .AddTypeExtension<LogServicesContentMutation>() // Mutations para LogServicesContent
     .AddTypeExtension<MicroservicesMutation>()   // Mutations para Microservicios (NUEVO)
+
+    // Extensiones de subscriptions (se unen al tipo Subscription raíz)
+    .AddTypeExtension<LogServicesSubscription>()          // Suscripciones para LogServicesHeader
+    .AddTypeExtension<LogMicroserviceSubscription>()      // Suscripciones para LogMicroservice
+    .AddTypeExtension<LogServicesContentSubscription>()   // Suscripciones para LogServicesContent
+    .AddTypeExtension<MicroserviceRegisterSubscription>() // Suscripciones para MicroserviceRegister
+    .AddTypeExtension<MicroservicesClusterSubscription>() // Suscripciones para MicroservicesCluster
+    .AddTypeExtension<UserSubscription>()                 // Suscripciones para User
+    .AddTypeExtension<ActivityLogSubscription>()          // Suscripciones para ActivityLog
+    .AddTypeExtension<CoreConnectorCredentialSubscription>() // Suscripciones para CoreConnectorCredential
 
     // Tipos de objetos GraphQL (representan entidades del dominio)
     .AddType<LogServicesHeaderType>()
@@ -159,6 +171,9 @@ builder.Services
     .AddFiltering()                              // Habilita filtrado en queries
     .AddSorting()                                // Habilita ordenamiento en queries
     .AddProjections()                            // Habilita proyecciones para optimizar queries
+
+    // Suscripciones en tiempo real (in-memory)
+    .AddInMemorySubscriptions()                  // Sistema de pub/sub en memoria para suscripciones GraphQL
 
     // Opciones de configuración
     .ModifyRequestOptions(opt =>
@@ -247,6 +262,9 @@ var app = builder.Build();
 
 // Logging de requests HTTP con Serilog (registra cada solicitud)
 app.UseSerilogRequestLogging();
+
+// Habilitar WebSockets para suscripciones GraphQL (debe ir antes de UseRouting)
+app.UseWebSockets();
 
 // Habilitar CORS (debe ir antes de UseRouting)
 app.UseCors("AllowAll");

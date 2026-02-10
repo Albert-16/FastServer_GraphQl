@@ -98,11 +98,18 @@ public class LogServicesHeaderConfiguration : IEntityTypeConfiguration<LogServic
         builder.Property(e => e.RequestId)
             .HasColumnName("fastserver_request_id");
 
-        // Índices
+        // Índices simples
         builder.HasIndex(e => e.LogDateIn);
-        builder.HasIndex(e => e.LogState);
+        // Índice en LogState eliminado - baja selectividad (pocos valores distintos)
         builder.HasIndex(e => e.MicroserviceName);
         builder.HasIndex(e => e.UserId);
         builder.HasIndex(e => e.TransactionId);
+
+        // Índices compuestos optimizados para queries comunes
+        builder.HasIndex(e => new { e.LogDateIn, e.MicroserviceName })
+            .HasDatabaseName("IX_LogServicesHeader_LogDateIn_MicroserviceName");
+
+        builder.HasIndex(e => new { e.UserId, e.LogDateIn })
+            .HasDatabaseName("IX_LogServicesHeader_UserId_LogDateIn");
     }
 }

@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.LogServicesContentEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Domain.Enums;
@@ -16,15 +18,18 @@ public class LogServicesContentService : ILogServicesContentService
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
     private readonly DataSourceType _defaultDataSource;
+    private readonly ILogServicesContentEventPublisher _eventPublisher;
 
     public LogServicesContentService(
         IDataSourceFactory dataSourceFactory,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings)
+        DataSourceSettings dataSourceSettings,
+        ILogServicesContentEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
         _defaultDataSource = dataSourceSettings.DefaultDataSource;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<LogServicesContentDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
@@ -54,7 +59,22 @@ public class LogServicesContentService : ILogServicesContentService
         var entity = _mapper.Map<LogServicesContent>(dto);
         var created = await uow.LogServicesContents.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<LogServicesContentDto>(created);
+
+        var result = _mapper.Map<LogServicesContentDto>(created);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new LogServicesContentCreatedEvent
+        {
+            LogId = result.LogId,
+            LogServicesDate = result.LogServicesDate,
+            LogServicesLogLevel = result.LogServicesLogLevel,
+            LogServicesState = result.LogServicesState,
+            LogServicesContentText = result.LogServicesContentText,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishLogServicesContentCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
@@ -67,6 +87,17 @@ public class LogServicesContentService : ILogServicesContentService
 
         await uow.LogServicesContents.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new LogServicesContentDeletedEvent
+        {
+            LogId = entity.LogId,
+            LogServicesLogLevel = entity.LogServicesLogLevel,
+            LogServicesState = entity.LogServicesState,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishLogServicesContentDeletedAsync(deletedEvent);
+
         return true;
     }
 }

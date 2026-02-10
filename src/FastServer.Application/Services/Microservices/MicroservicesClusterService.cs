@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.MicroservicesClusterEvents;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
@@ -13,11 +15,16 @@ public class MicroservicesClusterService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
+    private readonly IMicroservicesClusterEventPublisher _eventPublisher;
 
-    public MicroservicesClusterService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public MicroservicesClusterService(
+        IDataSourceFactory dataSourceFactory,
+        IMapper mapper,
+        IMicroservicesClusterEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<MicroservicesClusterDto?> GetByIdAsync(
@@ -78,7 +85,23 @@ public class MicroservicesClusterService
         await repository.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<MicroservicesClusterDto>(entity);
+        var result = _mapper.Map<MicroservicesClusterDto>(entity);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new MicroservicesClusterCreatedEvent
+        {
+            MicroservicesClusterId = result.MicroservicesClusterId,
+            MicroservicesClusterName = result.MicroservicesClusterName,
+            MicroservicesClusterServerName = result.MicroservicesClusterServerName,
+            MicroservicesClusterServerIp = result.MicroservicesClusterServerIp,
+            MicroservicesClusterActive = result.MicroservicesClusterActive,
+            MicroservicesClusterDeleted = result.MicroservicesClusterDeleted,
+            DeleteAt = result.DeleteAt,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroservicesClusterCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<MicroservicesClusterDto?> UpdateAsync(
@@ -105,7 +128,23 @@ public class MicroservicesClusterService
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<MicroservicesClusterDto>(entity);
+        var result = _mapper.Map<MicroservicesClusterDto>(entity);
+
+        // Crear evento con los campos correctos
+        var updatedEvent = new MicroservicesClusterUpdatedEvent
+        {
+            MicroservicesClusterId = result.MicroservicesClusterId,
+            MicroservicesClusterName = result.MicroservicesClusterName,
+            MicroservicesClusterServerName = result.MicroservicesClusterServerName,
+            MicroservicesClusterServerIp = result.MicroservicesClusterServerIp,
+            MicroservicesClusterActive = result.MicroservicesClusterActive,
+            MicroservicesClusterDeleted = result.MicroservicesClusterDeleted,
+            DeleteAt = result.DeleteAt,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroservicesClusterUpdatedAsync(updatedEvent);
+
+        return result;
     }
 
     public async Task<bool> SoftDeleteAsync(
@@ -125,6 +164,15 @@ public class MicroservicesClusterService
 
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new MicroservicesClusterDeletedEvent
+        {
+            MicroservicesClusterId = entity.MicroservicesClusterId,
+            MicroservicesClusterName = entity.MicroservicesClusterName,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroservicesClusterDeletedAsync(deletedEvent);
 
         return true;
     }

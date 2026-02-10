@@ -44,6 +44,8 @@ public class CoreConnectorCredentialConfiguration : IEntityTypeConfiguration<Cor
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices
-        builder.HasIndex(e => e.CoreConnectorCredentialUser);
+        builder.HasIndex(e => e.CoreConnectorCredentialUser)
+            .IsUnique()
+            .HasDatabaseName("UX_CoreConnectorCredential_User");
     }
 }

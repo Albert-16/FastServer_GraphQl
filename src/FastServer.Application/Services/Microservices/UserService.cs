@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.UserEvents;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
@@ -13,11 +15,16 @@ public class UserService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
+    private readonly IUserEventPublisher _eventPublisher;
 
-    public UserService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public UserService(
+        IDataSourceFactory dataSourceFactory,
+        IMapper mapper,
+        IUserEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<UserDto?> GetByIdAsync(
@@ -76,7 +83,24 @@ public class UserService
         await repository.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<UserDto>(entity);
+        var result = _mapper.Map<UserDto>(entity);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new UserCreatedEvent
+        {
+            UserId = result.UserId,
+            UserPeoplesoft = result.UserPeoplesoft,
+            UserActive = result.UserActive,
+            UserName = result.UserName,
+            UserEmail = result.UserEmail,
+            LastLogin = null,
+            PasswordChangedAt = null,
+            EmailConfirmed = false,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishUserCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<UserDto?> UpdateAsync(
@@ -103,7 +127,24 @@ public class UserService
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<UserDto>(entity);
+        var result = _mapper.Map<UserDto>(entity);
+
+        // Crear evento con los campos correctos
+        var updatedEvent = new UserUpdatedEvent
+        {
+            UserId = result.UserId,
+            UserPeoplesoft = result.UserPeoplesoft,
+            UserActive = result.UserActive,
+            UserName = result.UserName,
+            UserEmail = result.UserEmail,
+            LastLogin = null,
+            PasswordChangedAt = null,
+            EmailConfirmed = false,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishUserUpdatedAsync(updatedEvent);
+
+        return result;
     }
 
     public async Task<bool> SetActiveAsync(
@@ -140,6 +181,15 @@ public class UserService
 
         await repository.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new UserDeletedEvent
+        {
+            UserId = entity.UserId,
+            UserEmail = entity.UserEmail,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishUserDeletedAsync(deletedEvent);
 
         return true;
     }

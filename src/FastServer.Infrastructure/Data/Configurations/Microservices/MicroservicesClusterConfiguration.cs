@@ -54,7 +54,6 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
 
         // Índices
         builder.HasIndex(e => e.MicroservicesClusterName);
-        builder.HasIndex(e => e.MicroservicesClusterActive);
-        builder.HasIndex(e => e.MicroservicesClusterDeleted);
+        // Índices en Active y Deleted eliminados - baja selectividad (booleanos)
     }
 }

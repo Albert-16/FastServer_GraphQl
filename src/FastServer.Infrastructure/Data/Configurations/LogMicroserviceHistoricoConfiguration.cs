@@ -31,6 +31,6 @@ public class LogMicroserviceHistoricoConfiguration : IEntityTypeConfiguration<Lo
             .HasColumnType("text")
             .IsRequired();
 
-        builder.HasIndex(e => e.LogId);
+        // Índice en LogId eliminado - es redundante con la clave primaria
     }
 }

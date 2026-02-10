@@ -48,6 +48,6 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
         // Índices
         builder.HasIndex(e => e.MicroserviceId);
         builder.HasIndex(e => e.MicroserviceMethodName);
-        builder.HasIndex(e => e.MicroserviceMethodDelete);
+        // Índice en MicroserviceMethodDelete eliminado - baja selectividad (booleano)
     }
 }

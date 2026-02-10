@@ -41,7 +41,11 @@
       "Bash(powershell:*)",
       "Bash(dotnet ef dbcontext info:*)",
       "Bash(dotnet script:*)",
-      "Bash(timeout /t 15)"
+      "Bash(timeout /t 15)",
+      "Bash(python:*)",
+      "Bash(timeout:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(Stop-Process -Id 2848 -Force -ErrorAction SilentlyContinue)"
     ]
   }
 }

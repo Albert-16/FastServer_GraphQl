@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.LogEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Domain.Enums;
@@ -33,6 +35,7 @@ public class LogServicesHeaderService : ILogServicesHeaderService
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
     private readonly DataSourceType _defaultDataSource;
+    private readonly ILogEventPublisher _eventPublisher;
 
     /// <summary>
     /// Inicializa una nueva instancia del servicio LogServicesHeaderService.
@@ -40,6 +43,7 @@ public class LogServicesHeaderService : ILogServicesHeaderService
     /// <param name="dataSourceFactory">Fábrica para crear unidades de trabajo por origen de datos</param>
     /// <param name="mapper">Mapeador para convertir entre entidades y DTOs</param>
     /// <param name="dataSourceSettings">Configuración del origen de datos predeterminado</param>
+    /// <param name="eventPublisher">Publisher de eventos para suscripciones GraphQL</param>
     /// <remarks>
     /// El origen de datos predeterminado se obtiene de dataSourceSettings, que está
     /// configurado en appsettings.json. Esto permite que las queries sin especificar
@@ -48,11 +52,13 @@ public class LogServicesHeaderService : ILogServicesHeaderService
     public LogServicesHeaderService(
         IDataSourceFactory dataSourceFactory,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings)
+        DataSourceSettings dataSourceSettings,
+        ILogEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
         _defaultDataSource = dataSourceSettings.DefaultDataSource;
+        _eventPublisher = eventPublisher;
     }
 
     /// <summary>
@@ -164,6 +170,35 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         var entity = _mapper.Map<LogServicesHeader>(dto);
         var created = await uow.LogServicesHeaders.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Publicar evento de creación
+        var logEvent = new LogCreatedEvent
+        {
+            LogId = created.LogId,
+            LogDateIn = created.LogDateIn,
+            LogDateOut = created.LogDateOut,
+            LogState = created.LogState,
+            LogMethodUrl = created.LogMethodUrl,
+            LogMethodName = created.LogMethodName,
+            LogFsId = created.LogFsId,
+            MethodDescription = created.MethodDescription,
+            TciIpPort = created.TciIpPort,
+            ErrorCode = created.ErrorCode,
+            ErrorDescription = created.ErrorDescription,
+            IpFs = created.IpFs,
+            TypeProcess = created.TypeProcess,
+            LogNodo = created.LogNodo,
+            HttpMethod = created.HttpMethod,
+            MicroserviceName = created.MicroserviceName,
+            RequestDuration = created.RequestDuration,
+            TransactionId = created.TransactionId,
+            UserId = created.UserId,
+            SessionId = created.SessionId,
+            RequestId = created.RequestId,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishLogCreatedAsync(logEvent);
+
         return _mapper.Map<LogServicesHeaderDto>(created);
     }
 
@@ -189,6 +224,34 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         await uow.LogServicesHeaders.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
+        // Publicar evento de actualización
+        var logEvent = new LogUpdatedEvent
+        {
+            LogId = entity.LogId,
+            LogDateIn = entity.LogDateIn,
+            LogDateOut = entity.LogDateOut,
+            LogState = entity.LogState,
+            LogMethodUrl = entity.LogMethodUrl,
+            LogMethodName = entity.LogMethodName,
+            LogFsId = entity.LogFsId,
+            MethodDescription = entity.MethodDescription,
+            TciIpPort = entity.TciIpPort,
+            ErrorCode = entity.ErrorCode,
+            ErrorDescription = entity.ErrorDescription,
+            IpFs = entity.IpFs,
+            TypeProcess = entity.TypeProcess,
+            LogNodo = entity.LogNodo,
+            HttpMethod = entity.HttpMethod,
+            MicroserviceName = entity.MicroserviceName,
+            RequestDuration = entity.RequestDuration,
+            TransactionId = entity.TransactionId,
+            UserId = entity.UserId,
+            SessionId = entity.SessionId,
+            RequestId = entity.RequestId,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishLogUpdatedAsync(logEvent);
+
         return _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
@@ -202,6 +265,17 @@ public class LogServicesHeaderService : ILogServicesHeaderService
 
         await uow.LogServicesHeaders.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Publicar evento de eliminación
+        var logEvent = new LogDeletedEvent
+        {
+            LogId = entity.LogId,
+            MicroserviceName = entity.MicroserviceName,
+            UserId = entity.UserId,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishLogDeletedAsync(logEvent);
+
         return true;
     }
 

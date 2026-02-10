@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.ActivityLogEvents;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
@@ -13,11 +15,16 @@ public class ActivityLogService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
+    private readonly IActivityLogEventPublisher _eventPublisher;
 
-    public ActivityLogService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public ActivityLogService(
+        IDataSourceFactory dataSourceFactory,
+        IMapper mapper,
+        IActivityLogEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<ActivityLogDto?> GetByIdAsync(
@@ -85,7 +92,22 @@ public class ActivityLogService
         await repository.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<ActivityLogDto>(entity);
+        var result = _mapper.Map<ActivityLogDto>(entity);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new ActivityLogCreatedEvent
+        {
+            ActivityLogId = result.ActivityLogId,
+            EventTypeId = result.EventTypeId,
+            ActivityLogEntityName = result.ActivityLogEntityName,
+            ActivityLogEntityId = result.ActivityLogEntityId,
+            ActivityLogDescription = result.ActivityLogDescription,
+            UserId = result.UserId,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishActivityLogCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<bool> DeleteAsync(
@@ -101,6 +123,15 @@ public class ActivityLogService
 
         await repository.DeleteAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new ActivityLogDeletedEvent
+        {
+            ActivityLogId = entity.ActivityLogId,
+            ActivityLogDescription = entity.ActivityLogDescription,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishActivityLogDeletedAsync(deletedEvent);
 
         return true;
     }

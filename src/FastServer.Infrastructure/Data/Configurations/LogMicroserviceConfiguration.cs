@@ -30,6 +30,6 @@ public class LogMicroserviceConfiguration : IEntityTypeConfiguration<LogMicroser
             .HasColumnName("fastserver_logmicroservice_text")
             .HasColumnType("text");
 
-        builder.HasIndex(e => e.LogId);
+        // Índice en LogId eliminado - es redundante con la clave primaria
     }
 }

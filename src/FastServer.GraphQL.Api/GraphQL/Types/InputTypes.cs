@@ -50,6 +50,8 @@ public class UpdateLogServicesHeaderInput
 public class CreateLogMicroserviceInput
 {
     public long LogId { get; set; }
+    public DateTime? LogDate { get; set; }
+    public string? LogLevel { get; set; }
     public string? LogMicroserviceText { get; set; }
     public DataSourceType? DataSource { get; set; }
 }

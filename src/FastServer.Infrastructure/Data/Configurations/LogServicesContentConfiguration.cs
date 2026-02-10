@@ -34,6 +34,6 @@ public class LogServicesContentConfiguration : IEntityTypeConfiguration<LogServi
             .HasColumnName("fastserver_logservices_content_text")
             .HasColumnType("text");
 
-        builder.HasIndex(e => e.LogId);
+        // Índice en LogId eliminado - es redundante con la clave primaria
     }
 }

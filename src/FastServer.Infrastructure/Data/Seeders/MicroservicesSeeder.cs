@@ -130,6 +130,11 @@ public static class MicroservicesSeeder
 
     private static void SeedUsers(ModelBuilder modelBuilder)
     {
+        // Password hashes estáticos generados con BCrypt para "Admin123!" y "Dev123!"
+        // IMPORTANTE: Estos valores son estáticos para evitar que EF Core genere migraciones en cada build
+        const string adminPasswordHash = "$2a$11$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"; // Admin123!
+        const string devPasswordHash = "$2a$11$VRjNO0ZRwK7x1Z.XfJcKAOKs7ggzwhPB3QVpLp2PF3cxyMq7R5rHu"; // Dev123!
+
         modelBuilder.Entity<User>().HasData(
             new User
             {
@@ -138,6 +143,8 @@ public static class MicroservicesSeeder
                 UserActive = true,
                 UserName = "Admin User",
                 UserEmail = "admin@fastserver.com",
+                PasswordHash = adminPasswordHash,
+                EmailConfirmed = true,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             },
@@ -148,6 +155,8 @@ public static class MicroservicesSeeder
                 UserActive = true,
                 UserName = "Developer User",
                 UserEmail = "developer@fastserver.com",
+                PasswordHash = devPasswordHash,
+                EmailConfirmed = true,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             }

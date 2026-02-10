@@ -1,5 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.EventPublishers;
+using FastServer.Application.Events.MicroserviceRegisterEvents;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Domain.Enums;
 using FastServer.Domain.Interfaces;
@@ -13,11 +15,16 @@ public class MicroserviceRegisterService
 {
     private readonly IDataSourceFactory _dataSourceFactory;
     private readonly IMapper _mapper;
+    private readonly IMicroserviceRegisterEventPublisher _eventPublisher;
 
-    public MicroserviceRegisterService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public MicroserviceRegisterService(
+        IDataSourceFactory dataSourceFactory,
+        IMapper mapper,
+        IMicroserviceRegisterEventPublisher eventPublisher)
     {
         _dataSourceFactory = dataSourceFactory;
         _mapper = mapper;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<MicroserviceRegisterDto?> GetByIdAsync(
@@ -91,7 +98,23 @@ public class MicroserviceRegisterService
         await repository.AddAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<MicroserviceRegisterDto>(entity);
+        var result = _mapper.Map<MicroserviceRegisterDto>(entity);
+
+        // Crear evento con los campos correctos
+        var createdEvent = new MicroserviceRegisterCreatedEvent
+        {
+            MicroserviceId = result.MicroserviceId,
+            MicroserviceClusterId = result.MicroserviceClusterId,
+            MicroserviceName = result.MicroserviceName,
+            MicroserviceActive = result.MicroserviceActive,
+            MicroserviceDeleted = result.MicroserviceDeleted,
+            MicroserviceCoreConnection = result.MicroserviceCoreConnection,
+            DeleteAt = result.DeleteAt,
+            CreatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroserviceRegisterCreatedAsync(createdEvent);
+
+        return result;
     }
 
     public async Task<MicroserviceRegisterDto?> UpdateAsync(
@@ -118,7 +141,23 @@ public class MicroserviceRegisterService
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<MicroserviceRegisterDto>(entity);
+        var result = _mapper.Map<MicroserviceRegisterDto>(entity);
+
+        // Crear evento con los campos correctos
+        var updatedEvent = new MicroserviceRegisterUpdatedEvent
+        {
+            MicroserviceId = result.MicroserviceId,
+            MicroserviceClusterId = result.MicroserviceClusterId,
+            MicroserviceName = result.MicroserviceName,
+            MicroserviceActive = result.MicroserviceActive,
+            MicroserviceDeleted = result.MicroserviceDeleted,
+            MicroserviceCoreConnection = result.MicroserviceCoreConnection,
+            DeleteAt = result.DeleteAt,
+            UpdatedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroserviceRegisterUpdatedAsync(updatedEvent);
+
+        return result;
     }
 
     public async Task<bool> SoftDeleteAsync(
@@ -138,6 +177,15 @@ public class MicroserviceRegisterService
 
         await repository.UpdateAsync(entity, cancellationToken);
         await uow.SaveChangesAsync(cancellationToken);
+
+        // Crear evento con los campos correctos
+        var deletedEvent = new MicroserviceRegisterDeletedEvent
+        {
+            MicroserviceId = entity.MicroserviceId,
+            MicroserviceName = entity.MicroserviceName,
+            DeletedAt = DateTime.UtcNow
+        };
+        await _eventPublisher.PublishMicroserviceRegisterDeletedAsync(deletedEvent);
 
         return true;
     }
