@@ -1,0 +1,270 @@
+================================================================================
+  INSTALACION FASTSERVER API - SERVIDOR DEL BANCO
+  Fecha: 2026-02-10
+================================================================================
+
+IMPORTANTE: Estos comandos se ejecutan en el servidor del banco después de
+            haber copiado la carpeta FastServer al servidor.
+
+================================================================================
+PREREQUISITOS (VERIFICAR PRIMERO)
+================================================================================
+
+1. Verificar .NET 10 instalado:
+   dotnet --version
+
+   Debe mostrar: 10.0.102 o superior
+
+2. Verificar dotnet-ef instalado:
+   dotnet ef --version
+
+   Si no está instalado, ejecutar:
+   dotnet tool install --global dotnet-ef
+
+================================================================================
+PASO 1: CONFIGURAR CONEXIONES A BASES DE DATOS
+================================================================================
+
+Ubicación: C:\FastServer\src\FastServer.GraphQL.Api\appsettings.Production.json
+
+Editar el archivo y reemplazar con las credenciales del banco:
+
+{
+  "ConnectionStrings": {
+    "PostgreSQL": "Host=SERVIDOR_POSTGRES;Port=5432;Database=FastServerLogsDB;Username=fastserver_user;Password=CAMBIAR_AQUI;",
+    "SqlServer": "Server=SERVIDOR_SQLSERVER;Database=FastServerMicroservicesDB;User ID=fastserver_user;Password=CAMBIAR_AQUI;TrustServerCertificate=True;Encrypt=True;"
+  },
+  "DefaultDataSource": "PostgreSQL"
+}
+
+NOTA: Reemplazar SERVIDOR_POSTGRES, SERVIDOR_SQLSERVER y CAMBIAR_AQUI
+      con los valores reales del banco.
+
+================================================================================
+PASO 2: NAVEGAR A LA CARPETA DEL PROYECTO
+================================================================================
+
+cd C:\FastServer\src\FastServer.Infrastructure
+
+================================================================================
+PASO 3: APLICAR MIGRACIONES A POSTGRESQL
+================================================================================
+
+Ejecutar:
+dotnet ef database update --context PostgreSqlDbContext --startup-project ..\FastServer.GraphQL.Api --configuration Production
+
+Resultado esperado:
+  Build started...
+  Build succeeded.
+  Applying migration '20260210013959_PostgreSqlInitialCreate'.
+  Done.
+
+Si hay error, verificar:
+  - Que PostgreSQL esté corriendo: Get-Service -Name postgresql*
+  - Que el firewall permita conexión al puerto 5432
+  - Que las credenciales en appsettings.Production.json sean correctas
+
+================================================================================
+PASO 4: APLICAR MIGRACIONES A SQL SERVER
+================================================================================
+
+Ejecutar:
+dotnet ef database update --context SqlServerDbContext --startup-project ..\FastServer.GraphQL.Api --configuration Production
+
+Resultado esperado:
+  Build started...
+  Build succeeded.
+  Applying migration '20260210014700_SqlServerInitialCreate'.
+  Done.
+
+Si hay error, verificar:
+  - Que SQL Server esté corriendo: Get-Service -Name MSSQLSERVER
+  - Que el firewall permita conexión al puerto 1433
+  - Que las credenciales en appsettings.Production.json sean correctas
+
+================================================================================
+PASO 5: VERIFICAR QUE LAS TABLAS SE CREARON CORRECTAMENTE
+================================================================================
+
+POSTGRESQL:
+-----------
+psql -h SERVIDOR_POSTGRES -U fastserver_user -d FastServerLogsDB -c "\dt"
+
+Debe mostrar estas 3 tablas:
+  - LogServicesHeaders
+  - LogMicroservices
+  - LogServicesContents
+  - __EFMigrationsHistory
+
+SQL SERVER:
+-----------
+sqlcmd -S SERVIDOR_SQLSERVER -U fastserver_user -P PASSWORD -d FastServerMicroservicesDB -Q "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME"
+
+Debe mostrar estas 9 tablas:
+  - __EFMigrationsHistory
+  - activity_logs
+  - core_connector_credentials
+  - event_types
+  - microservice_core_connector
+  - microservice_methods
+  - microservice_registers
+  - microservices_clusters
+  - users
+
+================================================================================
+PASO 6: PROBAR QUE LA API INICIA CORRECTAMENTE
+================================================================================
+
+cd C:\FastServer\src\FastServer.GraphQL.Api
+
+dotnet run --environment Production
+
+Resultado esperado:
+  [INFO] FastServer GraphQL API iniciando...
+  [INFO] Origen de datos predeterminado: PostgreSQL
+  [INFO] Now listening on: https://localhost:64706
+  [INFO] Now listening on: http://localhost:64707
+  [INFO] Application started. Press Ctrl+C to shut down.
+
+================================================================================
+PASO 7: VERIFICAR ENDPOINTS
+================================================================================
+
+Abrir navegador o usar curl:
+
+1. Health Check:
+   http://localhost:64707/health
+
+   Debe responder:
+   {
+     "status": "Healthy",
+     "totalDuration": "00:00:00.0123456"
+   }
+
+2. GraphQL Playground:
+   http://localhost:64707/graphql
+
+   Ejecutar query de prueba:
+   query {
+     __schema {
+       queryType {
+         name
+       }
+     }
+   }
+
+================================================================================
+RESUMEN DE COMANDOS (COPIAR Y PEGAR EN ORDEN)
+================================================================================
+
+# 1. Navegar a carpeta
+cd C:\FastServer\src\FastServer.Infrastructure
+
+# 2. Aplicar migraciones PostgreSQL
+dotnet ef database update --context PostgreSqlDbContext --startup-project ..\FastServer.GraphQL.Api --configuration Production
+
+# 3. Aplicar migraciones SQL Server
+dotnet ef database update --context SqlServerDbContext --startup-project ..\FastServer.GraphQL.Api --configuration Production
+
+# 4. Iniciar API
+cd ..\FastServer.GraphQL.Api
+dotnet run --environment Production
+
+# 5. Probar (en otra terminal o navegador)
+curl http://localhost:64707/health
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+ERROR: "No se puede conectar a PostgreSQL"
+SOLUCION:
+  1. Verificar servicio: Get-Service -Name postgresql*
+  2. Verificar firewall: Test-NetConnection -ComputerName SERVIDOR_POSTGRES -Port 5432
+  3. Verificar credenciales en appsettings.Production.json
+  4. Crear usuario si no existe:
+     psql -U postgres
+     CREATE USER fastserver_user WITH PASSWORD 'PASSWORD';
+     GRANT ALL PRIVILEGES ON DATABASE FastServerLogsDB TO fastserver_user;
+
+ERROR: "No se puede conectar a SQL Server"
+SOLUCION:
+  1. Verificar servicio: Get-Service -Name MSSQLSERVER
+  2. Verificar firewall: Test-NetConnection -ComputerName SERVIDOR_SQLSERVER -Port 1433
+  3. Verificar que SQL Server acepta autenticación mixta
+  4. Crear usuario si no existe:
+     sqlcmd -S SERVIDOR_SQLSERVER -E
+     CREATE LOGIN fastserver_user WITH PASSWORD = 'PASSWORD';
+     USE FastServerMicroservicesDB;
+     CREATE USER fastserver_user FOR LOGIN fastserver_user;
+     ALTER ROLE db_owner ADD MEMBER fastserver_user;
+
+ERROR: "dotnet ef no encontrado"
+SOLUCION:
+  dotnet tool install --global dotnet-ef
+
+ERROR: "Migration ya existe"
+SOLUCION:
+  Las migraciones ya fueron aplicadas. Verificar con:
+  dotnet ef migrations list --context PostgreSqlDbContext --startup-project ..\FastServer.GraphQL.Api
+
+================================================================================
+CHECKLIST FINAL
+================================================================================
+
+[ ] .NET 10 instalado y verificado
+[ ] dotnet-ef instalado y verificado
+[ ] appsettings.Production.json configurado con credenciales del banco
+[ ] PostgreSQL corriendo y accesible
+[ ] SQL Server corriendo y accesible
+[ ] Migración PostgreSQL aplicada exitosamente
+[ ] Migración SQL Server aplicada exitosamente
+[ ] 3 tablas creadas en PostgreSQL (verificadas)
+[ ] 9 tablas creadas en SQL Server (verificadas)
+[ ] API inicia sin errores
+[ ] Endpoint /health responde correctamente
+[ ] Endpoint /graphql funciona correctamente
+[ ] Firewall configurado para permitir puertos 64706-64707
+[ ] FastServer UI puede conectarse a la API
+
+================================================================================
+CONFIGURACION ADICIONAL (OPCIONAL)
+================================================================================
+
+Para configurar como servicio de Windows:
+
+New-Service -Name "FastServerAPI" `
+    -BinaryPathName "C:\FastServer\src\FastServer.GraphQL.Api\bin\Release\net10.0\FastServer.GraphQL.Api.exe" `
+    -DisplayName "FastServer GraphQL API" `
+    -Description "API GraphQL para monitoreo de microservicios" `
+    -StartupType Automatic
+
+Start-Service -Name "FastServerAPI"
+Get-Service -Name "FastServerAPI"
+
+Para configurar firewall:
+
+New-NetFirewallRule -DisplayName "FastServer API HTTP" `
+    -Direction Inbound `
+    -LocalPort 64707 `
+    -Protocol TCP `
+    -Action Allow
+
+New-NetFirewallRule -DisplayName "FastServer API HTTPS" `
+    -Direction Inbound `
+    -LocalPort 64706 `
+    -Protocol TCP `
+    -Action Allow
+
+================================================================================
+CONTACTOS DE SOPORTE
+================================================================================
+
+Desarrollador: [Tu nombre]
+DBA PostgreSQL: [Nombre DBA PostgreSQL]
+DBA SQL Server: [Nombre DBA SQL Server]
+Infraestructura: [Contacto infraestructura banco]
+
+================================================================================
+FIN DEL DOCUMENTO
+================================================================================
