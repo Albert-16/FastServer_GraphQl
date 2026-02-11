@@ -2,66 +2,67 @@ using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.ActivityLogEvents;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar logs de actividad
+/// Servicio para gestionar logs de actividad en PostgreSQL (BD: FastServer)
 /// </summary>
 public class ActivityLogService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
     private readonly IActivityLogEventPublisher _eventPublisher;
 
     public ActivityLogService(
-        IDataSourceFactory dataSourceFactory,
+        IMicroservicesDbContext context,
         IMapper mapper,
         IActivityLogEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
         _eventPublisher = eventPublisher;
     }
 
     public async Task<ActivityLogDto?> GetByIdAsync(
         Guid id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<ActivityLog>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<ActivityLogDto>(entity);
+        var entity = await _context.ActivityLogs
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.ActivityLogId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<ActivityLogDto>(entity);
     }
 
     public async Task<List<ActivityLogDto>> GetByUserIdAsync(
         Guid userId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<ActivityLog>();
-        var entities = await repository.FindAsync(a => a.UserId == userId, cancellationToken);
+        var entities = await _context.ActivityLogs
+            .AsNoTracking()
+            .Where(a => a.UserId == userId)
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<ActivityLogDto>>(entities);
     }
 
     public async Task<List<ActivityLogDto>> GetByEntityAsync(
         string entityName,
         Guid? entityId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<ActivityLog>();
+        var query = _context.ActivityLogs
+            .AsNoTracking()
+            .Where(a => a.ActivityLogEntityName == entityName);
 
-        var entities = entityId.HasValue
-            ? await repository.FindAsync(a => a.ActivityLogEntityName == entityName && a.ActivityLogEntityId == entityId.Value, cancellationToken)
-            : await repository.FindAsync(a => a.ActivityLogEntityName == entityName, cancellationToken);
+        if (entityId.HasValue)
+        {
+            query = query.Where(a => a.ActivityLogEntityId == entityId.Value);
+        }
 
+        var entities = await query.ToListAsync(cancellationToken);
         return _mapper.Map<List<ActivityLogDto>>(entities);
     }
 
@@ -71,12 +72,8 @@ public class ActivityLogService
         Guid? entityId,
         string? description,
         Guid? userId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<ActivityLog>();
-
         var entity = new ActivityLog
         {
             ActivityLogId = Guid.NewGuid(),
@@ -89,8 +86,8 @@ public class ActivityLogService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.ActivityLogs.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<ActivityLogDto>(entity);
 
@@ -112,17 +109,14 @@ public class ActivityLogService
 
     public async Task<bool> DeleteAsync(
         Guid id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<ActivityLog>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.ActivityLogs
+            .FirstOrDefaultAsync(x => x.ActivityLogId == id, cancellationToken);
         if (entity == null) return false;
 
-        await repository.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.ActivityLogs.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Crear evento con los campos correctos
         var deletedEvent = new ActivityLogDeletedEvent

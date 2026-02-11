@@ -2,59 +2,57 @@ using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.UserEvents;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar usuarios
+/// Servicio para gestionar usuarios en PostgreSQL (BD: FastServer)
 /// </summary>
 public class UserService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
     private readonly IUserEventPublisher _eventPublisher;
 
     public UserService(
-        IDataSourceFactory dataSourceFactory,
+        IMicroservicesDbContext context,
         IMapper mapper,
         IUserEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
         _eventPublisher = eventPublisher;
     }
 
     public async Task<UserDto?> GetByIdAsync(
         Guid id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<UserDto>(entity);
+        var entity = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<UserDto>(entity);
     }
 
     public async Task<List<UserDto>> GetAllAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-        var entities = await repository.GetAllAsync(cancellationToken);
+        var entities = await _context.Users
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<UserDto>>(entities);
     }
 
     public async Task<List<UserDto>> GetAllActiveAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-        var entities = await repository.FindAsync(u => u.UserActive == true, cancellationToken);
+        var entities = await _context.Users
+            .AsNoTracking()
+            .Where(u => u.UserActive == true)
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<UserDto>>(entities);
     }
 
@@ -63,12 +61,8 @@ public class UserService
         string? name,
         string? email,
         bool active,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-
         var entity = new User
         {
             UserId = Guid.NewGuid(),
@@ -80,8 +74,8 @@ public class UserService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.Users.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<UserDto>(entity);
 
@@ -109,13 +103,10 @@ public class UserService
         string? name,
         string? email,
         bool? active,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
         if (entity == null) return null;
 
         if (peoplesoft != null) entity.UserPeoplesoft = peoplesoft;
@@ -124,8 +115,7 @@ public class UserService
         if (active.HasValue) entity.UserActive = active.Value;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<UserDto>(entity);
 
@@ -150,37 +140,30 @@ public class UserService
     public async Task<bool> SetActiveAsync(
         Guid id,
         bool active,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
         if (entity == null) return false;
 
         entity.UserActive = active;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }
 
     public async Task<bool> DeleteAsync(
         Guid id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<User>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.Users
+            .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
         if (entity == null) return false;
 
-        await repository.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.Users.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Crear evento con los campos correctos
         var deletedEvent = new UserDeletedEvent

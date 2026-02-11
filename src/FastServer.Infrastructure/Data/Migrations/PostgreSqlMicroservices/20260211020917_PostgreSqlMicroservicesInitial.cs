@@ -1,14 +1,15 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FastServer.Infrastructure.Data.Migrations.SqlServer
+namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 {
     /// <inheritdoc />
-    public partial class SqlServerInitialCreate : Migration
+    public partial class PostgreSqlMicroservicesInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,12 +19,12 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     core_connector_credential_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    core_connector_credential_user = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    core_connector_credential_pass = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    core_connector_credential_key = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    core_connector_credential_user = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    core_connector_credential_pass = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    core_connector_credential_key = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -35,10 +36,10 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     event_type_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    event_type_description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    event_type_description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -50,15 +51,15 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     microservices_cluster_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    microservices_cluster_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    microservices_cluster_server_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    microservices_cluster_server_ip = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    microservices_cluster_active = table.Column<bool>(type: "bit", nullable: true),
-                    microservices_cluster_deleted = table.Column<bool>(type: "bit", nullable: true),
-                    delete_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    microservices_cluster_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservices_cluster_server_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservices_cluster_server_ip = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    microservices_cluster_active = table.Column<bool>(type: "boolean", nullable: true),
+                    microservices_cluster_deleted = table.Column<bool>(type: "boolean", nullable: true),
+                    delete_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -69,19 +70,19 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 name: "users",
                 columns: table => new
                 {
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_peoplesoft = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    user_active = table.Column<bool>(type: "bit", nullable: true),
-                    user_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    user_email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    password_hash = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    last_login = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    password_changed_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    email_confirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    refresh_token = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    refresh_token_expiry_time = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_peoplesoft = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    user_active = table.Column<bool>(type: "boolean", nullable: true),
+                    user_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    user_email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    password_hash = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    last_login = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    password_changed_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    email_confirmed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    refresh_token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    refresh_token_expiry_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,21 +94,21 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     microservice_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     microservice_cluster_id = table.Column<long>(type: "bigint", nullable: true),
-                    microservice_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    microservice_active = table.Column<bool>(type: "bit", nullable: true),
-                    microservice_deleted = table.Column<bool>(type: "bit", nullable: true),
-                    microservice_core_connection = table.Column<bool>(type: "bit", nullable: true),
-                    delete_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    microservice_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservice_active = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_deleted = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_core_connection = table.Column<bool>(type: "boolean", nullable: true),
+                    delete_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_microservice_registers", x => x.microservice_id);
                     table.ForeignKey(
-                        name: "FK_microservice_registers_microservices_clusters_microservice_cluster_id",
+                        name: "FK_microservice_registers_microservices_clusters_microservice_~",
                         column: x => x.microservice_cluster_id,
                         principalTable: "microservices_clusters",
                         principalColumn: "microservices_cluster_id",
@@ -118,14 +119,14 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 name: "activity_logs",
                 columns: table => new
                 {
-                    activity_log_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    activity_log_id = table.Column<Guid>(type: "uuid", nullable: false),
                     event_type_id = table.Column<long>(type: "bigint", nullable: true),
-                    activity_log_entity_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    activity_log_entity_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    activity_log_description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    activity_log_entity_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    activity_log_entity_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    activity_log_description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -149,23 +150,23 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     microservice_core_connector_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     core_connector_credential_id = table.Column<long>(type: "bigint", nullable: true),
                     microservice_id = table.Column<long>(type: "bigint", nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_microservice_core_connector", x => x.microservice_core_connector_id);
                     table.ForeignKey(
-                        name: "FK_microservice_core_connector_core_connector_credentials_core_connector_credential_id",
+                        name: "FK_microservice_core_connector_core_connector_credentials_core~",
                         column: x => x.core_connector_credential_id,
                         principalTable: "core_connector_credentials",
                         principalColumn: "core_connector_credential_id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_microservice_core_connector_microservice_registers_microservice_id",
+                        name: "FK_microservice_core_connector_microservice_registers_microser~",
                         column: x => x.microservice_id,
                         principalTable: "microservice_registers",
                         principalColumn: "microservice_id",
@@ -177,13 +178,13 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 columns: table => new
                 {
                     microservice_method_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     microservice_id = table.Column<long>(type: "bigint", nullable: false),
-                    microservice_method_delete = table.Column<bool>(type: "bit", nullable: true),
-                    microservice_method_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    microservice_method_url = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    create_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    microservice_method_delete = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_method_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservice_method_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,8 +299,7 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 name: "UX_CoreConnectorCredential_User",
                 table: "core_connector_credentials",
                 column: "core_connector_credential_user",
-                unique: true,
-                filter: "[core_connector_credential_user] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_event_types_event_type_description",
@@ -350,8 +350,7 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 name: "IX_users_user_email",
                 table: "users",
                 column: "user_email",
-                unique: true,
-                filter: "[user_email] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_user_peoplesoft",

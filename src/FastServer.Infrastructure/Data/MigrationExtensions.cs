@@ -16,11 +16,11 @@ public static class MigrationExtensions
     public static async Task MigratePostgreSqlAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
-        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlDbContext>>();
+        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlLogsDbContext>>();
 
         try
         {
-            var context = scope.ServiceProvider.GetService<PostgreSqlDbContext>();
+            var context = scope.ServiceProvider.GetService<PostgreSqlLogsDbContext>();
             if (context != null)
             {
                 logger?.LogInformation("Aplicando migraciones de PostgreSQL...");
@@ -35,36 +35,36 @@ public static class MigrationExtensions
     }
 
     /// <summary>
-    /// Aplica las migraciones pendientes para SQL Server
+    /// Aplica las migraciones pendientes para PostgreSQL Microservices (BD: FastServer)
     /// </summary>
-    public static async Task MigrateSqlServerAsync(this IServiceProvider serviceProvider)
+    public static async Task MigratePostgreSqlMicroservicesAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
-        var logger = scope.ServiceProvider.GetService<ILogger<SqlServerDbContext>>();
+        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlMicroservicesDbContext>>();
 
         try
         {
-            var context = scope.ServiceProvider.GetService<SqlServerDbContext>();
+            var context = scope.ServiceProvider.GetService<PostgreSqlMicroservicesDbContext>();
             if (context != null)
             {
-                logger?.LogInformation("Aplicando migraciones de SQL Server...");
+                logger?.LogInformation("Aplicando migraciones de PostgreSQL Microservices (FastServer)...");
                 await context.Database.MigrateAsync();
-                logger?.LogInformation("Migraciones de SQL Server aplicadas correctamente");
+                logger?.LogInformation("Migraciones de PostgreSQL Microservices aplicadas correctamente");
             }
         }
         catch (Exception ex)
         {
-            logger?.LogWarning(ex, "No se pudieron aplicar las migraciones de SQL Server. La base de datos podría no estar configurada.");
+            logger?.LogWarning(ex, "No se pudieron aplicar las migraciones de PostgreSQL Microservices. La base de datos podría no estar configurada.");
         }
     }
 
     /// <summary>
-    /// Aplica las migraciones pendientes para todas las bases de datos configuradas
+    /// Aplica las migraciones pendientes para todas las bases de datos PostgreSQL configuradas
     /// </summary>
     public static async Task MigrateAllDatabasesAsync(this IServiceProvider serviceProvider)
     {
         await serviceProvider.MigratePostgreSqlAsync();
-        await serviceProvider.MigrateSqlServerAsync();
+        await serviceProvider.MigratePostgreSqlMicroservicesAsync();
     }
 
     /// <summary>
@@ -73,11 +73,11 @@ public static class MigrationExtensions
     public static async Task EnsurePostgreSqlCreatedAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
-        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlDbContext>>();
+        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlLogsDbContext>>();
 
         try
         {
-            var context = scope.ServiceProvider.GetService<PostgreSqlDbContext>();
+            var context = scope.ServiceProvider.GetService<PostgreSqlLogsDbContext>();
             if (context != null)
             {
                 logger?.LogInformation("Verificando base de datos PostgreSQL...");
@@ -92,26 +92,26 @@ public static class MigrationExtensions
     }
 
     /// <summary>
-    /// Asegura que la base de datos SQL Server está creada (útil para desarrollo)
+    /// Asegura que la base de datos PostgreSQL Microservices está creada (útil para desarrollo)
     /// </summary>
-    public static async Task EnsureSqlServerCreatedAsync(this IServiceProvider serviceProvider)
+    public static async Task EnsurePostgreSqlMicroservicesCreatedAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
-        var logger = scope.ServiceProvider.GetService<ILogger<SqlServerDbContext>>();
+        var logger = scope.ServiceProvider.GetService<ILogger<PostgreSqlMicroservicesDbContext>>();
 
         try
         {
-            var context = scope.ServiceProvider.GetService<SqlServerDbContext>();
+            var context = scope.ServiceProvider.GetService<PostgreSqlMicroservicesDbContext>();
             if (context != null)
             {
-                logger?.LogInformation("Verificando base de datos SQL Server...");
+                logger?.LogInformation("Verificando base de datos PostgreSQL Microservices (FastServer)...");
                 await context.Database.EnsureCreatedAsync();
-                logger?.LogInformation("Base de datos SQL Server verificada");
+                logger?.LogInformation("Base de datos PostgreSQL Microservices verificada");
             }
         }
         catch (Exception ex)
         {
-            logger?.LogWarning(ex, "No se pudo verificar la base de datos SQL Server.");
+            logger?.LogWarning(ex, "No se pudo verificar la base de datos PostgreSQL Microservices.");
         }
     }
 }

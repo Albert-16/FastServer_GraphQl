@@ -3,7 +3,7 @@ using FastServer.Domain.Enums;
 namespace FastServer.Application.DTOs;
 
 /// <summary>
-/// DTO para filtrar logs
+/// DTO para filtrar logs (PostgreSQL: FastServer_Logs)
 /// </summary>
 public record LogFilterDto
 {
@@ -15,5 +15,4 @@ public record LogFilterDto
     public string? TransactionId { get; init; }
     public string? HttpMethod { get; init; }
     public bool? HasErrors { get; init; }
-    public DataSourceType? DataSource { get; init; }
 }

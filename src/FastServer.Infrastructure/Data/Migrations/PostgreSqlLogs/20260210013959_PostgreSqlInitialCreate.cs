@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FastServer.Infrastructure.Data.Migrations.PostgreSql
+namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
 {
     /// <inheritdoc />
     public partial class PostgreSqlInitialCreate : Migration

@@ -27,7 +27,6 @@ public class CreateLogServicesHeaderInput
     public string? UserId { get; set; }
     public string? SessionId { get; set; }
     public long? RequestId { get; set; }
-    public DataSourceType? DataSource { get; set; }
 }
 
 /// <summary>
@@ -41,7 +40,6 @@ public class UpdateLogServicesHeaderInput
     public string? ErrorCode { get; set; }
     public string? ErrorDescription { get; set; }
     public long? RequestDuration { get; set; }
-    public DataSourceType? DataSource { get; set; }
 }
 
 /// <summary>
@@ -53,7 +51,6 @@ public class CreateLogMicroserviceInput
     public DateTime? LogDate { get; set; }
     public string? LogLevel { get; set; }
     public string? LogMicroserviceText { get; set; }
-    public DataSourceType? DataSource { get; set; }
 }
 
 /// <summary>
@@ -66,7 +63,6 @@ public class CreateLogServicesContentInput
     public string? LogServicesLogLevel { get; set; }
     public string? LogServicesState { get; set; }
     public string? LogServicesContentText { get; set; }
-    public DataSourceType? DataSource { get; set; }
 }
 
 /// <summary>
@@ -82,7 +78,6 @@ public class LogFilterInput
     public string? TransactionId { get; set; }
     public string? HttpMethod { get; set; }
     public bool? HasErrors { get; set; }
-    public DataSourceType? DataSource { get; set; }
 }
 
 /// <summary>

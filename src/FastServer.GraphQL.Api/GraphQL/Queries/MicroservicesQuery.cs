@@ -1,8 +1,7 @@
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.Interfaces;
 using FastServer.Application.Services.Microservices;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
 using FastServer.GraphQL.Api.GraphQL.Queries;
 using HotChocolate;
 using HotChocolate.Types;
@@ -16,39 +15,34 @@ public class MicroservicesQuery
     // MICROSERVICE REGISTERS
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los microservicios desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<MicroserviceRegister> GetAllMicroservices(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroserviceRegister>().Query();
+        return context.MicroserviceRegisters;
     }
 
+    [GraphQLDescription("Obtiene los microservicios activos desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<MicroserviceRegister> GetActiveMicroservices(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroserviceRegister>()
-            .Query()
+        return context.MicroserviceRegisters
             .Where(m => m.MicroserviceActive == true && m.MicroserviceDeleted != true);
     }
 
+    [GraphQLDescription("Obtiene microservicios por ID de cluster desde FastServer (PostgreSQL)")]
     [UseProjection]
     public IQueryable<MicroserviceRegister> GetMicroservicesByClusterId(
-        [Service] IDataSourceFactory factory,
-        long clusterId,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context,
+        long clusterId)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroserviceRegister>()
-            .Query()
+        return context.MicroserviceRegisters
             .Where(m => m.MicroserviceClusterId == clusterId);
     }
 
@@ -56,27 +50,24 @@ public class MicroservicesQuery
     // MICROSERVICES CLUSTERS
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los clusters de microservicios desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<MicroservicesCluster> GetAllClusters(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroservicesCluster>().Query();
+        return context.MicroservicesClusters;
     }
 
+    [GraphQLDescription("Obtiene los clusters activos desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<MicroservicesCluster> GetActiveClusters(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroservicesCluster>()
-            .Query()
+        return context.MicroservicesClusters
             .Where(c => c.MicroservicesClusterActive == true && c.MicroservicesClusterDeleted != true);
     }
 
@@ -84,27 +75,24 @@ public class MicroservicesQuery
     // USERS
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los usuarios desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<User> GetAllUsers(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<User>().Query();
+        return context.Users;
     }
 
+    [GraphQLDescription("Obtiene los usuarios activos desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<User> GetActiveUsers(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<User>()
-            .Query()
+        return context.Users
             .Where(u => u.UserActive == true);
     }
 
@@ -112,39 +100,34 @@ public class MicroservicesQuery
     // ACTIVITY LOGS
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los logs de actividad desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<ActivityLog> GetAllActivityLogs(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<ActivityLog>().Query();
+        return context.ActivityLogs;
     }
 
+    [GraphQLDescription("Obtiene los logs de actividad por usuario desde FastServer (PostgreSQL)")]
     [UseProjection]
     public IQueryable<ActivityLog> GetActivityLogsByUser(
-        [Service] IDataSourceFactory factory,
-        Guid userId,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context,
+        Guid userId)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<ActivityLog>()
-            .Query()
+        return context.ActivityLogs
             .Where(a => a.UserId == userId);
     }
 
+    [GraphQLDescription("Obtiene los logs de actividad por entidad desde FastServer (PostgreSQL)")]
     [UseProjection]
     public IQueryable<ActivityLog> GetActivityLogsByEntity(
-        [Service] IDataSourceFactory factory,
+        [Service] IMicroservicesDbContext context,
         string entityName,
-        Guid? entityId = null,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        Guid? entityId = null)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        var query = uow.GetRepository<ActivityLog>()
-            .Query()
+        var query = context.ActivityLogs
             .Where(a => a.ActivityLogEntityName == entityName);
 
         if (entityId.HasValue)
@@ -159,56 +142,51 @@ public class MicroservicesQuery
     // EVENT TYPES
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los tipos de eventos desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<EventType> GetAllEventTypes(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<EventType>().Query();
+        return context.EventTypes;
     }
 
     // ========================================
     // CORE CONNECTOR CREDENTIALS
     // ========================================
 
+    [GraphQLDescription("Obtiene todas las credenciales de conectores desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<CoreConnectorCredential> GetAllCredentials(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<CoreConnectorCredential>().Query();
+        return context.CoreConnectorCredentials;
     }
 
     // ========================================
     // MICROSERVICE CORE CONNECTORS
     // ========================================
 
+    [GraphQLDescription("Obtiene todos los conectores de microservicios desde FastServer (PostgreSQL)")]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
     public IQueryable<MicroserviceCoreConnector> GetAllConnectors(
-        [Service] IDataSourceFactory factory,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroserviceCoreConnector>().Query();
+        return context.MicroserviceCoreConnectors;
     }
 
+    [GraphQLDescription("Obtiene conectores por ID de microservicio desde FastServer (PostgreSQL)")]
     [UseProjection]
     public IQueryable<MicroserviceCoreConnector> GetConnectorsByMicroserviceId(
-        [Service] IDataSourceFactory factory,
-        long microserviceId,
-        DataSourceType dataSource = DataSourceType.SqlServer)
+        [Service] IMicroservicesDbContext context,
+        long microserviceId)
     {
-        var uow = factory.CreateUnitOfWork(dataSource);
-        return uow.GetRepository<MicroserviceCoreConnector>()
-            .Query()
+        return context.MicroserviceCoreConnectors
             .Where(c => c.MicroserviceId == microserviceId);
     }
 }

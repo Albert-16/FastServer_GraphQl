@@ -49,7 +49,12 @@
       "Bash(Get-ChildItem \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\" -Recurse -Filter \"*.cs\")",
       "Bash(Select-Object FullName)",
       "Bash(powershell.exe:*)",
-      "Bash(Remove-Item \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\\\\SqlServer\\\\*.cs\" -Force)"
+      "Bash(Remove-Item \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\\\\SqlServer\\\\*.cs\" -Force)",
+      "Bash(cd:*)",
+      "Bash(dotnet ef database list:*)",
+      "Bash(move PostgreSqlDbContext.cs PostgreSqlLogsDbContext.cs)",
+      "Bash(dotnet remove:*)",
+      "Bash(Select-String -Pattern \"error|warning|succeeded|failed\" -Context 0,2)"
     ]
   }
 }

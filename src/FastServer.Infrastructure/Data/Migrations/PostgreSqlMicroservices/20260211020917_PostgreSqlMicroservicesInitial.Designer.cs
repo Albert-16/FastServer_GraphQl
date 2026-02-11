@@ -3,17 +3,17 @@ using System;
 using FastServer.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FastServer.Infrastructure.Data.Migrations.SqlServer
+namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 {
-    [DbContext(typeof(SqlServerDbContext))]
-    [Migration("20260210014700_SqlServerInitialCreate")]
-    partial class SqlServerInitialCreate
+    [DbContext(typeof(PostgreSqlMicroservicesDbContext))]
+    [Migration("20260211020917_PostgreSqlMicroservicesInitial")]
+    partial class PostgreSqlMicroservicesInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,33 +21,33 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.ActivityLog", b =>
                 {
                     b.Property<Guid>("ActivityLogId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("activity_log_id");
 
                     b.Property<string>("ActivityLogDescription")
                         .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnType("character varying(2000)")
                         .HasColumnName("activity_log_description");
 
                     b.Property<Guid?>("ActivityLogEntityId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("activity_log_entity_id");
 
                     b.Property<string>("ActivityLogEntityName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("activity_log_entity_name");
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<long?>("EventTypeId")
@@ -55,11 +55,11 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnName("event_type_id");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.HasKey("ActivityLogId");
@@ -110,37 +110,36 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("core_connector_credential_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CoreConnectorCredentialId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("CoreConnectorCredentialId"));
 
                     b.Property<string>("CoreConnectorCredentialKey")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("core_connector_credential_key");
 
                     b.Property<string>("CoreConnectorCredentialPass")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("core_connector_credential_pass");
 
                     b.Property<string>("CoreConnectorCredentialUser")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("core_connector_credential_user");
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("CoreConnectorCredentialId");
 
                     b.HasIndex("CoreConnectorCredentialUser")
                         .IsUnique()
-                        .HasDatabaseName("UX_CoreConnectorCredential_User")
-                        .HasFilter("[core_connector_credential_user] IS NOT NULL");
+                        .HasDatabaseName("UX_CoreConnectorCredential_User");
 
                     b.ToTable("core_connector_credentials", (string)null);
 
@@ -172,19 +171,19 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("event_type_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("EventTypeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EventTypeId"));
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<string>("EventTypeDescription")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("event_type_description");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("EventTypeId");
@@ -217,14 +216,14 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("microservice_core_connector_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MicroserviceCoreConnectorId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceCoreConnectorId"));
 
                     b.Property<long?>("CoreConnectorCredentialId")
                         .HasColumnType("bigint")
                         .HasColumnName("core_connector_credential_id");
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<long?>("MicroserviceId")
@@ -232,7 +231,7 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnName("microservice_id");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("MicroserviceCoreConnectorId");
@@ -269,10 +268,10 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("microservice_method_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MicroserviceMethodId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceMethodId"));
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<long>("MicroserviceId")
@@ -280,21 +279,21 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnName("microservice_id");
 
                     b.Property<bool?>("MicroserviceMethodDelete")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservice_method_delete");
 
                     b.Property<string>("MicroserviceMethodName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("microservice_method_name");
 
                     b.Property<string>("MicroserviceMethodUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("microservice_method_url");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("MicroserviceMethodId");
@@ -335,18 +334,18 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("microservice_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MicroserviceId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceId"));
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("delete_at");
 
                     b.Property<bool?>("MicroserviceActive")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservice_active");
 
                     b.Property<long?>("MicroserviceClusterId")
@@ -354,20 +353,20 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnName("microservice_cluster_id");
 
                     b.Property<bool?>("MicroserviceCoreConnection")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservice_core_connection");
 
                     b.Property<bool?>("MicroserviceDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservice_deleted");
 
                     b.Property<string>("MicroserviceName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("microservice_name");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("MicroserviceId");
@@ -413,41 +412,41 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                         .HasColumnType("bigint")
                         .HasColumnName("microservices_cluster_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MicroservicesClusterId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroservicesClusterId"));
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("delete_at");
 
                     b.Property<bool?>("MicroservicesClusterActive")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservices_cluster_active");
 
                     b.Property<bool?>("MicroservicesClusterDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("microservices_cluster_deleted");
 
                     b.Property<string>("MicroservicesClusterName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("microservices_cluster_name");
 
                     b.Property<string>("MicroservicesClusterServerIp")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("microservices_cluster_server_ip");
 
                     b.Property<string>("MicroservicesClusterServerName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("microservices_cluster_server_name");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.HasKey("MicroservicesClusterId");
@@ -485,69 +484,68 @@ namespace FastServer.Infrastructure.Data.Migrations.SqlServer
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
                     b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
                     b.Property<bool>("EmailConfirmed")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("email_confirmed");
 
                     b.Property<DateTime?>("LastLogin")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_login");
 
                     b.Property<DateTime?>("ModifyAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
                     b.Property<DateTime?>("PasswordChangedAt")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("password_changed_at");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("character varying(500)")
                         .HasColumnName("refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("refresh_token_expiry_time");
 
                     b.Property<bool?>("UserActive")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("user_active");
 
                     b.Property<string>("UserEmail")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("user_email");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("character varying(255)")
                         .HasColumnName("user_name");
 
                     b.Property<string>("UserPeoplesoft")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("user_peoplesoft");
 
                     b.HasKey("UserId");
 
                     b.HasIndex("UserEmail")
-                        .IsUnique()
-                        .HasFilter("[user_email] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserPeoplesoft");
 

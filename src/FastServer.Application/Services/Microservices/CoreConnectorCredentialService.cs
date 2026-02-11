@@ -2,49 +2,47 @@ using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.CoreConnectorCredentialEvents;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar credenciales de conectores del core
+/// Servicio para gestionar credenciales de conectores del core en PostgreSQL (BD: FastServer)
 /// </summary>
 public class CoreConnectorCredentialService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
     private readonly ICoreConnectorCredentialEventPublisher _eventPublisher;
 
     public CoreConnectorCredentialService(
-        IDataSourceFactory dataSourceFactory,
+        IMicroservicesDbContext context,
         IMapper mapper,
         ICoreConnectorCredentialEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
         _eventPublisher = eventPublisher;
     }
 
     public async Task<CoreConnectorCredentialDto?> GetByIdAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<CoreConnectorCredential>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<CoreConnectorCredentialDto>(entity);
+        var entity = await _context.CoreConnectorCredentials
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.CoreConnectorCredentialId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<CoreConnectorCredentialDto>(entity);
     }
 
     public async Task<List<CoreConnectorCredentialDto>> GetAllAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<CoreConnectorCredential>();
-        var entities = await repository.GetAllAsync(cancellationToken);
+        var entities = await _context.CoreConnectorCredentials
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<CoreConnectorCredentialDto>>(entities);
     }
 
@@ -52,12 +50,8 @@ public class CoreConnectorCredentialService
         string? user,
         string? password,
         string? key,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<CoreConnectorCredential>();
-
         var entity = new CoreConnectorCredential
         {
             CoreConnectorCredentialUser = user,
@@ -67,8 +61,8 @@ public class CoreConnectorCredentialService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.CoreConnectorCredentials.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<CoreConnectorCredentialDto>(entity);
 
@@ -94,13 +88,10 @@ public class CoreConnectorCredentialService
         string? user,
         string? password,
         string? key,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<CoreConnectorCredential>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.CoreConnectorCredentials
+            .FirstOrDefaultAsync(x => x.CoreConnectorCredentialId == id, cancellationToken);
         if (entity == null) return null;
 
         if (user != null) entity.CoreConnectorCredentialUser = user;
@@ -108,8 +99,7 @@ public class CoreConnectorCredentialService
         if (key != null) entity.CoreConnectorCredentialKey = key;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<CoreConnectorCredentialDto>(entity);
 
@@ -132,17 +122,14 @@ public class CoreConnectorCredentialService
 
     public async Task<bool> DeleteAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<CoreConnectorCredential>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.CoreConnectorCredentials
+            .FirstOrDefaultAsync(x => x.CoreConnectorCredentialId == id, cancellationToken);
         if (entity == null) return false;
 
-        await repository.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.CoreConnectorCredentials.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Crear evento con los campos correctos
         var deletedEvent = new CoreConnectorCredentialDeletedEvent

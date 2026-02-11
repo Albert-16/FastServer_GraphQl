@@ -1,5 +1,4 @@
 using FastServer.Application;
-using FastServer.Domain.Enums;
 using FastServer.GraphQL.Api.GraphQL;
 using FastServer.GraphQL.Api.GraphQL.Mutations;
 using FastServer.GraphQL.Api.GraphQL.Queries;
@@ -12,9 +11,10 @@ using Serilog;
 /*
  * FastServer GraphQL API
  *
- * API GraphQL para gestionar logs de servicios con soporte multi-base de datos.
- * Soporta PostgreSQL y SQL Server, permitiendo consultas dinámicas a cualquiera
- * de las bases de datos configuradas.
+ * API GraphQL para gestionar logs de servicios y microservicios usando PostgreSQL exclusivamente.
+ * Dos bases de datos PostgreSQL separadas:
+ *   - FastServer_Logs: Logging de servicios (6 tablas)
+ *   - FastServer: Gestión de microservicios (8 tablas)
  *
  * Arquitectura: Clean Architecture con capas Domain, Application, Infrastructure y API
  *
@@ -62,53 +62,30 @@ builder.Services.AddScoped<FastServer.Application.Services.Microservices.CoreCon
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.MicroserviceCoreConnectorService>();
 
 // ========================================
-// VALIDACIÓN DE CONFIGURACIÓN DE BASES DE DATOS
+// VALIDACIÓN DE CONFIGURACIÓN DE BASES DE DATOS POSTGRESQL
 // ========================================
 
 // Obtener cadenas de conexión desde appsettings.json
-var postgresConn = builder.Configuration.GetConnectionString("PostgreSQL");
-var sqlServerConn = builder.Configuration.GetConnectionString("SqlServer");
+var postgresLogsConn = builder.Configuration.GetConnectionString("PostgreSQLLogs");
+var postgresMicroservicesConn = builder.Configuration.GetConnectionString("PostgreSQLMicroservices");
 
-// Validar que al menos una base de datos esté configurada
-// Esto garantiza que la aplicación tenga al menos un origen de datos disponible
-if (string.IsNullOrEmpty(postgresConn) && string.IsNullOrEmpty(sqlServerConn))
+// Validar que ambas bases de datos PostgreSQL estén configuradas
+// FastServer_Logs (logs) y FastServer (microservicios)
+if (string.IsNullOrEmpty(postgresLogsConn))
 {
     throw new InvalidOperationException(
-        "Al menos una cadena de conexión (PostgreSQL o SqlServer) debe estar configurada");
+        "La cadena de conexión 'PostgreSQLLogs' debe estar configurada en appsettings.json");
 }
 
-// ========================================
-// CONFIGURACIÓN DEL ORIGEN DE DATOS PREDETERMINADO
-// ========================================
-
-// Leer el origen de datos predeterminado desde appsettings.json
-// Si no está configurado, se usa PostgreSQL por defecto
-var defaultDataSource = builder.Configuration.GetValue<string>("DefaultDataSource") ?? "PostgreSQL";
-
-// Parsear el string a enum DataSourceType
-if (!Enum.TryParse<DataSourceType>(defaultDataSource, true, out var dataSourceType))
+if (string.IsNullOrEmpty(postgresMicroservicesConn))
 {
     throw new InvalidOperationException(
-        $"DefaultDataSource '{defaultDataSource}' no es válido. Valores aceptados: PostgreSQL, SqlServer");
+        "La cadena de conexión 'PostgreSQLMicroservices' debe estar configurada en appsettings.json");
 }
 
-// Validar que el origen predeterminado tenga cadena de conexión configurada
-// Esto previene errores en tiempo de ejecución cuando se intente usar el origen predeterminado
-if (dataSourceType == DataSourceType.PostgreSQL && string.IsNullOrEmpty(postgresConn))
-{
-    throw new InvalidOperationException(
-        "DefaultDataSource está configurado como PostgreSQL pero no hay cadena de conexión PostgreSQL");
-}
-
-if (dataSourceType == DataSourceType.SqlServer && string.IsNullOrEmpty(sqlServerConn))
-{
-    throw new InvalidOperationException(
-        "DefaultDataSource está configurado como SqlServer pero no hay cadena de conexión SqlServer");
-}
-
-// Registrar DataSourceSettings como Singleton en DI
-// Esto permite que todos los servicios accedan al origen de datos predeterminado
-builder.Services.ConfigureDefaultDataSource(dataSourceType);
+Log.Information("Configuración de bases de datos:");
+Log.Information("  - BD Logs: FastServer_Logs (PostgreSQL)");
+Log.Information("  - BD Microservices: FastServer (PostgreSQL)");
 
 // ========================================
 // CONFIGURACIÓN DE GRAPHQL CON HOT CHOCOLATE
@@ -328,7 +305,7 @@ app.MapGet("/", () => Results.Redirect("/graphql"));
 // ========================================
 
 Log.Information("FastServer GraphQL API iniciando...");
-Log.Information("Origen de datos predeterminado: {DataSource}", defaultDataSource);
+Log.Information("Arquitectura: PostgreSQL exclusivo (FastServer_Logs + FastServer)");
 
 try
 {

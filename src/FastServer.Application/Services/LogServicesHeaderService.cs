@@ -4,60 +4,43 @@ using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.LogEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
-using FastServer.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services;
 
 /// <summary>
 /// Servicio de aplicación para gestionar logs de cabecera (LogServicesHeader).
-/// Proporciona operaciones CRUD y consultas especializadas con soporte multi-base de datos.
+/// Proporciona operaciones CRUD y consultas especializadas usando PostgreSQL (BD: FastServer_Logs).
 /// </summary>
 /// <remarks>
 /// Este servicio implementa la lógica de negocio para los logs de servicios.
 /// Características principales:
-/// - Soporte para múltiples orígenes de datos (PostgreSQL y SQL Server)
+/// - Acceso directo a PostgreSQL mediante ILogsDbContext
 /// - Mapeo automático entre entidades y DTOs usando AutoMapper
 /// - Paginación de resultados para optimizar rendimiento
 /// - Filtrado avanzado de logs por múltiples criterios
-/// - Uso del patrón Unit of Work para garantizar transaccionalidad
-///
-/// Flujo típico de una operación:
-/// 1. El servicio recibe una solicitud (con o sin especificación de origen de datos)
-/// 2. Crea un UnitOfWork para el origen de datos apropiado
-/// 3. Ejecuta la operación a través de los repositorios
-/// 4. Mapea el resultado de entidad a DTO
-/// 5. Retorna el DTO al cliente
+/// - Uso de AsNoTracking() para queries de solo lectura
+/// - Publicación de eventos para suscripciones GraphQL
 /// </remarks>
 public class LogServicesHeaderService : ILogServicesHeaderService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly ILogsDbContext _context;
     private readonly IMapper _mapper;
-    private readonly DataSourceType _defaultDataSource;
     private readonly ILogEventPublisher _eventPublisher;
 
     /// <summary>
     /// Inicializa una nueva instancia del servicio LogServicesHeaderService.
     /// </summary>
-    /// <param name="dataSourceFactory">Fábrica para crear unidades de trabajo por origen de datos</param>
+    /// <param name="context">Contexto de base de datos PostgreSQL para logs (FastServer_Logs)</param>
     /// <param name="mapper">Mapeador para convertir entre entidades y DTOs</param>
-    /// <param name="dataSourceSettings">Configuración del origen de datos predeterminado</param>
     /// <param name="eventPublisher">Publisher de eventos para suscripciones GraphQL</param>
-    /// <remarks>
-    /// El origen de datos predeterminado se obtiene de dataSourceSettings, que está
-    /// configurado en appsettings.json. Esto permite que las queries sin especificar
-    /// dataSource usen automáticamente la base de datos configurada.
-    /// </remarks>
     public LogServicesHeaderService(
-        IDataSourceFactory dataSourceFactory,
+        ILogsDbContext context,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings,
         ILogEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
-        _defaultDataSource = dataSourceSettings.DefaultDataSource;
         _eventPublisher = eventPublisher;
     }
 
@@ -65,53 +48,49 @@ public class LogServicesHeaderService : ILogServicesHeaderService
     /// Obtiene un log por su identificador único.
     /// </summary>
     /// <param name="id">Identificador del log a buscar</param>
-    /// <param name="dataSource">Origen de datos opcional. Si es null, usa el predeterminado</param>
     /// <param name="cancellationToken">Token para cancelar la operación</param>
     /// <returns>El log encontrado o null si no existe</returns>
-    public async Task<LogServicesHeaderDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesHeaderDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        // Crear UnitOfWork con el origen de datos especificado o el predeterminado
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
+        var entity = await _context.LogServicesHeaders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
 
-        // Buscar la entidad en el repositorio
-        var entity = await uow.LogServicesHeaders.GetByIdAsync(id, cancellationToken);
-
-        // Mapear a DTO y retornar (null si no se encontró)
         return entity == null ? null : _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
     /// <summary>
-    /// Obtiene un log con todos sus detalles relacionados (microservicios y contenidos).
+    /// Obtiene un log con todos sus detalles (campos completos de la cabecera).
     /// </summary>
     /// <param name="id">Identificador del log a buscar</param>
-    /// <param name="dataSource">Origen de datos opcional. Si es null, usa el predeterminado</param>
     /// <param name="cancellationToken">Token para cancelar la operación</param>
-    /// <returns>El log con sus relaciones o null si no existe</returns>
+    /// <returns>El log con todos sus campos o null si no existe</returns>
     /// <remarks>
-    /// Este método carga las relaciones de navegación (LogMicroservices y LogServicesContents)
-    /// mediante eager loading para evitar múltiples consultas a la base de datos.
+    /// Este método es equivalente a GetByIdAsync. Las relaciones con LogMicroservices y
+    /// LogServicesContents deben obtenerse por separado usando sus respectivos servicios.
     /// </remarks>
-    public async Task<LogServicesHeaderDto?> GetWithDetailsAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesHeaderDto?> GetWithDetailsAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogServicesHeaders.GetWithDetailsAsync(id, cancellationToken);
+        var entity = await _context.LogServicesHeaders
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
+
         return entity == null ? null : _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
-    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetAllAsync(PaginationParamsDto pagination, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetAllAsync(PaginationParamsDto pagination, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var totalCount = await uow.LogServicesHeaders.CountAsync(cancellationToken);
-        var entities = await uow.LogServicesHeaders.GetAllAsync(cancellationToken);
+        var totalCount = await _context.LogServicesHeaders.CountAsync(cancellationToken);
 
-        var pagedEntities = entities
+        var entities = await _context.LogServicesHeaders
+            .AsNoTracking()
             .Skip(pagination.Skip)
             .Take(pagination.PageSize)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         return new PaginatedResultDto<LogServicesHeaderDto>
         {
-            Items = _mapper.Map<IEnumerable<LogServicesHeaderDto>>(pagedEntities),
+            Items = _mapper.Map<IEnumerable<LogServicesHeaderDto>>(entities),
             TotalCount = totalCount,
             PageNumber = pagination.PageNumber,
             PageSize = pagination.PageSize
@@ -120,9 +99,7 @@ public class LogServicesHeaderService : ILogServicesHeaderService
 
     public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetByFilterAsync(LogFilterDto filter, PaginationParamsDto pagination, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(filter.DataSource ?? _defaultDataSource);
-
-        var query = uow.LogServicesHeaders.Query();
+        var query = _context.LogServicesHeaders.AsNoTracking();
 
         if (filter.StartDate.HasValue)
             query = query.Where(x => x.LogDateIn >= filter.StartDate.Value);
@@ -148,12 +125,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         if (filter.HasErrors.HasValue && filter.HasErrors.Value)
             query = query.Where(x => x.ErrorCode != null);
 
-        var totalCount = query.Count();
-        var entities = query
+        var totalCount = await query.CountAsync(cancellationToken);
+        var entities = await query
             .OrderByDescending(x => x.LogDateIn)
             .Skip(pagination.Skip)
             .Take(pagination.PageSize)
-            .ToList();
+            .ToListAsync(cancellationToken);
 
         return new PaginatedResultDto<LogServicesHeaderDto>
         {
@@ -164,48 +141,47 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         };
     }
 
-    public async Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
         var entity = _mapper.Map<LogServicesHeader>(dto);
-        var created = await uow.LogServicesHeaders.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.LogServicesHeaders.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Publicar evento de creación
         var logEvent = new LogCreatedEvent
         {
-            LogId = created.LogId,
-            LogDateIn = created.LogDateIn,
-            LogDateOut = created.LogDateOut,
-            LogState = created.LogState,
-            LogMethodUrl = created.LogMethodUrl,
-            LogMethodName = created.LogMethodName,
-            LogFsId = created.LogFsId,
-            MethodDescription = created.MethodDescription,
-            TciIpPort = created.TciIpPort,
-            ErrorCode = created.ErrorCode,
-            ErrorDescription = created.ErrorDescription,
-            IpFs = created.IpFs,
-            TypeProcess = created.TypeProcess,
-            LogNodo = created.LogNodo,
-            HttpMethod = created.HttpMethod,
-            MicroserviceName = created.MicroserviceName,
-            RequestDuration = created.RequestDuration,
-            TransactionId = created.TransactionId,
-            UserId = created.UserId,
-            SessionId = created.SessionId,
-            RequestId = created.RequestId,
+            LogId = entity.LogId,
+            LogDateIn = entity.LogDateIn,
+            LogDateOut = entity.LogDateOut,
+            LogState = entity.LogState,
+            LogMethodUrl = entity.LogMethodUrl,
+            LogMethodName = entity.LogMethodName,
+            LogFsId = entity.LogFsId,
+            MethodDescription = entity.MethodDescription,
+            TciIpPort = entity.TciIpPort,
+            ErrorCode = entity.ErrorCode,
+            ErrorDescription = entity.ErrorDescription,
+            IpFs = entity.IpFs,
+            TypeProcess = entity.TypeProcess,
+            LogNodo = entity.LogNodo,
+            HttpMethod = entity.HttpMethod,
+            MicroserviceName = entity.MicroserviceName,
+            RequestDuration = entity.RequestDuration,
+            TransactionId = entity.TransactionId,
+            UserId = entity.UserId,
+            SessionId = entity.SessionId,
+            RequestId = entity.RequestId,
             CreatedAt = DateTime.UtcNow
         };
         await _eventPublisher.PublishLogCreatedAsync(logEvent);
 
-        return _mapper.Map<LogServicesHeaderDto>(created);
+        return _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
-    public async Task<LogServicesHeaderDto> UpdateAsync(UpdateLogServicesHeaderDto dto, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesHeaderDto> UpdateAsync(UpdateLogServicesHeaderDto dto, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogServicesHeaders.GetByIdAsync(dto.LogId, cancellationToken);
+        var entity = await _context.LogServicesHeaders
+            .FirstOrDefaultAsync(x => x.LogId == dto.LogId, cancellationToken);
 
         if (entity == null)
             throw new KeyNotFoundException($"LogServicesHeader with id {dto.LogId} not found");
@@ -221,8 +197,8 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         if (dto.RequestDuration.HasValue)
             entity.RequestDuration = dto.RequestDuration.Value;
 
-        await uow.LogServicesHeaders.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.LogServicesHeaders.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Publicar evento de actualización
         var logEvent = new LogUpdatedEvent
@@ -255,16 +231,16 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         return _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
-    public async Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogServicesHeaders.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.LogServicesHeaders
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
 
         if (entity == null)
             return false;
 
-        await uow.LogServicesHeaders.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.LogServicesHeaders.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Publicar evento de eliminación
         var logEvent = new LogDeletedEvent
@@ -279,10 +255,19 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         return true;
     }
 
-    public async Task<IEnumerable<LogServicesHeaderDto>> GetFailedLogsAsync(DateTime? fromDate = null, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LogServicesHeaderDto>> GetFailedLogsAsync(DateTime? fromDate = null, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entities = await uow.LogServicesHeaders.GetFailedLogsAsync(fromDate, cancellationToken);
+        var query = _context.LogServicesHeaders
+            .AsNoTracking()
+            .Where(x => x.ErrorCode != null);
+
+        if (fromDate.HasValue)
+            query = query.Where(x => x.LogDateIn >= fromDate.Value);
+
+        var entities = await query
+            .OrderByDescending(x => x.LogDateIn)
+            .ToListAsync(cancellationToken);
+
         return _mapper.Map<IEnumerable<LogServicesHeaderDto>>(entities);
     }
 }

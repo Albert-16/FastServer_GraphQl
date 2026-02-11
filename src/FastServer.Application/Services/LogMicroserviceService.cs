@@ -4,63 +4,74 @@ using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.LogMicroserviceEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
-using FastServer.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services;
 
 /// <summary>
-/// Implementación del servicio de LogMicroservice
+/// Servicio de aplicación para gestionar logs de microservicios (LogMicroservice).
+/// Proporciona operaciones CRUD y consultas especializadas usando PostgreSQL (BD: FastServer_Logs).
 /// </summary>
 public class LogMicroserviceService : ILogMicroserviceService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly ILogsDbContext _context;
     private readonly IMapper _mapper;
-    private readonly DataSourceType _defaultDataSource;
     private readonly ILogMicroserviceEventPublisher _eventPublisher;
 
+    /// <summary>
+    /// Inicializa una nueva instancia del servicio LogMicroserviceService.
+    /// </summary>
+    /// <param name="context">Contexto de base de datos PostgreSQL para logs (FastServer_Logs)</param>
+    /// <param name="mapper">Mapeador para convertir entre entidades y DTOs</param>
+    /// <param name="eventPublisher">Publisher de eventos para suscripciones GraphQL</param>
     public LogMicroserviceService(
-        IDataSourceFactory dataSourceFactory,
+        ILogsDbContext context,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings,
         ILogMicroserviceEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
-        _defaultDataSource = dataSourceSettings.DefaultDataSource;
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<LogMicroserviceDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogMicroserviceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogMicroservices.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.LogMicroservices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
+
         return entity == null ? null : _mapper.Map<LogMicroserviceDto>(entity);
     }
 
-    public async Task<IEnumerable<LogMicroserviceDto>> GetByLogIdAsync(long logId, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LogMicroserviceDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entities = await uow.LogMicroservices.GetByLogIdAsync(logId, cancellationToken);
+        var entities = await _context.LogMicroservices
+            .AsNoTracking()
+            .Where(x => x.LogId == logId)
+            .OrderBy(x => x.LogDate)
+            .ToListAsync(cancellationToken);
+
         return _mapper.Map<IEnumerable<LogMicroserviceDto>>(entities);
     }
 
-    public async Task<IEnumerable<LogMicroserviceDto>> SearchByTextAsync(string searchText, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LogMicroserviceDto>> SearchByTextAsync(string searchText, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entities = await uow.LogMicroservices.SearchByTextAsync(searchText, cancellationToken);
+        var entities = await _context.LogMicroservices
+            .AsNoTracking()
+            .Where(x => x.LogMicroserviceText != null && x.LogMicroserviceText.Contains(searchText))
+            .OrderByDescending(x => x.LogDate)
+            .ToListAsync(cancellationToken);
+
         return _mapper.Map<IEnumerable<LogMicroserviceDto>>(entities);
     }
 
-    public async Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
         var entity = _mapper.Map<LogMicroservice>(dto);
-        var created = await uow.LogMicroservices.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.LogMicroservices.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        var result = _mapper.Map<LogMicroserviceDto>(created);
+        var result = _mapper.Map<LogMicroserviceDto>(entity);
 
         await _eventPublisher.PublishLogMicroserviceCreatedAsync(new LogMicroserviceCreatedEvent
         {
@@ -74,16 +85,16 @@ public class LogMicroserviceService : ILogMicroserviceService
         return result;
     }
 
-    public async Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogMicroservices.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.LogMicroservices
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
 
         if (entity == null)
             return false;
 
-        await uow.LogMicroservices.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.LogMicroservices.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         await _eventPublisher.PublishLogMicroserviceDeletedAsync(new LogMicroserviceDeletedEvent
         {

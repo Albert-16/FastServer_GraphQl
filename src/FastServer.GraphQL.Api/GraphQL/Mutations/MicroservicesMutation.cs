@@ -1,6 +1,5 @@
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.Services.Microservices;
-using FastServer.Domain.Enums;
 using FastServer.GraphQL.Api.GraphQL.Mutations;
 using HotChocolate;
 using HotChocolate.Types;
@@ -20,10 +19,9 @@ public class MicroservicesMutation
         string? name,
         bool active = true,
         bool coreConnection = false,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(clusterId, name, active, coreConnection, dataSource, cancellationToken);
+        return await service.CreateAsync(clusterId, name, active, coreConnection, cancellationToken);
     }
 
     public async Task<MicroserviceRegisterDto?> UpdateMicroserviceAsync(
@@ -33,29 +31,26 @@ public class MicroservicesMutation
         string? name = null,
         bool? active = null,
         bool? coreConnection = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, clusterId, name, active, coreConnection, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, clusterId, name, active, coreConnection, cancellationToken);
     }
 
     public async Task<bool> SoftDeleteMicroserviceAsync(
         [Service] MicroserviceRegisterService service,
         long id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.SoftDeleteAsync(id, dataSource, cancellationToken);
+        return await service.SoftDeleteAsync(id, cancellationToken);
     }
 
     public async Task<bool> SetMicroserviceActiveAsync(
         [Service] MicroserviceRegisterService service,
         long id,
         bool active,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.SetActiveAsync(id, active, dataSource, cancellationToken);
+        return await service.SetActiveAsync(id, active, cancellationToken);
     }
 
     // ========================================
@@ -68,10 +63,9 @@ public class MicroservicesMutation
         string? serverName = null,
         string? serverIp = null,
         bool active = true,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(name, serverName, serverIp, active, dataSource, cancellationToken);
+        return await service.CreateAsync(name, serverName, serverIp, active, cancellationToken);
     }
 
     public async Task<MicroservicesClusterDto?> UpdateClusterAsync(
@@ -81,29 +75,26 @@ public class MicroservicesMutation
         string? serverName = null,
         string? serverIp = null,
         bool? active = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, name, serverName, serverIp, active, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, name, serverName, serverIp, active, cancellationToken);
     }
 
     public async Task<bool> SoftDeleteClusterAsync(
         [Service] MicroservicesClusterService service,
         long id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.SoftDeleteAsync(id, dataSource, cancellationToken);
+        return await service.SoftDeleteAsync(id, cancellationToken);
     }
 
     public async Task<bool> SetClusterActiveAsync(
         [Service] MicroservicesClusterService service,
         long id,
         bool active,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.SetActiveAsync(id, active, dataSource, cancellationToken);
+        return await service.SetActiveAsync(id, active, cancellationToken);
     }
 
     // ========================================
@@ -116,10 +107,9 @@ public class MicroservicesMutation
         string? email,
         string? peoplesoft = null,
         bool active = true,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(peoplesoft, name, email, active, dataSource, cancellationToken);
+        return await service.CreateAsync(peoplesoft, name, email, active, cancellationToken);
     }
 
     public async Task<UserDto?> UpdateUserAsync(
@@ -129,29 +119,26 @@ public class MicroservicesMutation
         string? email = null,
         string? peoplesoft = null,
         bool? active = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, peoplesoft, name, email, active, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, peoplesoft, name, email, active, cancellationToken);
     }
 
     public async Task<bool> DeleteUserAsync(
         [Service] UserService service,
         Guid id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(id, dataSource, cancellationToken);
+        return await service.DeleteAsync(id, cancellationToken);
     }
 
     public async Task<bool> SetUserActiveAsync(
         [Service] UserService service,
         Guid id,
         bool active,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.SetActiveAsync(id, active, dataSource, cancellationToken);
+        return await service.SetActiveAsync(id, active, cancellationToken);
     }
 
     // ========================================
@@ -165,19 +152,17 @@ public class MicroservicesMutation
         Guid? entityId,
         string? description,
         Guid? userId,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(eventTypeId, entityName, entityId, description, userId, dataSource, cancellationToken);
+        return await service.CreateAsync(eventTypeId, entityName, entityId, description, userId, cancellationToken);
     }
 
     public async Task<bool> DeleteActivityLogAsync(
         [Service] ActivityLogService service,
         Guid id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(id, dataSource, cancellationToken);
+        return await service.DeleteAsync(id, cancellationToken);
     }
 
     // ========================================
@@ -187,29 +172,26 @@ public class MicroservicesMutation
     public async Task<EventTypeDto> CreateEventTypeAsync(
         [Service] EventTypeService service,
         string description,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(description, dataSource, cancellationToken);
+        return await service.CreateAsync(description, cancellationToken);
     }
 
     public async Task<EventTypeDto?> UpdateEventTypeAsync(
         [Service] EventTypeService service,
         long id,
         string description,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, description, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, description, cancellationToken);
     }
 
     public async Task<bool> DeleteEventTypeAsync(
         [Service] EventTypeService service,
         long id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(id, dataSource, cancellationToken);
+        return await service.DeleteAsync(id, cancellationToken);
     }
 
     // ========================================
@@ -221,10 +203,9 @@ public class MicroservicesMutation
         string? user,
         string? password,
         string? key = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(user, password, key, dataSource, cancellationToken);
+        return await service.CreateAsync(user, password, key, cancellationToken);
     }
 
     public async Task<CoreConnectorCredentialDto?> UpdateCredentialAsync(
@@ -233,19 +214,17 @@ public class MicroservicesMutation
         string? user = null,
         string? password = null,
         string? key = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, user, password, key, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, user, password, key, cancellationToken);
     }
 
     public async Task<bool> DeleteCredentialAsync(
         [Service] CoreConnectorCredentialService service,
         long id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(id, dataSource, cancellationToken);
+        return await service.DeleteAsync(id, cancellationToken);
     }
 
     // ========================================
@@ -256,10 +235,9 @@ public class MicroservicesMutation
         [Service] MicroserviceCoreConnectorService service,
         long? credentialId,
         long? microserviceId,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(credentialId, microserviceId, dataSource, cancellationToken);
+        return await service.CreateAsync(credentialId, microserviceId, cancellationToken);
     }
 
     public async Task<MicroserviceCoreConnectorDto?> UpdateConnectorAsync(
@@ -267,18 +245,16 @@ public class MicroservicesMutation
         long id,
         long? credentialId = null,
         long? microserviceId = null,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, credentialId, microserviceId, dataSource, cancellationToken);
+        return await service.UpdateAsync(id, credentialId, microserviceId, cancellationToken);
     }
 
     public async Task<bool> DeleteConnectorAsync(
         [Service] MicroserviceCoreConnectorService service,
         long id,
-        DataSourceType dataSource = DataSourceType.SqlServer,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(id, dataSource, cancellationToken);
+        return await service.DeleteAsync(id, cancellationToken);
     }
 }

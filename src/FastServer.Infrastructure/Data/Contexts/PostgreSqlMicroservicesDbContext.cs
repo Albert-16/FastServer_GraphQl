@@ -1,3 +1,4 @@
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.Infrastructure.Data.Configurations.Microservices;
 using FastServer.Infrastructure.Data.Seeders;
@@ -6,11 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace FastServer.Infrastructure.Data.Contexts;
 
 /// <summary>
-/// Contexto de base de datos SQL Server - Microservices Management
+/// Contexto exclusivo para gestión de microservicios (BD: FastServer).
+/// NO contiene entidades de logs - ver PostgreSqlLogsDbContext.
 /// </summary>
-public class SqlServerDbContext : DbContext
+public class PostgreSqlMicroservicesDbContext : DbContext, IMicroservicesDbContext
 {
-    public SqlServerDbContext(DbContextOptions<SqlServerDbContext> options) : base(options)
+    public PostgreSqlMicroservicesDbContext(DbContextOptions<PostgreSqlMicroservicesDbContext> options) : base(options)
     {
     }
 

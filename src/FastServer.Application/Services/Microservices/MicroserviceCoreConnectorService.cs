@@ -1,56 +1,51 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar conectores entre microservicios y el core
+/// Servicio para gestionar conectores entre microservicios y el core en PostgreSQL (BD: FastServer)
 /// </summary>
 public class MicroserviceCoreConnectorService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
 
-    public MicroserviceCoreConnectorService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public MicroserviceCoreConnectorService(IMicroservicesDbContext context, IMapper mapper)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
     }
 
     public async Task<MicroserviceCoreConnectorDto?> GetByIdAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceCoreConnector>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<MicroserviceCoreConnectorDto>(entity);
+        var entity = await _context.MicroserviceCoreConnectors
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.MicroserviceCoreConnectorId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<MicroserviceCoreConnectorDto>(entity);
     }
 
     public async Task<List<MicroserviceCoreConnectorDto>> GetByMicroserviceIdAsync(
         long microserviceId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceCoreConnector>();
-        var entities = await repository.FindAsync(c => c.MicroserviceId == microserviceId, cancellationToken);
+        var entities = await _context.MicroserviceCoreConnectors
+            .AsNoTracking()
+            .Where(c => c.MicroserviceId == microserviceId)
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceCoreConnectorDto>>(entities);
     }
 
     public async Task<MicroserviceCoreConnectorDto> CreateAsync(
         long? credentialId,
         long? microserviceId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceCoreConnector>();
-
         var entity = new MicroserviceCoreConnector
         {
             CoreConnectorCredentialId = credentialId,
@@ -59,8 +54,8 @@ public class MicroserviceCoreConnectorService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.MicroserviceCoreConnectors.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<MicroserviceCoreConnectorDto>(entity);
     }
@@ -69,38 +64,31 @@ public class MicroserviceCoreConnectorService
         long id,
         long? credentialId,
         long? microserviceId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceCoreConnector>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.MicroserviceCoreConnectors
+            .FirstOrDefaultAsync(x => x.MicroserviceCoreConnectorId == id, cancellationToken);
         if (entity == null) return null;
 
         if (credentialId.HasValue) entity.CoreConnectorCredentialId = credentialId;
         if (microserviceId.HasValue) entity.MicroserviceId = microserviceId;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<MicroserviceCoreConnectorDto>(entity);
     }
 
     public async Task<bool> DeleteAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceCoreConnector>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.MicroserviceCoreConnectors
+            .FirstOrDefaultAsync(x => x.MicroserviceCoreConnectorId == id, cancellationToken);
         if (entity == null) return false;
 
-        await repository.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.MicroserviceCoreConnectors.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

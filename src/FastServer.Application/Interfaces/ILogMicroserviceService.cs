@@ -1,16 +1,15 @@
 using FastServer.Application.DTOs;
-using FastServer.Domain.Enums;
 
 namespace FastServer.Application.Interfaces;
 
 /// <summary>
-/// Servicio para operaciones de LogMicroservice
+/// Servicio para operaciones de LogMicroservice usando PostgreSQL (BD: FastServer_Logs).
 /// </summary>
 public interface ILogMicroserviceService
 {
-    Task<LogMicroserviceDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default);
-    Task<IEnumerable<LogMicroserviceDto>> GetByLogIdAsync(long logId, DataSourceType? dataSource = null, CancellationToken cancellationToken = default);
-    Task<IEnumerable<LogMicroserviceDto>> SearchByTextAsync(string searchText, DataSourceType? dataSource = null, CancellationToken cancellationToken = default);
-    Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, DataSourceType? dataSource = null, CancellationToken cancellationToken = default);
-    Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default);
+    Task<LogMicroserviceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<LogMicroserviceDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<LogMicroserviceDto>> SearchByTextAsync(string searchText, CancellationToken cancellationToken = default);
+    Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default);
 }

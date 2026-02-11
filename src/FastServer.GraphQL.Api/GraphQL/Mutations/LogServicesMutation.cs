@@ -13,7 +13,7 @@ public class LogServicesMutation
     /// <summary>
     /// Crea un nuevo log de servicios
     /// </summary>
-    [GraphQLDescription("Crea un nuevo log de servicios")]
+    [GraphQLDescription("Crea un nuevo log de servicios en FastServer_Logs (PostgreSQL)")]
     public async Task<LogServicesHeaderDto> CreateLogServicesHeader(
         [Service] ILogServicesHeaderService service,
         [GraphQLDescription("Datos del log a crear")] CreateLogServicesHeaderInput input,
@@ -43,13 +43,13 @@ public class LogServicesMutation
             RequestId = input.RequestId
         };
 
-        return await service.CreateAsync(dto, input.DataSource, cancellationToken);
+        return await service.CreateAsync(dto, cancellationToken);
     }
 
     /// <summary>
     /// Actualiza un log de servicios
     /// </summary>
-    [GraphQLDescription("Actualiza un log de servicios existente")]
+    [GraphQLDescription("Actualiza un log de servicios existente en FastServer_Logs (PostgreSQL)")]
     public async Task<LogServicesHeaderDto> UpdateLogServicesHeader(
         [Service] ILogServicesHeaderService service,
         [GraphQLDescription("Datos a actualizar")] UpdateLogServicesHeaderInput input,
@@ -65,20 +65,19 @@ public class LogServicesMutation
             RequestDuration = input.RequestDuration
         };
 
-        return await service.UpdateAsync(dto, input.DataSource, cancellationToken);
+        return await service.UpdateAsync(dto, cancellationToken);
     }
 
     /// <summary>
     /// Elimina un log de servicios
     /// </summary>
-    [GraphQLDescription("Elimina un log de servicios por su ID")]
+    [GraphQLDescription("Elimina un log de servicios por su ID desde FastServer_Logs (PostgreSQL)")]
     public async Task<bool> DeleteLogServicesHeader(
         [Service] ILogServicesHeaderService service,
         [GraphQLDescription("ID del log a eliminar")] long logId,
-        [GraphQLDescription("Origen de datos")] FastServer.Domain.Enums.DataSourceType? dataSource = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(logId, dataSource, cancellationToken);
+        return await service.DeleteAsync(logId, cancellationToken);
     }
 }
 
@@ -91,7 +90,7 @@ public class LogMicroserviceMutation
     /// <summary>
     /// Crea un nuevo log de microservicio
     /// </summary>
-    [GraphQLDescription("Crea un nuevo log de microservicio")]
+    [GraphQLDescription("Crea un nuevo log de microservicio en FastServer_Logs (PostgreSQL)")]
     public async Task<LogMicroserviceDto> CreateLogMicroservice(
         [Service] ILogMicroserviceService service,
         [GraphQLDescription("Datos del log a crear")] CreateLogMicroserviceInput input,
@@ -105,20 +104,19 @@ public class LogMicroserviceMutation
             LogMicroserviceText = input.LogMicroserviceText
         };
 
-        return await service.CreateAsync(dto, input.DataSource, cancellationToken);
+        return await service.CreateAsync(dto, cancellationToken);
     }
 
     /// <summary>
     /// Elimina un log de microservicio
     /// </summary>
-    [GraphQLDescription("Elimina un log de microservicio por su ID")]
+    [GraphQLDescription("Elimina un log de microservicio por su ID desde FastServer_Logs (PostgreSQL)")]
     public async Task<bool> DeleteLogMicroservice(
         [Service] ILogMicroserviceService service,
         [GraphQLDescription("ID del log a eliminar")] long logId,
-        [GraphQLDescription("Origen de datos")] FastServer.Domain.Enums.DataSourceType? dataSource = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(logId, dataSource, cancellationToken);
+        return await service.DeleteAsync(logId, cancellationToken);
     }
 }
 
@@ -131,7 +129,7 @@ public class LogServicesContentMutation
     /// <summary>
     /// Crea un nuevo contenido de log
     /// </summary>
-    [GraphQLDescription("Crea un nuevo contenido de log de servicios")]
+    [GraphQLDescription("Crea un nuevo contenido de log de servicios en FastServer_Logs (PostgreSQL)")]
     public async Task<LogServicesContentDto> CreateLogServicesContent(
         [Service] ILogServicesContentService service,
         [GraphQLDescription("Datos del contenido a crear")] CreateLogServicesContentInput input,
@@ -146,19 +144,18 @@ public class LogServicesContentMutation
             LogServicesContentText = input.LogServicesContentText
         };
 
-        return await service.CreateAsync(dto, input.DataSource, cancellationToken);
+        return await service.CreateAsync(dto, cancellationToken);
     }
 
     /// <summary>
     /// Elimina un contenido de log
     /// </summary>
-    [GraphQLDescription("Elimina un contenido de log por su ID")]
+    [GraphQLDescription("Elimina un contenido de log por su ID desde FastServer_Logs (PostgreSQL)")]
     public async Task<bool> DeleteLogServicesContent(
         [Service] ILogServicesContentService service,
         [GraphQLDescription("ID del log a eliminar")] long logId,
-        [GraphQLDescription("Origen de datos")] FastServer.Domain.Enums.DataSourceType? dataSource = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.DeleteAsync(logId, dataSource, cancellationToken);
+        return await service.DeleteAsync(logId, cancellationToken);
     }
 }

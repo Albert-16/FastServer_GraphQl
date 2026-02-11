@@ -2,74 +2,68 @@ using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.MicroserviceRegisterEvents;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar registros de microservicios
+/// Servicio para gestionar registros de microservicios en PostgreSQL (BD: FastServer)
 /// </summary>
 public class MicroserviceRegisterService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
     private readonly IMicroserviceRegisterEventPublisher _eventPublisher;
 
     public MicroserviceRegisterService(
-        IDataSourceFactory dataSourceFactory,
+        IMicroservicesDbContext context,
         IMapper mapper,
         IMicroserviceRegisterEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
         _eventPublisher = eventPublisher;
     }
 
     public async Task<MicroserviceRegisterDto?> GetByIdAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<MicroserviceRegisterDto>(entity);
+        var entity = await _context.MicroserviceRegisters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<MicroserviceRegisterDto>(entity);
     }
 
     public async Task<List<MicroserviceRegisterDto>> GetAllAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-        var entities = await repository.GetAllAsync(cancellationToken);
+        var entities = await _context.MicroserviceRegisters
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
 
     public async Task<List<MicroserviceRegisterDto>> GetAllActiveAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-        var entities = await repository.FindAsync(
-            m => m.MicroserviceActive == true && m.MicroserviceDeleted != true,
-            cancellationToken);
+        var entities = await _context.MicroserviceRegisters
+            .AsNoTracking()
+            .Where(m => m.MicroserviceActive == true && m.MicroserviceDeleted != true)
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
 
     public async Task<List<MicroserviceRegisterDto>> GetByClusterIdAsync(
         long clusterId,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-        var entities = await repository.FindAsync(
-            m => m.MicroserviceClusterId == clusterId && m.MicroserviceDeleted != true,
-            cancellationToken);
+        var entities = await _context.MicroserviceRegisters
+            .AsNoTracking()
+            .Where(m => m.MicroserviceClusterId == clusterId && m.MicroserviceDeleted != true)
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
 
@@ -78,12 +72,8 @@ public class MicroserviceRegisterService
         string? name,
         bool active,
         bool coreConnection,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-
         var entity = new MicroserviceRegister
         {
             MicroserviceClusterId = clusterId,
@@ -95,8 +85,8 @@ public class MicroserviceRegisterService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.MicroserviceRegisters.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<MicroserviceRegisterDto>(entity);
 
@@ -123,13 +113,10 @@ public class MicroserviceRegisterService
         string? name,
         bool? active,
         bool? coreConnection,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.MicroserviceRegisters
+            .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
         if (entity == null) return null;
 
         if (clusterId.HasValue) entity.MicroserviceClusterId = clusterId;
@@ -138,8 +125,7 @@ public class MicroserviceRegisterService
         if (coreConnection.HasValue) entity.MicroserviceCoreConnection = coreConnection.Value;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         var result = _mapper.Map<MicroserviceRegisterDto>(entity);
 
@@ -162,21 +148,17 @@ public class MicroserviceRegisterService
 
     public async Task<bool> SoftDeleteAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.MicroserviceRegisters
+            .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
         if (entity == null) return false;
 
         entity.MicroserviceDeleted = true;
         entity.DeleteAt = DateTime.UtcNow;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Crear evento con los campos correctos
         var deletedEvent = new MicroserviceRegisterDeletedEvent
@@ -193,20 +175,16 @@ public class MicroserviceRegisterService
     public async Task<bool> SetActiveAsync(
         long id,
         bool active,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<MicroserviceRegister>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.MicroserviceRegisters
+            .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
         if (entity == null) return false;
 
         entity.MicroserviceActive = active;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

@@ -1,3 +1,4 @@
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
 using FastServer.Infrastructure.Data.Configurations;
 using FastServer.Infrastructure.Data.Seeders;
@@ -6,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 namespace FastServer.Infrastructure.Data.Contexts;
 
 /// <summary>
-/// Contexto de base de datos PostgreSQL
+/// Contexto exclusivo para logs de servicios (BD: FastServer_Logs).
+/// NO contiene entidades de microservicios - ver PostgreSqlMicroservicesDbContext.
 /// </summary>
-public class PostgreSqlDbContext : DbContext
+public class PostgreSqlLogsDbContext : DbContext, ILogsDbContext
 {
 
-    public PostgreSqlDbContext(DbContextOptions<PostgreSqlDbContext> options) : base(options)
+    public PostgreSqlLogsDbContext(DbContextOptions<PostgreSqlLogsDbContext> options) : base(options)
     {
     }
 

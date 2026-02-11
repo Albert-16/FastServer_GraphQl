@@ -6,55 +6,55 @@ using Microsoft.Extensions.Configuration;
 namespace FastServer.Infrastructure.Data;
 
 /// <summary>
-/// Factory para crear el DbContext de PostgreSQL en tiempo de diseño (migraciones)
+/// Factory para crear el DbContext de PostgreSQL Logs en tiempo de diseño (migraciones)
+/// BD: FastServer_Logs
 /// </summary>
-public class PostgreSqlDbContextFactory : IDesignTimeDbContextFactory<PostgreSqlDbContext>
+public class PostgreSqlLogsDbContextFactory : IDesignTimeDbContextFactory<PostgreSqlLogsDbContext>
 {
-    public PostgreSqlDbContext CreateDbContext(string[] args)
+    public PostgreSqlLogsDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true)
-           // .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("PostgreSQL")
-            ?? "Host=localhost;Database=FastServerLogs;Username=postgres;Password=Souma";
+        var connectionString = configuration.GetConnectionString("PostgreSQLLogs")
+            ?? "Host=localhost;Port=5432;Database=FastServer_Logs;Username=postgres;Password=Souma";
 
-        var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlLogsDbContext>();
         optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
         {
             npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "public");
         });
 
-        return new PostgreSqlDbContext(optionsBuilder.Options);
+        return new PostgreSqlLogsDbContext(optionsBuilder.Options);
     }
 }
 
 /// <summary>
-/// Factory para crear el DbContext de SQL Server en tiempo de diseño (migraciones)
+/// Factory para crear el DbContext de PostgreSQL Microservices en tiempo de diseño (migraciones)
+/// BD: FastServer
 /// </summary>
-public class SqlServerDbContextFactory : IDesignTimeDbContextFactory<SqlServerDbContext>
+public class PostgreSqlMicroservicesDbContextFactory : IDesignTimeDbContextFactory<PostgreSqlMicroservicesDbContext>
 {
-    public SqlServerDbContext CreateDbContext(string[] args)
+    public PostgreSqlMicroservicesDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true)
-          //  .AddJsonFile("appsettings.Development.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("SqlServer")
-            ?? "Server=DESKTOP-9C0B00C\\SQLEXPRESS;Database=FastServerLogs_Dev;Integrated Security=True;TrustServerCertificate=True";
+        var connectionString = configuration.GetConnectionString("PostgreSQLMicroservices")
+            ?? "Host=localhost;Port=5432;Database=FastServer;Username=postgres;Password=Souma";
 
-        var optionsBuilder = new DbContextOptionsBuilder<SqlServerDbContext>();
-        optionsBuilder.UseSqlServer(connectionString, sqlOptions =>
+        var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlMicroservicesDbContext>();
+        optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
         {
-            sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "dbo");
+            npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "public");
         });
 
-        return new SqlServerDbContext(optionsBuilder.Options);
+        return new PostgreSqlMicroservicesDbContext(optionsBuilder.Options);
     }
 }

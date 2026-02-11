@@ -1,54 +1,48 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
+using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities.Microservices;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services.Microservices;
 
 /// <summary>
-/// Servicio para gestionar tipos de eventos
+/// Servicio para gestionar tipos de eventos en PostgreSQL (BD: FastServer)
 /// </summary>
 public class EventTypeService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
 
-    public EventTypeService(IDataSourceFactory dataSourceFactory, IMapper mapper)
+    public EventTypeService(IMicroservicesDbContext context, IMapper mapper)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
     }
 
     public async Task<EventTypeDto?> GetByIdAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<EventType>();
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
-        return _mapper.Map<EventTypeDto>(entity);
+        var entity = await _context.EventTypes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.EventTypeId == id, cancellationToken);
+        return entity == null ? null : _mapper.Map<EventTypeDto>(entity);
     }
 
     public async Task<List<EventTypeDto>> GetAllAsync(
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<EventType>();
-        var entities = await repository.GetAllAsync(cancellationToken);
+        var entities = await _context.EventTypes
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
         return _mapper.Map<List<EventTypeDto>>(entities);
     }
 
     public async Task<EventTypeDto> CreateAsync(
         string description,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<EventType>();
-
         var entity = new EventType
         {
             EventTypeDescription = description,
@@ -56,8 +50,8 @@ public class EventTypeService
             ModifyAt = DateTime.UtcNow
         };
 
-        await repository.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.EventTypes.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<EventTypeDto>(entity);
     }
@@ -65,37 +59,30 @@ public class EventTypeService
     public async Task<EventTypeDto?> UpdateAsync(
         long id,
         string description,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<EventType>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.EventTypes
+            .FirstOrDefaultAsync(x => x.EventTypeId == id, cancellationToken);
         if (entity == null) return null;
 
         entity.EventTypeDescription = description;
         entity.ModifyAt = DateTime.UtcNow;
 
-        await repository.UpdateAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<EventTypeDto>(entity);
     }
 
     public async Task<bool> DeleteAsync(
         long id,
-        DataSourceType dataSourceType,
         CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSourceType);
-        var repository = uow.GetRepository<EventType>();
-
-        var entity = await repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.EventTypes
+            .FirstOrDefaultAsync(x => x.EventTypeId == id, cancellationToken);
         if (entity == null) return false;
 
-        await repository.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.EventTypes.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

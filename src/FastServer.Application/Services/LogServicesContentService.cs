@@ -4,63 +4,74 @@ using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.LogServicesContentEvents;
 using FastServer.Application.Interfaces;
 using FastServer.Domain.Entities;
-using FastServer.Domain.Enums;
-using FastServer.Domain.Interfaces;
-using FastServer.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace FastServer.Application.Services;
 
 /// <summary>
-/// Implementación del servicio de LogServicesContent
+/// Servicio de aplicación para gestionar contenidos de logs (LogServicesContent).
+/// Proporciona operaciones CRUD y consultas especializadas usando PostgreSQL (BD: FastServer_Logs).
 /// </summary>
 public class LogServicesContentService : ILogServicesContentService
 {
-    private readonly IDataSourceFactory _dataSourceFactory;
+    private readonly ILogsDbContext _context;
     private readonly IMapper _mapper;
-    private readonly DataSourceType _defaultDataSource;
     private readonly ILogServicesContentEventPublisher _eventPublisher;
 
+    /// <summary>
+    /// Inicializa una nueva instancia del servicio LogServicesContentService.
+    /// </summary>
+    /// <param name="context">Contexto de base de datos PostgreSQL para logs (FastServer_Logs)</param>
+    /// <param name="mapper">Mapeador para convertir entre entidades y DTOs</param>
+    /// <param name="eventPublisher">Publisher de eventos para suscripciones GraphQL</param>
     public LogServicesContentService(
-        IDataSourceFactory dataSourceFactory,
+        ILogsDbContext context,
         IMapper mapper,
-        DataSourceSettings dataSourceSettings,
         ILogServicesContentEventPublisher eventPublisher)
     {
-        _dataSourceFactory = dataSourceFactory;
+        _context = context;
         _mapper = mapper;
-        _defaultDataSource = dataSourceSettings.DefaultDataSource;
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<LogServicesContentDto?> GetByIdAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesContentDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogServicesContents.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.LogServicesContents
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
+
         return entity == null ? null : _mapper.Map<LogServicesContentDto>(entity);
     }
 
-    public async Task<IEnumerable<LogServicesContentDto>> GetByLogIdAsync(long logId, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LogServicesContentDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entities = await uow.LogServicesContents.GetByLogIdAsync(logId, cancellationToken);
+        var entities = await _context.LogServicesContents
+            .AsNoTracking()
+            .Where(x => x.LogId == logId)
+            .OrderBy(x => x.LogServicesDate)
+            .ToListAsync(cancellationToken);
+
         return _mapper.Map<IEnumerable<LogServicesContentDto>>(entities);
     }
 
-    public async Task<IEnumerable<LogServicesContentDto>> SearchByContentAsync(string searchText, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<LogServicesContentDto>> SearchByContentAsync(string searchText, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entities = await uow.LogServicesContents.SearchByContentTextAsync(searchText, cancellationToken);
+        var entities = await _context.LogServicesContents
+            .AsNoTracking()
+            .Where(x => x.LogServicesContentText != null && x.LogServicesContentText.Contains(searchText))
+            .OrderByDescending(x => x.LogServicesDate)
+            .ToListAsync(cancellationToken);
+
         return _mapper.Map<IEnumerable<LogServicesContentDto>>(entities);
     }
 
-    public async Task<LogServicesContentDto> CreateAsync(CreateLogServicesContentDto dto, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<LogServicesContentDto> CreateAsync(CreateLogServicesContentDto dto, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
         var entity = _mapper.Map<LogServicesContent>(dto);
-        var created = await uow.LogServicesContents.AddAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        await _context.LogServicesContents.AddAsync(entity, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        var result = _mapper.Map<LogServicesContentDto>(created);
+        var result = _mapper.Map<LogServicesContentDto>(entity);
 
         // Crear evento con los campos correctos
         var createdEvent = new LogServicesContentCreatedEvent
@@ -77,16 +88,16 @@ public class LogServicesContentService : ILogServicesContentService
         return result;
     }
 
-    public async Task<bool> DeleteAsync(long id, DataSourceType? dataSource = null, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        using var uow = _dataSourceFactory.CreateUnitOfWork(dataSource ?? _defaultDataSource);
-        var entity = await uow.LogServicesContents.GetByIdAsync(id, cancellationToken);
+        var entity = await _context.LogServicesContents
+            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
 
         if (entity == null)
             return false;
 
-        await uow.LogServicesContents.DeleteAsync(entity, cancellationToken);
-        await uow.SaveChangesAsync(cancellationToken);
+        _context.LogServicesContents.Remove(entity);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Crear evento con los campos correctos
         var deletedEvent = new LogServicesContentDeletedEvent
