@@ -530,7 +530,6 @@ La migración está **completamente funcional** y lista para:
 
 3. **Actualizar Proyectos Auxiliares**
    - FastServer.Tests (actualizar mocks)
-   - FastServer.DbMigrator (actualizar referencias)
 
 ---
 

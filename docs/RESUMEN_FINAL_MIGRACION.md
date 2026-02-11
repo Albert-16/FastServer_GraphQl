@@ -183,6 +183,15 @@ FastServer API
 - ❌ `Data/Contexts/SqlServerDbContext.cs`
 - ❌ `Data/Migrations/SqlServer/` (carpeta completa)
 
+**Tools (carpeta completa eliminada):**
+- ❌ `tools/FastServer.DbMigrator/` - Proyecto de migraciones automáticas (obsoleto)
+- ❌ `tools/FastServer.DataMigrator/` - Proyecto de migración SQL Server → PostgreSQL (obsoleto)
+- ❌ `tools/create-indexes.ps1` - Script PowerShell de índices (obsoleto)
+- ❌ `tools/create-postgresql-indexes.sql` - Script SQL de índices (obsoleto)
+- ❌ `tools/migration-sqlserver-to-postgres.md` - Guía de migración (obsoleto)
+
+**Nota:** Las migraciones ahora se ejecutan manualmente con `dotnet ef database update` y los índices están definidos en EntityConfigurations.
+
 ---
 
 ## ✅ Pruebas Realizadas
@@ -382,16 +391,12 @@ Se crearon **5 documentos completos** para el banco:
    - Actualizar tests unitarios para nueva arquitectura
    - Agregar tests de integración
 
-2. **Actualizar FastServer.DbMigrator**
-   - Actualizar referencias a contextos renombrados
-   - Eliminar lógica de SQL Server
-
-3. **Performance Adicional**
+2. **Performance Adicional**
    - Implementar caching con Redis
    - Agregar índices compuestos adicionales
    - Configurar pgBouncer para connection pooling a nivel PostgreSQL
 
-4. **Monitoreo**
+3. **Monitoreo**
    - Integrar Application Insights / Prometheus
    - Configurar alertas automáticas
    - Dashboard de métricas en Grafana

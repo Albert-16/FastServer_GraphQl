@@ -228,10 +228,9 @@ psql -h localhost -U postgres
 
 Los siguientes proyectos tienen errores pero **NO afectan la ejecución de la API**:
 
-1. **FastServer.DbMigrator** - Referencias obsoletas a PostgreSqlDbContext y SqlServerDbContext
-2. **FastServer.Tests** - Referencias obsoletas a IDataSourceFactory e IUnitOfWork
+1. **FastServer.Tests** - Referencias obsoletas a IDataSourceFactory e IUnitOfWork
 
-Estos proyectos se pueden actualizar posteriormente si son necesarios.
+Este proyecto se puede actualizar posteriormente si es necesario.
 
 ### Archivos Eliminados
 
@@ -243,6 +242,7 @@ Estos proyectos se pueden actualizar posteriormente si son necesarios.
 - ❌ `DataSourceSettings.cs`
 - ❌ `IDataSourceFactory.cs`
 - ❌ `IUnitOfWork.cs`
+- ❌ `tools/` (carpeta completa con DbMigrator, DataMigrator y scripts obsoletos)
 
 ---
 
@@ -253,10 +253,6 @@ Estos proyectos se pueden actualizar posteriormente si son necesarios.
 1. **Actualizar FastServer.Tests**
    - Reemplazar IDataSourceFactory con ILogsDbContext/IMicroservicesDbContext
    - Actualizar mocks para la nueva arquitectura
-
-2. **Actualizar FastServer.DbMigrator**
-   - Cambiar referencias a PostgreSqlLogsDbContext y PostgreSqlMicroservicesDbContext
-   - Eliminar lógica de SQL Server
 
 3. **Optimizaciones Adicionales**
    - Implementar índices compuestos en PostgreSQL
