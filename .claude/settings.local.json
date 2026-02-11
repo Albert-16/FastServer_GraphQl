@@ -58,7 +58,8 @@
       "Bash(python3:*)",
       "Bash(PGPASSWORD=Souma psql:*)",
       "Bash(pkill:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(ls:*)"
     ]
   }
 }
