@@ -54,7 +54,11 @@
       "Bash(dotnet ef database list:*)",
       "Bash(move PostgreSqlDbContext.cs PostgreSqlLogsDbContext.cs)",
       "Bash(dotnet remove:*)",
-      "Bash(Select-String -Pattern \"error|warning|succeeded|failed\" -Context 0,2)"
+      "Bash(Select-String -Pattern \"error|warning|succeeded|failed\" -Context 0,2)",
+      "Bash(python3:*)",
+      "Bash(PGPASSWORD=Souma psql:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)"
     ]
   }
 }
