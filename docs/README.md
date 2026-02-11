@@ -20,6 +20,7 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 |-----------|-------------|-----------|
 | **[🎯 Resumen de Migración](RESUMEN_FINAL_MIGRACION.md)** | Resumen ejecutivo de cambios arquitectónicos | Todos |
 | **[🔄 Migración PostgreSQL](MIGRACION_POSTGRESQL_COMPLETADA.md)** | Detalles técnicos de la migración completa | Desarrolladores |
+| **[⚡ PostgreSQL Performance](PostgreSQL_Performance.md)** | Monitoreo, optimización y métricas de PostgreSQL | DBA/DevOps |
 
 ---
 
@@ -42,6 +43,7 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 
 **🔧 DevOps/SysAdmin:**
 - [INSTRUCCIONES_INSTALACION_BANCO.md](INSTRUCCIONES_INSTALACION_BANCO.md) - Instalación completa
+- [PostgreSQL_Performance.md](PostgreSQL_Performance.md) - Monitoreo y optimización de BD
 - Sección de "Troubleshooting" en cada documento
 
 **🧪 QA/Tester:**
@@ -147,6 +149,28 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 
 ---
 
+### ⚡ PostgreSQL_Performance.md
+
+**Qué incluye:**
+- ✅ Configuración de pg_stat_statements y auto_explain
+- ✅ 17 queries de monitoreo (queries lentas, índices sin usar, bloat, etc.)
+- ✅ Optimización de VACUUM y autovacuum
+- ✅ PgBouncer para connection pooling
+- ✅ Configuración óptima de postgresql.conf
+- ✅ Scripts de automatización y checklists
+- ✅ Integración con Grafana/Prometheus
+
+**Cuándo usarlo:**
+- Identificar queries lentas en producción
+- Detectar índices no utilizados
+- Monitorear salud de la base de datos
+- Optimizar rendimiento de PostgreSQL
+- Automatizar tareas de mantenimiento
+
+**Tiempo estimado:** 40 minutos lectura + configuración
+
+---
+
 ## 🎯 Flujos de Trabajo
 
 ### 🆕 Nueva Instalación
@@ -174,6 +198,17 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 1. Revisar sección "Troubleshooting" en [INSTRUCCIONES_INSTALACION_BANCO.md](INSTRUCCIONES_INSTALACION_BANCO.md)
 2. Consultar [MIGRACION_POSTGRESQL_COMPLETADA.md](MIGRACION_POSTGRESQL_COMPLETADA.md) para detalles técnicos
 3. Si es sobre subscripciones: [GUIA_PRUEBAS_SUBSCRIPCIONES.md](GUIA_PRUEBAS_SUBSCRIPCIONES.md)
+4. Si hay problemas de performance: [PostgreSQL_Performance.md](PostgreSQL_Performance.md)
+
+---
+
+### 🗄️ Optimización de Base de Datos
+
+1. Leer [PostgreSQL_Performance.md](PostgreSQL_Performance.md) secciones 1-3 (30 min)
+2. Configurar pg_stat_statements en servidor PostgreSQL
+3. Ejecutar queries de monitoreo semanalmente
+4. Revisar índices sin usar y queries lentas
+5. Implementar checklists de mantenimiento mensual/trimestral
 
 ---
 
@@ -181,11 +216,12 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 
 | Métrica | Valor |
 |---------|-------|
-| **Documentos generados** | 5 |
-| **Páginas totales** | ~150 |
-| **Ejemplos de código** | 30+ |
+| **Documentos generados** | 6 |
+| **Páginas totales** | ~250 |
+| **Ejemplos de código** | 50+ |
 | **Pruebas documentadas** | 10 |
 | **Casos de uso** | 15+ |
+| **Queries de monitoreo** | 17 |
 | **Screenshots/Diagramas** | 0 (puro texto) |
 
 ---
@@ -207,6 +243,9 @@ Documentación completa del proyecto FastServer - Sistema de gestión de logs y 
 - [ ] Revisado checklist en INSTRUCCIONES_INSTALACION_BANCO.md
 - [ ] Configurado backup según INSTRUCCIONES_INSTALACION_BANCO.md
 - [ ] Validadas métricas de RESUMEN_FINAL_MIGRACION.md
+- [ ] Configurado pg_stat_statements según PostgreSQL_Performance.md
+- [ ] Implementado monitoreo de queries lentas
+- [ ] Revisados índices sin usar
 
 ---
 
