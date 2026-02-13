@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet ef database update:*)",
+      "Bash(del \"C:\\\\Users\\\\MSI MAG\\\\FastServer\\\\src\\\\FastServer.Infrastructure\\\\Data\\\\Migrations\\\\PostgreSqlLogs\\\\PostgreSqlDbContextModelSnapshot.cs\")",
+      "Bash(dotnet test:*)",
+      "Bash(timeout 15 dotnet run:*)"
+    ]
+  }
+}

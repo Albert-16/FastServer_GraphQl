@@ -151,7 +151,7 @@ public class BulkCreateLogServicesHeaderMutationTests
                     LogState = LogState.Completed,
                     LogMethodUrl = "/api/users",
                     LogMethodName = "GetUsers",
-                    LogFsId = 42,
+                    LogFsId = Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
                     MethodDescription = "Obtiene usuarios",
                     TciIpPort = "192.168.1.1:8080",
                     IpFs = "10.0.0.1",
@@ -186,7 +186,7 @@ public class BulkCreateLogServicesHeaderMutationTests
         capturedDto.LogState.Should().Be(LogState.Completed);
         capturedDto.LogMethodUrl.Should().Be("/api/users");
         capturedDto.LogMethodName.Should().Be("GetUsers");
-        capturedDto.LogFsId.Should().Be(42);
+        capturedDto.LogFsId.Should().Be(Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"));
         capturedDto.MicroserviceName.Should().Be("user-service");
         capturedDto.HttpMethod.Should().Be("GET");
         capturedDto.TransactionId.Should().Be("txn-001");
@@ -343,7 +343,7 @@ public class BulkCreateLogServicesHeaderServiceTests : IDisposable
             new()
             {
                 LogDateIn = now, LogDateOut = now.AddSeconds(5), LogState = LogState.Completed,
-                LogMethodUrl = "/api/users/list", LogMethodName = "ListUsers", LogFsId = 99,
+                LogMethodUrl = "/api/users/list", LogMethodName = "ListUsers", LogFsId = Guid.Parse("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
                 MicroserviceName = "user-management", HttpMethod = "GET",
                 TransactionId = "txn-abc-123", UserId = "admin-001", RequestDuration = 250, RequestId = 12345
             }

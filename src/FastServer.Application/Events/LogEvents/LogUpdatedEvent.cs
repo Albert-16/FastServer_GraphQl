@@ -13,7 +13,7 @@ public class LogUpdatedEvent
     public LogState LogState { get; set; }
     public string LogMethodUrl { get; set; } = string.Empty;
     public string? LogMethodName { get; set; }
-    public long? LogFsId { get; set; }
+    public Guid? LogFsId { get; set; }
     public string? MethodDescription { get; set; }
     public string? TciIpPort { get; set; }
     public string? ErrorCode { get; set; }

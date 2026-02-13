@@ -13,7 +13,7 @@ public record LogServicesHeaderDto
     public LogState LogState { get; init; }
     public string LogMethodUrl { get; init; } = string.Empty;
     public string? LogMethodName { get; init; }
-    public long? LogFsId { get; init; }
+    public Guid? LogFsId { get; init; }
     public string? MethodDescription { get; init; }
     public string? TciIpPort { get; init; }
     public string? ErrorCode { get; init; }
@@ -40,7 +40,7 @@ public record CreateLogServicesHeaderDto
     public LogState LogState { get; init; }
     public string LogMethodUrl { get; init; } = string.Empty;
     public string? LogMethodName { get; init; }
-    public long? LogFsId { get; init; }
+    public Guid? LogFsId { get; init; }
     public string? MethodDescription { get; init; }
     public string? TciIpPort { get; init; }
     public string? ErrorCode { get; init; }

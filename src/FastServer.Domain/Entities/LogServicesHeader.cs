@@ -35,7 +35,7 @@ public class LogServicesHeader : BaseEntity
     /// <summary>
     /// ID de FastServer
     /// </summary>
-    public long? LogFsId { get; set; }
+    public Guid? LogFsId { get; set; }
 
     /// <summary>
     /// Descripción del método

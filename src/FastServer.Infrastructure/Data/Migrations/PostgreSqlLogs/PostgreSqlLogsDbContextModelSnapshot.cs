@@ -248,8 +248,8 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("fastserver_log_date_out");
 
-                    b.Property<long?>("LogFsId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("LogFsId")
+                        .HasColumnType("uuid")
                         .HasColumnName("fastserver_log_fs_id");
 
                     b.Property<string>("LogMethodName")
@@ -408,8 +408,8 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("fastserver_log_date_out");
 
-                    b.Property<long?>("LogFsId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("LogFsId")
+                        .HasColumnType("uuid")
                         .HasColumnName("fastserver_log_fs_id");
 
                     b.Property<string>("LogMethodName")
