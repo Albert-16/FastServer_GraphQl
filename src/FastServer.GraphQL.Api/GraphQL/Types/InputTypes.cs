@@ -66,6 +66,24 @@ public class CreateLogServicesContentInput
 }
 
 /// <summary>
+/// Input para inserción masiva de LogServicesHeader
+/// </summary>
+public class BulkCreateLogServicesHeaderInput
+{
+    [GraphQLDescription("Lista de logs de servicios a crear (máximo 1000)")]
+    public List<CreateLogServicesHeaderInput> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Input para inserción masiva de LogMicroservice
+/// </summary>
+public class BulkCreateLogMicroserviceInput
+{
+    [GraphQLDescription("Lista de logs de microservicio a crear (máximo 1000)")]
+    public List<CreateLogMicroserviceInput> Items { get; set; } = new();
+}
+
+/// <summary>
 /// Input para filtrar logs
 /// </summary>
 public class LogFilterInput
@@ -143,5 +161,23 @@ public class PaginationInputType : InputObjectType<PaginationInput>
     {
         descriptor.Name("PaginationInput");
         descriptor.Description("Input para paginación");
+    }
+}
+
+public class BulkCreateLogServicesHeaderInputType : InputObjectType<BulkCreateLogServicesHeaderInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkCreateLogServicesHeaderInput> descriptor)
+    {
+        descriptor.Name("BulkCreateLogServicesHeaderInput");
+        descriptor.Description("Input para inserción masiva de logs de servicios");
+    }
+}
+
+public class BulkCreateLogMicroserviceInputType : InputObjectType<BulkCreateLogMicroserviceInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkCreateLogMicroserviceInput> descriptor)
+    {
+        descriptor.Name("BulkCreateLogMicroserviceInput");
+        descriptor.Description("Input para inserción masiva de logs de microservicio");
     }
 }

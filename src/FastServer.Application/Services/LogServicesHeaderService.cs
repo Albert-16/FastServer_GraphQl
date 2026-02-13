@@ -141,6 +141,158 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         };
     }
 
+    public async Task<BulkInsertResultDto<LogServicesHeaderDto>> CreateBulkAsync(
+        IEnumerable<CreateLogServicesHeaderDto> dtos,
+        CancellationToken cancellationToken = default)
+    {
+        var dtoList = dtos.ToList();
+
+        if (dtoList.Count == 0)
+        {
+            return new BulkInsertResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = 0,
+                TotalInserted = 0,
+                Success = true
+            };
+        }
+
+        if (dtoList.Count > 1000)
+        {
+            return new BulkInsertResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                Success = false,
+                ErrorMessage = "El límite máximo por lote es de 1000 registros."
+            };
+        }
+
+        // Validar cada registro y separar válidos de inválidos
+        var validDtos = new List<CreateLogServicesHeaderDto>();
+        var errors = new List<BulkInsertError>();
+
+        for (int i = 0; i < dtoList.Count; i++)
+        {
+            var dto = dtoList[i];
+            var validationError = ValidateLogServicesHeader(dto);
+            if (validationError != null)
+            {
+                errors.Add(new BulkInsertError
+                {
+                    Index = i,
+                    ErrorMessage = validationError,
+                    FailedItem = dto
+                });
+            }
+            else
+            {
+                validDtos.Add(dto);
+            }
+        }
+
+        // Si no hay registros válidos, retornar solo los errores
+        if (validDtos.Count == 0)
+        {
+            return new BulkInsertResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                TotalFailed = errors.Count,
+                Success = false,
+                ErrorMessage = "Ningún registro pasó la validación.",
+                Errors = errors
+            };
+        }
+
+        var entities = _mapper.Map<List<LogServicesHeader>>(validDtos);
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        try
+        {
+            var results = await strategy.ExecuteAsync(async ct =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync(ct);
+                await _context.LogServicesHeaders.AddRangeAsync(entities, ct);
+                await _context.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+                return _mapper.Map<List<LogServicesHeaderDto>>(entities);
+            }, cancellationToken);
+
+            // Publicar eventos en background (fire-and-forget)
+            _ = Task.Run(async () =>
+            {
+                foreach (var entity in entities)
+                {
+                    try
+                    {
+                        await _eventPublisher.PublishLogCreatedAsync(new LogCreatedEvent
+                        {
+                            LogId = entity.LogId,
+                            LogDateIn = entity.LogDateIn,
+                            LogDateOut = entity.LogDateOut,
+                            LogState = entity.LogState,
+                            LogMethodUrl = entity.LogMethodUrl,
+                            LogMethodName = entity.LogMethodName,
+                            LogFsId = entity.LogFsId,
+                            MethodDescription = entity.MethodDescription,
+                            TciIpPort = entity.TciIpPort,
+                            ErrorCode = entity.ErrorCode,
+                            ErrorDescription = entity.ErrorDescription,
+                            IpFs = entity.IpFs,
+                            TypeProcess = entity.TypeProcess,
+                            LogNodo = entity.LogNodo,
+                            HttpMethod = entity.HttpMethod,
+                            MicroserviceName = entity.MicroserviceName,
+                            RequestDuration = entity.RequestDuration,
+                            TransactionId = entity.TransactionId,
+                            UserId = entity.UserId,
+                            SessionId = entity.SessionId,
+                            RequestId = entity.RequestId,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch { /* Log silencioso - no bloquea respuesta */ }
+                }
+            }, CancellationToken.None);
+
+            return new BulkInsertResultDto<LogServicesHeaderDto>
+            {
+                InsertedItems = results,
+                TotalRequested = dtoList.Count,
+                TotalInserted = results.Count,
+                TotalFailed = errors.Count,
+                Success = true,
+                Errors = errors
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BulkInsertResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                TotalFailed = dtoList.Count,
+                Success = false,
+                ErrorMessage = ex.Message,
+                Errors = errors
+            };
+        }
+    }
+
+    private static string? ValidateLogServicesHeader(CreateLogServicesHeaderDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.LogMethodUrl))
+            return "LogMethodUrl es requerido.";
+        if (dto.LogDateIn == default)
+            return "LogDateIn es requerido.";
+        if (dto.LogDateOut == default)
+            return "LogDateOut es requerido.";
+        if (dto.LogDateOut < dto.LogDateIn)
+            return "LogDateOut no puede ser anterior a LogDateIn.";
+        return null;
+    }
+
     public async Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, CancellationToken cancellationToken = default)
     {
         var entity = _mapper.Map<LogServicesHeader>(dto);

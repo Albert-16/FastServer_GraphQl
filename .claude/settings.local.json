@@ -61,5 +61,6 @@
       "Bash(kill:*)",
       "Bash(ls:*)"
     ]
-  }
+  },
+  "outputStyle": "Learning"
 }

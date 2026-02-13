@@ -1,5 +1,6 @@
 using FastServer.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace FastServer.Application.Interfaces;
 
@@ -16,5 +17,6 @@ public interface ILogsDbContext
     DbSet<LogMicroserviceHistorico> LogMicroservicesHistorico { get; }
     DbSet<LogServicesContentHistorico> LogServicesContentsHistorico { get; }
 
+    DatabaseFacade Database { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -47,6 +47,42 @@ public class LogServicesMutation
     }
 
     /// <summary>
+    /// Crea múltiples logs de servicios en una sola operación
+    /// </summary>
+    [GraphQLDescription("Crea múltiples logs de servicios en una sola operación atómica en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkInsertResultDto<LogServicesHeaderDto>> BulkCreateLogServicesHeader(
+        [Service] ILogServicesHeaderService service,
+        [GraphQLDescription("Datos de los logs a crear")] BulkCreateLogServicesHeaderInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new CreateLogServicesHeaderDto
+        {
+            LogDateIn = i.LogDateIn,
+            LogDateOut = i.LogDateOut,
+            LogState = i.LogState,
+            LogMethodUrl = i.LogMethodUrl,
+            LogMethodName = i.LogMethodName,
+            LogFsId = i.LogFsId,
+            MethodDescription = i.MethodDescription,
+            TciIpPort = i.TciIpPort,
+            ErrorCode = i.ErrorCode,
+            ErrorDescription = i.ErrorDescription,
+            IpFs = i.IpFs,
+            TypeProcess = i.TypeProcess,
+            LogNodo = i.LogNodo,
+            HttpMethod = i.HttpMethod,
+            MicroserviceName = i.MicroserviceName,
+            RequestDuration = i.RequestDuration,
+            TransactionId = i.TransactionId,
+            UserId = i.UserId,
+            SessionId = i.SessionId,
+            RequestId = i.RequestId
+        });
+
+        return await service.CreateBulkAsync(dtos, cancellationToken);
+    }
+
+    /// <summary>
     /// Actualiza un log de servicios
     /// </summary>
     [GraphQLDescription("Actualiza un log de servicios existente en FastServer_Logs (PostgreSQL)")]
@@ -105,6 +141,26 @@ public class LogMicroserviceMutation
         };
 
         return await service.CreateAsync(dto, cancellationToken);
+    }
+
+    /// <summary>
+    /// Crea múltiples logs de microservicio en una sola operación
+    /// </summary>
+    [GraphQLDescription("Crea múltiples logs de microservicio en una sola operación en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkInsertResultDto<LogMicroserviceDto>> BulkCreateLogMicroservice(
+        [Service] ILogMicroserviceService service,
+        [GraphQLDescription("Datos de los logs a crear")] BulkCreateLogMicroserviceInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new CreateLogMicroserviceDto
+        {
+            LogId = i.LogId,
+            LogDate = i.LogDate,
+            LogLevel = i.LogLevel,
+            LogMicroserviceText = i.LogMicroserviceText
+        });
+
+        return await service.CreateBulkAsync(dtos, cancellationToken);
     }
 
     /// <summary>

@@ -65,6 +65,134 @@ public class LogMicroserviceService : ILogMicroserviceService
         return _mapper.Map<IEnumerable<LogMicroserviceDto>>(entities);
     }
 
+    public async Task<BulkInsertResultDto<LogMicroserviceDto>> CreateBulkAsync(
+        IEnumerable<CreateLogMicroserviceDto> dtos,
+        CancellationToken cancellationToken = default)
+    {
+        var dtoList = dtos.ToList();
+
+        if (dtoList.Count == 0)
+        {
+            return new BulkInsertResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = 0,
+                TotalInserted = 0,
+                Success = true
+            };
+        }
+
+        if (dtoList.Count > 1000)
+        {
+            return new BulkInsertResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                Success = false,
+                ErrorMessage = "El límite máximo por lote es de 1000 registros."
+            };
+        }
+
+        // Validar cada registro y separar válidos de inválidos
+        var validDtos = new List<CreateLogMicroserviceDto>();
+        var errors = new List<BulkInsertError>();
+
+        for (int i = 0; i < dtoList.Count; i++)
+        {
+            var dto = dtoList[i];
+            var validationError = ValidateLogMicroservice(dto);
+            if (validationError != null)
+            {
+                errors.Add(new BulkInsertError
+                {
+                    Index = i,
+                    ErrorMessage = validationError,
+                    FailedItem = dto
+                });
+            }
+            else
+            {
+                validDtos.Add(dto);
+            }
+        }
+
+        if (validDtos.Count == 0)
+        {
+            return new BulkInsertResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                TotalFailed = errors.Count,
+                Success = false,
+                ErrorMessage = "Ningún registro pasó la validación.",
+                Errors = errors
+            };
+        }
+
+        var entities = _mapper.Map<List<LogMicroservice>>(validDtos);
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        try
+        {
+            var results = await strategy.ExecuteAsync(async ct =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync(ct);
+                await _context.LogMicroservices.AddRangeAsync(entities, ct);
+                await _context.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+                return _mapper.Map<List<LogMicroserviceDto>>(entities);
+            }, cancellationToken);
+
+            // Publicar eventos en background (fire-and-forget)
+            _ = Task.Run(async () =>
+            {
+                foreach (var result in results)
+                {
+                    try
+                    {
+                        await _eventPublisher.PublishLogMicroserviceCreatedAsync(new LogMicroserviceCreatedEvent
+                        {
+                            LogId = result.LogId,
+                            LogDate = result.LogDate,
+                            LogLevel = result.LogLevel,
+                            LogMicroserviceText = result.LogMicroserviceText,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch { /* Log silencioso - no bloquea respuesta */ }
+                }
+            }, CancellationToken.None);
+
+            return new BulkInsertResultDto<LogMicroserviceDto>
+            {
+                InsertedItems = results,
+                TotalRequested = dtoList.Count,
+                TotalInserted = results.Count,
+                TotalFailed = errors.Count,
+                Success = true,
+                Errors = errors
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BulkInsertResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalInserted = 0,
+                TotalFailed = dtoList.Count,
+                Success = false,
+                ErrorMessage = ex.Message,
+                Errors = errors
+            };
+        }
+    }
+
+    private static string? ValidateLogMicroservice(CreateLogMicroserviceDto dto)
+    {
+        if (dto.LogId <= 0)
+            return "LogId debe ser mayor a 0.";
+        return null;
+    }
+
     public async Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, CancellationToken cancellationToken = default)
     {
         var entity = _mapper.Map<LogMicroservice>(dto);

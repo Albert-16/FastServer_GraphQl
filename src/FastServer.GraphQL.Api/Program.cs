@@ -143,6 +143,11 @@ builder.Services
     .AddType<CreateLogServicesContentInputType>()
     .AddType<LogFilterInputType>()
     .AddType<PaginationInputType>()
+    .AddType<BulkCreateLogServicesHeaderInputType>()
+    .AddType<BulkCreateLogMicroserviceInputType>()
+    .AddType<BulkInsertErrorType>()
+    .AddType<BulkInsertLogServicesHeaderResultType>()
+    .AddType<BulkInsertLogMicroserviceResultType>()
 
     // Características adicionales de Hot Chocolate
     .AddFiltering()                              // Habilita filtrado en queries

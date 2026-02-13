@@ -11,5 +11,6 @@ public interface ILogMicroserviceService
     Task<IEnumerable<LogMicroserviceDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default);
     Task<IEnumerable<LogMicroserviceDto>> SearchByTextAsync(string searchText, CancellationToken cancellationToken = default);
     Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, CancellationToken cancellationToken = default);
+    Task<BulkInsertResultDto<LogMicroserviceDto>> CreateBulkAsync(IEnumerable<CreateLogMicroserviceDto> dtos, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default);
 }

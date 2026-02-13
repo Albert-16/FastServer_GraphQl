@@ -15,6 +15,30 @@ public record PaginatedResultDto<T>
 }
 
 /// <summary>
+/// DTO para resultados de inserción masiva
+/// </summary>
+public record BulkInsertResultDto<T>
+{
+    public IEnumerable<T> InsertedItems { get; init; } = Enumerable.Empty<T>();
+    public int TotalRequested { get; init; }
+    public int TotalInserted { get; init; }
+    public int TotalFailed { get; init; }
+    public bool Success { get; init; }
+    public string? ErrorMessage { get; init; }
+    public IEnumerable<BulkInsertError> Errors { get; init; } = Enumerable.Empty<BulkInsertError>();
+}
+
+/// <summary>
+/// Error individual en inserción masiva
+/// </summary>
+public record BulkInsertError
+{
+    public int Index { get; init; }
+    public string ErrorMessage { get; init; } = string.Empty;
+    public object? FailedItem { get; init; }
+}
+
+/// <summary>
 /// DTO para parámetros de paginación
 /// </summary>
 public record PaginationParamsDto
