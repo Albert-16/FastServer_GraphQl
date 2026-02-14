@@ -69,14 +69,20 @@ public static class DatabaseSeeder
         modelBuilder.Entity<LogMicroservice>().HasData(
             new LogMicroservice
             {
+                LogMicroserviceId = Guid.Parse("01965a00-0000-7000-8000-000000000001"),
                 LogId = 1,
+                RequestId = 1001,
+                EventName = "AuthenticateUser",
                 LogDate = new DateTime(2025, 1, 1, 10, 0, 0, DateTimeKind.Utc),
                 LogLevel = "INFO",
                 LogMicroserviceText = "[AuthService] Inicio de autenticación para usuario: admin"
             },
             new LogMicroservice
             {
+                LogMicroserviceId = Guid.Parse("01965a00-0000-7000-8000-000000000002"),
                 LogId = 2,
+                RequestId = 1002,
+                EventName = "SearchProducts",
                 LogDate = new DateTime(2025, 1, 1, 10, 5, 0, DateTimeKind.Utc),
                 LogLevel = "INFO",
                 LogMicroserviceText = "[ProductService] Búsqueda ejecutada: 'laptop gaming' - 15 resultados encontrados"
@@ -153,14 +159,20 @@ public static class DatabaseSeeder
         modelBuilder.Entity<LogMicroserviceHistorico>().HasData(
             new LogMicroserviceHistorico
             {
+                LogMicroserviceId = Guid.Parse("01965a00-0000-7000-8000-000000000003"),
                 LogId = 1,
+                RequestId = 2001,
+                EventName = "AuthenticateUser",
                 LogDate = new DateTime(2024, 12, 15, 10, 0, 0, DateTimeKind.Utc),
                 LogLevel = "INFO",
                 LogMicroserviceText = "[AuthService] Autenticación histórica exitosa para usuario: admin"
             },
             new LogMicroserviceHistorico
             {
+                LogMicroserviceId = Guid.Parse("01965a00-0000-7000-8000-000000000004"),
                 LogId = 2,
+                RequestId = 2002,
+                EventName = "SearchProducts",
                 LogDate = new DateTime(2024, 12, 15, 10, 10, 0, DateTimeKind.Utc),
                 LogLevel = "INFO",
                 LogMicroserviceText = "[ProductService] Búsqueda histórica ejecutada: 'gaming keyboard' - 12 resultados"

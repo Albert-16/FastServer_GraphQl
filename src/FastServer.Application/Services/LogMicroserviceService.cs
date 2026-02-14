@@ -129,6 +129,13 @@ public class LogMicroserviceService : ILogMicroserviceService
         }
 
         var entities = _mapper.Map<List<LogMicroservice>>(validDtos);
+
+        // Generar LogMicroserviceId para cada entidad
+        foreach (var entity in entities)
+        {
+            entity.LogMicroserviceId = Guid.CreateVersion7();
+        }
+
         var strategy = _context.Database.CreateExecutionStrategy();
 
         try
@@ -152,6 +159,9 @@ public class LogMicroserviceService : ILogMicroserviceService
                         await _eventPublisher.PublishLogMicroserviceCreatedAsync(new LogMicroserviceCreatedEvent
                         {
                             LogId = result.LogId,
+                            LogMicroserviceId = result.LogMicroserviceId,
+                            RequestId = result.RequestId,
+                            EventName = result.EventName,
                             LogDate = result.LogDate,
                             LogLevel = result.LogLevel,
                             LogMicroserviceText = result.LogMicroserviceText,
@@ -190,12 +200,18 @@ public class LogMicroserviceService : ILogMicroserviceService
     {
         if (dto.LogId <= 0)
             return "LogId debe ser mayor a 0.";
+        if (dto.RequestId <= 0)
+            return "RequestId debe ser mayor a 0.";
+        if (string.IsNullOrWhiteSpace(dto.EventName))
+            return "EventName es requerido.";
         return null;
     }
 
     public async Task<LogMicroserviceDto> CreateAsync(CreateLogMicroserviceDto dto, CancellationToken cancellationToken = default)
     {
         var entity = _mapper.Map<LogMicroservice>(dto);
+        entity.LogMicroserviceId = Guid.CreateVersion7();
+
         await _context.LogMicroservices.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -204,6 +220,9 @@ public class LogMicroserviceService : ILogMicroserviceService
         await _eventPublisher.PublishLogMicroserviceCreatedAsync(new LogMicroserviceCreatedEvent
         {
             LogId = result.LogId,
+            LogMicroserviceId = result.LogMicroserviceId,
+            RequestId = result.RequestId,
+            EventName = result.EventName,
             LogDate = result.LogDate,
             LogLevel = result.LogLevel,
             LogMicroserviceText = result.LogMicroserviceText,
@@ -215,13 +234,14 @@ public class LogMicroserviceService : ILogMicroserviceService
 
     public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.LogMicroservices
-            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
+        var entities = await _context.LogMicroservices
+            .Where(x => x.LogId == id)
+            .ToListAsync(cancellationToken);
 
-        if (entity == null)
+        if (entities.Count == 0)
             return false;
 
-        _context.LogMicroservices.Remove(entity);
+        _context.LogMicroservices.RemoveRange(entities);
         await _context.SaveChangesAsync(cancellationToken);
 
         await _eventPublisher.PublishLogMicroserviceDeletedAsync(new LogMicroserviceDeletedEvent

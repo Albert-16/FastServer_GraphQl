@@ -13,10 +13,25 @@ public class LogMicroserviceHistoricoConfiguration : IEntityTypeConfiguration<Lo
     {
         builder.ToTable("FastServer_LogMicroservice_Historico");
 
-        builder.HasKey(e => e.LogId);
+        builder.HasKey(e => e.LogMicroserviceId);
+
+        builder.Property(e => e.LogMicroserviceId)
+            .HasColumnName("fastserver_log_microservice_id")
+            .HasColumnType("uuid")
+            .IsRequired();
 
         builder.Property(e => e.LogId)
-            .HasColumnName("fastserver_log_id");
+            .HasColumnName("fastserver_log_id")
+            .IsRequired();
+
+        builder.Property(e => e.RequestId)
+            .HasColumnName("fastserver_request_id")
+            .IsRequired();
+
+        builder.Property(e => e.EventName)
+            .HasColumnName("fastserver_event_name")
+            .HasMaxLength(250)
+            .IsRequired();
 
         builder.Property(e => e.LogDate)
             .HasColumnName("fastserver_log_date")
@@ -31,6 +46,7 @@ public class LogMicroserviceHistoricoConfiguration : IEntityTypeConfiguration<Lo
             .HasColumnType("text")
             .IsRequired();
 
-        // Índice en LogId eliminado - es redundante con la clave primaria
+        builder.HasIndex(e => e.LogId)
+            .HasDatabaseName("IX_FastServer_LogMicroservice_Historico_LogId");
     }
 }

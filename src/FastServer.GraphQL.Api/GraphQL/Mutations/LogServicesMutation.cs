@@ -135,6 +135,8 @@ public class LogMicroserviceMutation
         var dto = new CreateLogMicroserviceDto
         {
             LogId = input.LogId,
+            RequestId = input.RequestId,
+            EventName = input.EventName,
             LogDate = input.LogDate,
             LogLevel = input.LogLevel,
             LogMicroserviceText = input.LogMicroserviceText
@@ -155,6 +157,8 @@ public class LogMicroserviceMutation
         var dtos = input.Items.Select(i => new CreateLogMicroserviceDto
         {
             LogId = i.LogId,
+            RequestId = i.RequestId,
+            EventName = i.EventName,
             LogDate = i.LogDate,
             LogLevel = i.LogLevel,
             LogMicroserviceText = i.LogMicroserviceText

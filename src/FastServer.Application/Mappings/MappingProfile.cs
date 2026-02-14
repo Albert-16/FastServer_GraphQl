@@ -23,13 +23,12 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.RequestId, opt => opt.MapFrom(src => src.RequestId != null ? (long?)src.RequestId.GetHashCode() : null));
 
         // LogMicroservice mappings
-        CreateMap<LogMicroservice, LogMicroserviceDto>()
-            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
+        CreateMap<LogMicroservice, LogMicroserviceDto>();
 
-        CreateMap<CreateLogMicroserviceDto, LogMicroservice>();
+        CreateMap<CreateLogMicroserviceDto, LogMicroservice>()
+            .ForMember(dest => dest.LogMicroserviceId, opt => opt.Ignore());
 
-        CreateMap<LogMicroserviceHistorico, LogMicroserviceDto>()
-            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
+        CreateMap<LogMicroserviceHistorico, LogMicroserviceDto>();
 
         // LogServicesContent mappings
         CreateMap<LogServicesContent, LogServicesContentDto>()

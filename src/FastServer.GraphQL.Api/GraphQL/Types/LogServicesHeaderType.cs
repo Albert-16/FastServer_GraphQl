@@ -110,9 +110,21 @@ public class LogMicroserviceType : ObjectType<LogMicroserviceDto>
         descriptor.Name("LogMicroservice");
         descriptor.Description("Log de microservicio");
 
+        descriptor.Field(x => x.LogMicroserviceId)
+            .Name("logMicroserviceId")
+            .Description("Identificador único del registro");
+
         descriptor.Field(x => x.LogId)
             .Name("logId")
             .Description("Identificador del log");
+
+        descriptor.Field(x => x.RequestId)
+            .Name("requestId")
+            .Description("Identificador de la solicitud");
+
+        descriptor.Field(x => x.EventName)
+            .Name("eventName")
+            .Description("Nombre del evento");
 
         descriptor.Field(x => x.LogMicroserviceText)
             .Name("logMicroserviceText")
