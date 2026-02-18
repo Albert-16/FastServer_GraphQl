@@ -537,17 +537,22 @@ public class UpdateLogServicesHeaderMutationTests
     public async Task UpdateLogServicesHeader_ShouldMapNewFieldsToDto()
     {
         // Arrange
+        var fsId = Guid.NewGuid();
         var input = new UpdateLogServicesHeaderInput
         {
             LogId = 42,
             LogMethodName = "UpdatedMethod",
+            LogFsId = fsId,
             MethodDescription = "Updated description",
             TciIpPort = "10.0.0.5:9090",
             IpFs = "192.168.0.10",
             TypeProcess = "ASYNC",
             LogNodo = "node-updated",
             MicroserviceName = "updated-service",
-            UserId = "user-updated"
+            UserId = "user-updated",
+            SessionId = "sess-updated",
+            TransactionId = "txn-updated",
+            RequestId = 999
         };
 
         UpdateLogServicesHeaderDto? capturedDto = null;
@@ -562,6 +567,7 @@ public class UpdateLogServicesHeaderMutationTests
         capturedDto.Should().NotBeNull();
         capturedDto!.LogId.Should().Be(42);
         capturedDto.LogMethodName.Should().Be("UpdatedMethod");
+        capturedDto.LogFsId.Should().Be(fsId);
         capturedDto.MethodDescription.Should().Be("Updated description");
         capturedDto.TciIpPort.Should().Be("10.0.0.5:9090");
         capturedDto.IpFs.Should().Be("192.168.0.10");
@@ -569,6 +575,9 @@ public class UpdateLogServicesHeaderMutationTests
         capturedDto.LogNodo.Should().Be("node-updated");
         capturedDto.MicroserviceName.Should().Be("updated-service");
         capturedDto.UserId.Should().Be("user-updated");
+        capturedDto.SessionId.Should().Be("sess-updated");
+        capturedDto.TransactionId.Should().Be("txn-updated");
+        capturedDto.RequestId.Should().Be(999);
     }
 
     [Fact]
@@ -579,8 +588,8 @@ public class UpdateLogServicesHeaderMutationTests
         {
             Items = new List<UpdateLogServicesHeaderInput>
             {
-                new() { LogId = 1, MicroserviceName = "svc-A", UserId = "usr-1" },
-                new() { LogId = 2, LogMethodName = "GetData", TypeProcess = "REST" }
+                new() { LogId = 1, MicroserviceName = "svc-A", UserId = "usr-1", SessionId = "sess-1", TransactionId = "txn-1" },
+                new() { LogId = 2, LogMethodName = "GetData", TypeProcess = "REST", RequestId = 888 }
             }
         };
 
@@ -600,10 +609,13 @@ public class UpdateLogServicesHeaderMutationTests
         dtoList[0].LogId.Should().Be(1);
         dtoList[0].MicroserviceName.Should().Be("svc-A");
         dtoList[0].UserId.Should().Be("usr-1");
+        dtoList[0].SessionId.Should().Be("sess-1");
+        dtoList[0].TransactionId.Should().Be("txn-1");
 
         dtoList[1].LogId.Should().Be(2);
         dtoList[1].LogMethodName.Should().Be("GetData");
         dtoList[1].TypeProcess.Should().Be("REST");
+        dtoList[1].RequestId.Should().Be(888);
     }
 }
 
@@ -665,17 +677,22 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
     {
         // Arrange
         var entity = await SeedEntityAsync();
+        var fsId = Guid.NewGuid();
         var dto = new UpdateLogServicesHeaderDto
         {
             LogId = entity.LogId,
             LogMethodName = "NewMethod",
+            LogFsId = fsId,
             MethodDescription = "New description",
             TciIpPort = "9.9.9.9:443",
             IpFs = "8.8.8.8",
             TypeProcess = "ASYNC",
             LogNodo = "node-new",
             MicroserviceName = "new-service",
-            UserId = "new-user"
+            UserId = "new-user",
+            SessionId = "sess-new",
+            TransactionId = "txn-new",
+            RequestId = 777
         };
 
         // Act
@@ -684,6 +701,7 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
         // Assert
         var updated = await _context.LogServicesHeaders.FirstAsync(x => x.LogId == entity.LogId);
         updated.LogMethodName.Should().Be("NewMethod");
+        updated.LogFsId.Should().Be(fsId);
         updated.MethodDescription.Should().Be("New description");
         updated.TciIpPort.Should().Be("9.9.9.9:443");
         updated.IpFs.Should().Be("8.8.8.8");
@@ -691,6 +709,9 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
         updated.LogNodo.Should().Be("node-new");
         updated.MicroserviceName.Should().Be("new-service");
         updated.UserId.Should().Be("new-user");
+        updated.SessionId.Should().Be("sess-new");
+        updated.TransactionId.Should().Be("txn-new");
+        updated.RequestId.Should().Be(777);
     }
 
     [Fact]

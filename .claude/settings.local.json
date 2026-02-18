@@ -64,7 +64,10 @@
       "Bash(git -C \"C:/Users/MSI MAG/FastServer\" restore src/FastServer.Domain/.claude/settings.local.json)",
       "Bash(pushd:*)",
       "Bash(git clean:*)",
-      "Bash(popd:*)"
+      "Bash(popd:*)",
+      "Bash(cmd /c:*)",
+      "Bash(cmd //c:*)",
+      "Bash(wmic process where \"ProcessId=20540\" delete)"
     ]
   },
   "outputStyle": "Learning"

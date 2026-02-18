@@ -344,6 +344,8 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             entity.LogState = dto.LogState.Value;
         if (dto.LogMethodName != null)
             entity.LogMethodName = dto.LogMethodName;
+        if (dto.LogFsId.HasValue)
+            entity.LogFsId = dto.LogFsId.Value;
         if (dto.MethodDescription != null)
             entity.MethodDescription = dto.MethodDescription;
         if (dto.TciIpPort != null)
@@ -358,6 +360,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             entity.MicroserviceName = dto.MicroserviceName;
         if (dto.UserId != null)
             entity.UserId = dto.UserId;
+        if (dto.SessionId != null)
+            entity.SessionId = dto.SessionId;
+        if (dto.TransactionId != null)
+            entity.TransactionId = dto.TransactionId;
+        if (dto.RequestId.HasValue)
+            entity.RequestId = dto.RequestId.Value;
         if (dto.ErrorCode != null)
             entity.ErrorCode = dto.ErrorCode;
         if (dto.ErrorDescription != null)
@@ -491,6 +499,8 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                         entity.LogState = dto.LogState.Value;
                     if (dto.LogMethodName != null)
                         entity.LogMethodName = dto.LogMethodName;
+                    if (dto.LogFsId.HasValue)
+                        entity.LogFsId = dto.LogFsId.Value;
                     if (dto.MethodDescription != null)
                         entity.MethodDescription = dto.MethodDescription;
                     if (dto.TciIpPort != null)
@@ -505,6 +515,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                         entity.MicroserviceName = dto.MicroserviceName;
                     if (dto.UserId != null)
                         entity.UserId = dto.UserId;
+                    if (dto.SessionId != null)
+                        entity.SessionId = dto.SessionId;
+                    if (dto.TransactionId != null)
+                        entity.TransactionId = dto.TransactionId;
+                    if (dto.RequestId.HasValue)
+                        entity.RequestId = dto.RequestId.Value;
                     if (dto.ErrorCode != null)
                         entity.ErrorCode = dto.ErrorCode;
                     if (dto.ErrorDescription != null)

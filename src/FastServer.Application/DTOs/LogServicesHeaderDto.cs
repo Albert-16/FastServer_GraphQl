@@ -66,6 +66,7 @@ public record UpdateLogServicesHeaderDto
     public DateTime? LogDateOut { get; init; }
     public LogState? LogState { get; init; }
     public string? LogMethodName { get; init; }
+    public Guid? LogFsId { get; init; }
     public string? MethodDescription { get; init; }
     public string? TciIpPort { get; init; }
     public string? IpFs { get; init; }
@@ -73,6 +74,9 @@ public record UpdateLogServicesHeaderDto
     public string? LogNodo { get; init; }
     public string? MicroserviceName { get; init; }
     public string? UserId { get; init; }
+    public string? SessionId { get; init; }
+    public string? TransactionId { get; init; }
+    public long? RequestId { get; init; }
     public string? ErrorCode { get; init; }
     public string? ErrorDescription { get; init; }
     public long? RequestDuration { get; init; }

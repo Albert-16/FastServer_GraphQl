@@ -38,6 +38,7 @@ public class UpdateLogServicesHeaderInput
     public DateTime? LogDateOut { get; set; }
     public LogState? LogState { get; set; }
     public string? LogMethodName { get; set; }
+    public Guid? LogFsId { get; set; }
     public string? MethodDescription { get; set; }
     public string? TciIpPort { get; set; }
     public string? IpFs { get; set; }
@@ -45,6 +46,9 @@ public class UpdateLogServicesHeaderInput
     public string? LogNodo { get; set; }
     public string? MicroserviceName { get; set; }
     public string? UserId { get; set; }
+    public string? SessionId { get; set; }
+    public string? TransactionId { get; set; }
+    public long? RequestId { get; set; }
     public string? ErrorCode { get; set; }
     public string? ErrorDescription { get; set; }
     public long? RequestDuration { get; set; }
