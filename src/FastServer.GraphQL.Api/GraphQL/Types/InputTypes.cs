@@ -37,6 +37,14 @@ public class UpdateLogServicesHeaderInput
     public long LogId { get; set; }
     public DateTime? LogDateOut { get; set; }
     public LogState? LogState { get; set; }
+    public string? LogMethodName { get; set; }
+    public string? MethodDescription { get; set; }
+    public string? TciIpPort { get; set; }
+    public string? IpFs { get; set; }
+    public string? TypeProcess { get; set; }
+    public string? LogNodo { get; set; }
+    public string? MicroserviceName { get; set; }
+    public string? UserId { get; set; }
     public string? ErrorCode { get; set; }
     public string? ErrorDescription { get; set; }
     public long? RequestDuration { get; set; }

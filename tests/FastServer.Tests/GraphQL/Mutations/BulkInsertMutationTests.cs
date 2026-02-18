@@ -520,6 +520,245 @@ public class BulkCreateLogServicesHeaderServiceTests : IDisposable
 
 #endregion
 
+#region Mutation-Level Tests: UpdateLogServicesHeader (new fields mapping)
+
+public class UpdateLogServicesHeaderMutationTests
+{
+    private readonly Mock<ILogServicesHeaderService> _mockService;
+    private readonly LogServicesMutation _mutation;
+
+    public UpdateLogServicesHeaderMutationTests()
+    {
+        _mockService = new Mock<ILogServicesHeaderService>();
+        _mutation = new LogServicesMutation();
+    }
+
+    [Fact]
+    public async Task UpdateLogServicesHeader_ShouldMapNewFieldsToDto()
+    {
+        // Arrange
+        var input = new UpdateLogServicesHeaderInput
+        {
+            LogId = 42,
+            LogMethodName = "UpdatedMethod",
+            MethodDescription = "Updated description",
+            TciIpPort = "10.0.0.5:9090",
+            IpFs = "192.168.0.10",
+            TypeProcess = "ASYNC",
+            LogNodo = "node-updated",
+            MicroserviceName = "updated-service",
+            UserId = "user-updated"
+        };
+
+        UpdateLogServicesHeaderDto? capturedDto = null;
+        _mockService.Setup(s => s.UpdateAsync(It.IsAny<UpdateLogServicesHeaderDto>(), It.IsAny<CancellationToken>()))
+            .Callback<UpdateLogServicesHeaderDto, CancellationToken>((dto, _) => capturedDto = dto)
+            .ReturnsAsync(new LogServicesHeaderDto { LogId = 42 });
+
+        // Act
+        await _mutation.UpdateLogServicesHeader(_mockService.Object, input);
+
+        // Assert
+        capturedDto.Should().NotBeNull();
+        capturedDto!.LogId.Should().Be(42);
+        capturedDto.LogMethodName.Should().Be("UpdatedMethod");
+        capturedDto.MethodDescription.Should().Be("Updated description");
+        capturedDto.TciIpPort.Should().Be("10.0.0.5:9090");
+        capturedDto.IpFs.Should().Be("192.168.0.10");
+        capturedDto.TypeProcess.Should().Be("ASYNC");
+        capturedDto.LogNodo.Should().Be("node-updated");
+        capturedDto.MicroserviceName.Should().Be("updated-service");
+        capturedDto.UserId.Should().Be("user-updated");
+    }
+
+    [Fact]
+    public async Task BulkUpdateLogServicesHeader_ShouldMapNewFieldsToDto()
+    {
+        // Arrange
+        var input = new BulkUpdateLogServicesHeaderInput
+        {
+            Items = new List<UpdateLogServicesHeaderInput>
+            {
+                new() { LogId = 1, MicroserviceName = "svc-A", UserId = "usr-1" },
+                new() { LogId = 2, LogMethodName = "GetData", TypeProcess = "REST" }
+            }
+        };
+
+        IEnumerable<UpdateLogServicesHeaderDto>? capturedDtos = null;
+        _mockService.Setup(s => s.UpdateBulkAsync(It.IsAny<IEnumerable<UpdateLogServicesHeaderDto>>(), It.IsAny<CancellationToken>()))
+            .Callback<IEnumerable<UpdateLogServicesHeaderDto>, CancellationToken>((dtos, _) => capturedDtos = dtos.ToList())
+            .ReturnsAsync(new BulkUpdateResultDto<LogServicesHeaderDto> { Success = true, TotalRequested = 2, TotalUpdated = 2 });
+
+        // Act
+        await _mutation.BulkUpdateLogServicesHeader(_mockService.Object, input);
+
+        // Assert
+        capturedDtos.Should().NotBeNull();
+        var dtoList = capturedDtos!.ToList();
+        dtoList.Should().HaveCount(2);
+
+        dtoList[0].LogId.Should().Be(1);
+        dtoList[0].MicroserviceName.Should().Be("svc-A");
+        dtoList[0].UserId.Should().Be("usr-1");
+
+        dtoList[1].LogId.Should().Be(2);
+        dtoList[1].LogMethodName.Should().Be("GetData");
+        dtoList[1].TypeProcess.Should().Be("REST");
+    }
+}
+
+#endregion
+
+#region Service-Level Tests: UpdateLogServicesHeaderService (new fields + partial update)
+
+public class UpdateLogServicesHeaderServiceTests : IDisposable
+{
+    private readonly TestLogsDbContext _context;
+    private readonly IMapper _mapper;
+    private readonly Mock<ILogEventPublisher> _mockEventPublisher;
+    private readonly LogServicesHeaderService _service;
+
+    public UpdateLogServicesHeaderServiceTests()
+    {
+        var options = new DbContextOptionsBuilder<TestLogsDbContext>()
+            .UseInMemoryDatabase(databaseName: $"TestDb_Update_{Guid.NewGuid()}")
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options;
+
+        _context = new TestLogsDbContext(options);
+
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        _mapper = mapperConfig.CreateMapper();
+
+        _mockEventPublisher = new Mock<ILogEventPublisher>();
+        _mockEventPublisher.Setup(p => p.PublishLogUpdatedAsync(It.IsAny<LogUpdatedEvent>()))
+            .Returns(Task.CompletedTask);
+
+        _service = new LogServicesHeaderService(_context, _mapper, _mockEventPublisher.Object);
+    }
+
+    private async Task<LogServicesHeader> SeedEntityAsync()
+    {
+        var entity = new LogServicesHeader
+        {
+            LogDateIn = DateTime.UtcNow,
+            LogDateOut = DateTime.UtcNow.AddSeconds(1),
+            LogState = LogState.Completed,
+            LogMethodUrl = "/api/original",
+            LogMethodName = "OriginalMethod",
+            MethodDescription = "Original description",
+            TciIpPort = "1.1.1.1:80",
+            IpFs = "2.2.2.2",
+            TypeProcess = "SYNC",
+            LogNodo = "node-original",
+            MicroserviceName = "original-service",
+            UserId = "original-user",
+            ErrorCode = null
+        };
+        await _context.LogServicesHeaders.AddAsync(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
+    [Fact]
+    public async Task UpdateAsync_ShouldUpdateNewFields()
+    {
+        // Arrange
+        var entity = await SeedEntityAsync();
+        var dto = new UpdateLogServicesHeaderDto
+        {
+            LogId = entity.LogId,
+            LogMethodName = "NewMethod",
+            MethodDescription = "New description",
+            TciIpPort = "9.9.9.9:443",
+            IpFs = "8.8.8.8",
+            TypeProcess = "ASYNC",
+            LogNodo = "node-new",
+            MicroserviceName = "new-service",
+            UserId = "new-user"
+        };
+
+        // Act
+        await _service.UpdateAsync(dto);
+
+        // Assert
+        var updated = await _context.LogServicesHeaders.FirstAsync(x => x.LogId == entity.LogId);
+        updated.LogMethodName.Should().Be("NewMethod");
+        updated.MethodDescription.Should().Be("New description");
+        updated.TciIpPort.Should().Be("9.9.9.9:443");
+        updated.IpFs.Should().Be("8.8.8.8");
+        updated.TypeProcess.Should().Be("ASYNC");
+        updated.LogNodo.Should().Be("node-new");
+        updated.MicroserviceName.Should().Be("new-service");
+        updated.UserId.Should().Be("new-user");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_NullFields_ShouldNotOverwriteExistingValues()
+    {
+        // Arrange — sembrar entidad con valores en los nuevos campos
+        var entity = await SeedEntityAsync();
+        var dto = new UpdateLogServicesHeaderDto
+        {
+            LogId = entity.LogId,
+            // Todos los nuevos campos se dejan null — no deben sobreescribir
+            ErrorCode = "E500"
+        };
+
+        // Act
+        await _service.UpdateAsync(dto);
+
+        // Assert — los nuevos campos mantienen sus valores originales
+        var updated = await _context.LogServicesHeaders.FirstAsync(x => x.LogId == entity.LogId);
+        updated.LogMethodName.Should().Be("OriginalMethod");
+        updated.MethodDescription.Should().Be("Original description");
+        updated.TciIpPort.Should().Be("1.1.1.1:80");
+        updated.IpFs.Should().Be("2.2.2.2");
+        updated.TypeProcess.Should().Be("SYNC");
+        updated.LogNodo.Should().Be("node-original");
+        updated.MicroserviceName.Should().Be("original-service");
+        updated.UserId.Should().Be("original-user");
+        updated.ErrorCode.Should().Be("E500"); // este sí se actualizó
+    }
+
+    [Fact]
+    public async Task UpdateBulkAsync_ShouldUpdateNewFieldsOnMultipleEntities()
+    {
+        // Arrange
+        var e1 = await SeedEntityAsync();
+        var e2 = await SeedEntityAsync();
+
+        var dtos = new List<UpdateLogServicesHeaderDto>
+        {
+            new() { LogId = e1.LogId, MicroserviceName = "svc-updated-1", UserId = "user-updated-1" },
+            new() { LogId = e2.LogId, LogMethodName = "BulkMethod", TypeProcess = "BATCH" }
+        };
+
+        // Act
+        var result = await _service.UpdateBulkAsync(dtos);
+
+        // Assert
+        result.Success.Should().BeTrue();
+        result.TotalUpdated.Should().Be(2);
+
+        var updated1 = await _context.LogServicesHeaders.FirstAsync(x => x.LogId == e1.LogId);
+        updated1.MicroserviceName.Should().Be("svc-updated-1");
+        updated1.UserId.Should().Be("user-updated-1");
+        updated1.LogMethodName.Should().Be("OriginalMethod"); // no se tocó
+
+        var updated2 = await _context.LogServicesHeaders.FirstAsync(x => x.LogId == e2.LogId);
+        updated2.LogMethodName.Should().Be("BulkMethod");
+        updated2.TypeProcess.Should().Be("BATCH");
+        updated2.MicroserviceName.Should().Be("original-service"); // no se tocó
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+}
+
+#endregion
 #region Service-Level Tests: LogMicroserviceService
 
 public class BulkCreateLogMicroserviceServiceTests : IDisposable

@@ -342,6 +342,22 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             entity.LogDateOut = dto.LogDateOut.Value;
         if (dto.LogState.HasValue)
             entity.LogState = dto.LogState.Value;
+        if (dto.LogMethodName != null)
+            entity.LogMethodName = dto.LogMethodName;
+        if (dto.MethodDescription != null)
+            entity.MethodDescription = dto.MethodDescription;
+        if (dto.TciIpPort != null)
+            entity.TciIpPort = dto.TciIpPort;
+        if (dto.IpFs != null)
+            entity.IpFs = dto.IpFs;
+        if (dto.TypeProcess != null)
+            entity.TypeProcess = dto.TypeProcess;
+        if (dto.LogNodo != null)
+            entity.LogNodo = dto.LogNodo;
+        if (dto.MicroserviceName != null)
+            entity.MicroserviceName = dto.MicroserviceName;
+        if (dto.UserId != null)
+            entity.UserId = dto.UserId;
         if (dto.ErrorCode != null)
             entity.ErrorCode = dto.ErrorCode;
         if (dto.ErrorDescription != null)
@@ -473,6 +489,22 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                         entity.LogDateOut = dto.LogDateOut.Value;
                     if (dto.LogState.HasValue)
                         entity.LogState = dto.LogState.Value;
+                    if (dto.LogMethodName != null)
+                        entity.LogMethodName = dto.LogMethodName;
+                    if (dto.MethodDescription != null)
+                        entity.MethodDescription = dto.MethodDescription;
+                    if (dto.TciIpPort != null)
+                        entity.TciIpPort = dto.TciIpPort;
+                    if (dto.IpFs != null)
+                        entity.IpFs = dto.IpFs;
+                    if (dto.TypeProcess != null)
+                        entity.TypeProcess = dto.TypeProcess;
+                    if (dto.LogNodo != null)
+                        entity.LogNodo = dto.LogNodo;
+                    if (dto.MicroserviceName != null)
+                        entity.MicroserviceName = dto.MicroserviceName;
+                    if (dto.UserId != null)
+                        entity.UserId = dto.UserId;
                     if (dto.ErrorCode != null)
                         entity.ErrorCode = dto.ErrorCode;
                     if (dto.ErrorDescription != null)
