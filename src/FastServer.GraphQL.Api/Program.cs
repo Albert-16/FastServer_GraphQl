@@ -145,9 +145,20 @@ builder.Services
     .AddType<PaginationInputType>()
     .AddType<BulkCreateLogServicesHeaderInputType>()
     .AddType<BulkCreateLogMicroserviceInputType>()
+    .AddType<BulkCreateLogServicesContentInputType>()
+    .AddType<UpdateLogMicroserviceInputType>()
+    .AddType<UpdateLogServicesContentInputType>()
+    .AddType<BulkUpdateLogServicesHeaderInputType>()
+    .AddType<BulkUpdateLogMicroserviceInputType>()
+    .AddType<BulkUpdateLogServicesContentInputType>()
     .AddType<BulkInsertErrorType>()
+    .AddType<BulkUpdateErrorType>()
     .AddType<BulkInsertLogServicesHeaderResultType>()
     .AddType<BulkInsertLogMicroserviceResultType>()
+    .AddType<BulkInsertLogServicesContentResultType>()
+    .AddType<BulkUpdateLogServicesHeaderResultType>()
+    .AddType<BulkUpdateLogMicroserviceResultType>()
+    .AddType<BulkUpdateLogServicesContentResultType>()
 
     // Características adicionales de Hot Chocolate
     .AddFiltering()                              // Habilita filtrado en queries

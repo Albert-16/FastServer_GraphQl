@@ -59,7 +59,12 @@
       "Bash(PGPASSWORD=Souma psql:*)",
       "Bash(pkill:*)",
       "Bash(kill:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git restore:*)",
+      "Bash(git -C \"C:/Users/MSI MAG/FastServer\" restore src/FastServer.Domain/.claude/settings.local.json)",
+      "Bash(pushd:*)",
+      "Bash(git clean:*)",
+      "Bash(popd:*)"
     ]
   },
   "outputStyle": "Learning"

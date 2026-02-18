@@ -11,5 +11,8 @@ public interface ILogServicesContentService
     Task<IEnumerable<LogServicesContentDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default);
     Task<IEnumerable<LogServicesContentDto>> SearchByContentAsync(string searchText, CancellationToken cancellationToken = default);
     Task<LogServicesContentDto> CreateAsync(CreateLogServicesContentDto dto, CancellationToken cancellationToken = default);
+    Task<BulkInsertResultDto<LogServicesContentDto>> CreateBulkAsync(IEnumerable<CreateLogServicesContentDto> dtos, CancellationToken cancellationToken = default);
+    Task<LogServicesContentDto> UpdateAsync(UpdateLogServicesContentDto dto, CancellationToken cancellationToken = default);
+    Task<BulkUpdateResultDto<LogServicesContentDto>> UpdateBulkAsync(IEnumerable<UpdateLogServicesContentDto> dtos, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default);
 }

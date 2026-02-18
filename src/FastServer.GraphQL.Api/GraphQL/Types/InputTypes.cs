@@ -86,6 +86,66 @@ public class BulkCreateLogMicroserviceInput
 }
 
 /// <summary>
+/// Input para actualizar LogMicroservice
+/// </summary>
+public class UpdateLogMicroserviceInput
+{
+    public Guid LogMicroserviceId { get; set; }
+    public string? EventName { get; set; }
+    public DateTime? LogDate { get; set; }
+    public string? LogLevel { get; set; }
+    public string? LogMicroserviceText { get; set; }
+}
+
+/// <summary>
+/// Input para actualizar LogServicesContent
+/// </summary>
+public class UpdateLogServicesContentInput
+{
+    public long LogId { get; set; }
+    public string? LogServicesDate { get; set; }
+    public string? LogServicesLogLevel { get; set; }
+    public string? LogServicesState { get; set; }
+    public string? LogServicesContentText { get; set; }
+}
+
+/// <summary>
+/// Input para inserción masiva de LogServicesContent
+/// </summary>
+public class BulkCreateLogServicesContentInput
+{
+    [GraphQLDescription("Lista de contenidos de log a crear (máximo 1000)")]
+    public List<CreateLogServicesContentInput> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Input para actualización masiva de LogServicesHeader
+/// </summary>
+public class BulkUpdateLogServicesHeaderInput
+{
+    [GraphQLDescription("Lista de logs de servicios a actualizar (máximo 1000)")]
+    public List<UpdateLogServicesHeaderInput> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Input para actualización masiva de LogMicroservice
+/// </summary>
+public class BulkUpdateLogMicroserviceInput
+{
+    [GraphQLDescription("Lista de logs de microservicio a actualizar (máximo 1000)")]
+    public List<UpdateLogMicroserviceInput> Items { get; set; } = new();
+}
+
+/// <summary>
+/// Input para actualización masiva de LogServicesContent
+/// </summary>
+public class BulkUpdateLogServicesContentInput
+{
+    [GraphQLDescription("Lista de contenidos de log a actualizar (máximo 1000)")]
+    public List<UpdateLogServicesContentInput> Items { get; set; } = new();
+}
+
+/// <summary>
 /// Input para filtrar logs
 /// </summary>
 public class LogFilterInput
@@ -181,5 +241,59 @@ public class BulkCreateLogMicroserviceInputType : InputObjectType<BulkCreateLogM
     {
         descriptor.Name("BulkCreateLogMicroserviceInput");
         descriptor.Description("Input para inserción masiva de logs de microservicio");
+    }
+}
+
+public class UpdateLogMicroserviceInputType : InputObjectType<UpdateLogMicroserviceInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<UpdateLogMicroserviceInput> descriptor)
+    {
+        descriptor.Name("UpdateLogMicroserviceInput");
+        descriptor.Description("Input para actualizar un log de microservicio");
+    }
+}
+
+public class UpdateLogServicesContentInputType : InputObjectType<UpdateLogServicesContentInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<UpdateLogServicesContentInput> descriptor)
+    {
+        descriptor.Name("UpdateLogServicesContentInput");
+        descriptor.Description("Input para actualizar contenido de log");
+    }
+}
+
+public class BulkCreateLogServicesContentInputType : InputObjectType<BulkCreateLogServicesContentInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkCreateLogServicesContentInput> descriptor)
+    {
+        descriptor.Name("BulkCreateLogServicesContentInput");
+        descriptor.Description("Input para inserción masiva de contenidos de log");
+    }
+}
+
+public class BulkUpdateLogServicesHeaderInputType : InputObjectType<BulkUpdateLogServicesHeaderInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkUpdateLogServicesHeaderInput> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogServicesHeaderInput");
+        descriptor.Description("Input para actualización masiva de logs de servicios");
+    }
+}
+
+public class BulkUpdateLogMicroserviceInputType : InputObjectType<BulkUpdateLogMicroserviceInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkUpdateLogMicroserviceInput> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogMicroserviceInput");
+        descriptor.Description("Input para actualización masiva de logs de microservicio");
+    }
+}
+
+public class BulkUpdateLogServicesContentInputType : InputObjectType<BulkUpdateLogServicesContentInput>
+{
+    protected override void Configure(IInputObjectTypeDescriptor<BulkUpdateLogServicesContentInput> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogServicesContentInput");
+        descriptor.Description("Input para actualización masiva de contenidos de log");
     }
 }

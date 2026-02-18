@@ -26,3 +26,15 @@ public record CreateLogMicroserviceDto
     public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
 }
+
+/// <summary>
+/// DTO para actualizar LogMicroservice
+/// </summary>
+public record UpdateLogMicroserviceDto
+{
+    public Guid LogMicroserviceId { get; init; }
+    public string? EventName { get; init; }
+    public DateTime? LogDate { get; init; }
+    public string? LogLevel { get; init; }
+    public string? LogMicroserviceText { get; init; }
+}

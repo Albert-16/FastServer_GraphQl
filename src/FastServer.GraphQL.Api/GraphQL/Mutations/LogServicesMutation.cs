@@ -105,6 +105,28 @@ public class LogServicesMutation
     }
 
     /// <summary>
+    /// Actualiza múltiples logs de servicios en una sola operación
+    /// </summary>
+    [GraphQLDescription("Actualiza múltiples logs de servicios en una sola operación atómica en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkUpdateResultDto<LogServicesHeaderDto>> BulkUpdateLogServicesHeader(
+        [Service] ILogServicesHeaderService service,
+        [GraphQLDescription("Datos de los logs a actualizar")] BulkUpdateLogServicesHeaderInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new UpdateLogServicesHeaderDto
+        {
+            LogId = i.LogId,
+            LogDateOut = i.LogDateOut,
+            LogState = i.LogState,
+            ErrorCode = i.ErrorCode,
+            ErrorDescription = i.ErrorDescription,
+            RequestDuration = i.RequestDuration
+        });
+
+        return await service.UpdateBulkAsync(dtos, cancellationToken);
+    }
+
+    /// <summary>
     /// Elimina un log de servicios
     /// </summary>
     [GraphQLDescription("Elimina un log de servicios por su ID desde FastServer_Logs (PostgreSQL)")]
@@ -168,6 +190,48 @@ public class LogMicroserviceMutation
     }
 
     /// <summary>
+    /// Actualiza un log de microservicio
+    /// </summary>
+    [GraphQLDescription("Actualiza un log de microservicio existente en FastServer_Logs (PostgreSQL)")]
+    public async Task<LogMicroserviceDto> UpdateLogMicroservice(
+        [Service] ILogMicroserviceService service,
+        [GraphQLDescription("Datos a actualizar")] UpdateLogMicroserviceInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dto = new UpdateLogMicroserviceDto
+        {
+            LogMicroserviceId = input.LogMicroserviceId,
+            EventName = input.EventName,
+            LogDate = input.LogDate,
+            LogLevel = input.LogLevel,
+            LogMicroserviceText = input.LogMicroserviceText
+        };
+
+        return await service.UpdateAsync(dto, cancellationToken);
+    }
+
+    /// <summary>
+    /// Actualiza múltiples logs de microservicio en una sola operación
+    /// </summary>
+    [GraphQLDescription("Actualiza múltiples logs de microservicio en una sola operación atómica en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkUpdateResultDto<LogMicroserviceDto>> BulkUpdateLogMicroservice(
+        [Service] ILogMicroserviceService service,
+        [GraphQLDescription("Datos de los logs a actualizar")] BulkUpdateLogMicroserviceInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new UpdateLogMicroserviceDto
+        {
+            LogMicroserviceId = i.LogMicroserviceId,
+            EventName = i.EventName,
+            LogDate = i.LogDate,
+            LogLevel = i.LogLevel,
+            LogMicroserviceText = i.LogMicroserviceText
+        });
+
+        return await service.UpdateBulkAsync(dtos, cancellationToken);
+    }
+
+    /// <summary>
     /// Elimina un log de microservicio
     /// </summary>
     [GraphQLDescription("Elimina un log de microservicio por su ID desde FastServer_Logs (PostgreSQL)")]
@@ -205,6 +269,69 @@ public class LogServicesContentMutation
         };
 
         return await service.CreateAsync(dto, cancellationToken);
+    }
+
+    /// <summary>
+    /// Crea múltiples contenidos de log en una sola operación
+    /// </summary>
+    [GraphQLDescription("Crea múltiples contenidos de log en una sola operación atómica en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkInsertResultDto<LogServicesContentDto>> BulkCreateLogServicesContent(
+        [Service] ILogServicesContentService service,
+        [GraphQLDescription("Datos de los contenidos a crear")] BulkCreateLogServicesContentInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new CreateLogServicesContentDto
+        {
+            LogId = i.LogId,
+            LogServicesDate = i.LogServicesDate,
+            LogServicesLogLevel = i.LogServicesLogLevel,
+            LogServicesState = i.LogServicesState,
+            LogServicesContentText = i.LogServicesContentText
+        });
+
+        return await service.CreateBulkAsync(dtos, cancellationToken);
+    }
+
+    /// <summary>
+    /// Actualiza un contenido de log
+    /// </summary>
+    [GraphQLDescription("Actualiza un contenido de log existente en FastServer_Logs (PostgreSQL)")]
+    public async Task<LogServicesContentDto> UpdateLogServicesContent(
+        [Service] ILogServicesContentService service,
+        [GraphQLDescription("Datos a actualizar")] UpdateLogServicesContentInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dto = new UpdateLogServicesContentDto
+        {
+            LogId = input.LogId,
+            LogServicesDate = input.LogServicesDate,
+            LogServicesLogLevel = input.LogServicesLogLevel,
+            LogServicesState = input.LogServicesState,
+            LogServicesContentText = input.LogServicesContentText
+        };
+
+        return await service.UpdateAsync(dto, cancellationToken);
+    }
+
+    /// <summary>
+    /// Actualiza múltiples contenidos de log en una sola operación
+    /// </summary>
+    [GraphQLDescription("Actualiza múltiples contenidos de log en una sola operación atómica en FastServer_Logs (PostgreSQL)")]
+    public async Task<BulkUpdateResultDto<LogServicesContentDto>> BulkUpdateLogServicesContent(
+        [Service] ILogServicesContentService service,
+        [GraphQLDescription("Datos de los contenidos a actualizar")] BulkUpdateLogServicesContentInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var dtos = input.Items.Select(i => new UpdateLogServicesContentDto
+        {
+            LogId = i.LogId,
+            LogServicesDate = i.LogServicesDate,
+            LogServicesLogLevel = i.LogServicesLogLevel,
+            LogServicesState = i.LogServicesState,
+            LogServicesContentText = i.LogServicesContentText
+        });
+
+        return await service.UpdateBulkAsync(dtos, cancellationToken);
     }
 
     /// <summary>

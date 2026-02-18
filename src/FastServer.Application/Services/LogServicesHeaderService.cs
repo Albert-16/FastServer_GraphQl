@@ -383,6 +383,173 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         return _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
+    public async Task<BulkUpdateResultDto<LogServicesHeaderDto>> UpdateBulkAsync(
+        IEnumerable<UpdateLogServicesHeaderDto> dtos,
+        CancellationToken cancellationToken = default)
+    {
+        var dtoList = dtos.ToList();
+
+        if (dtoList.Count == 0)
+        {
+            return new BulkUpdateResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = 0,
+                TotalUpdated = 0,
+                Success = true
+            };
+        }
+
+        if (dtoList.Count > 1000)
+        {
+            return new BulkUpdateResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                Success = false,
+                ErrorMessage = "El límite máximo por lote es de 1000 registros."
+            };
+        }
+
+        var validDtos = new List<UpdateLogServicesHeaderDto>();
+        var errors = new List<BulkUpdateError>();
+
+        for (int i = 0; i < dtoList.Count; i++)
+        {
+            var dto = dtoList[i];
+            if (dto.LogId <= 0)
+            {
+                errors.Add(new BulkUpdateError
+                {
+                    Index = i,
+                    ErrorMessage = "LogId debe ser mayor a 0.",
+                    FailedItem = dto
+                });
+            }
+            else
+            {
+                validDtos.Add(dto);
+            }
+        }
+
+        if (validDtos.Count == 0)
+        {
+            return new BulkUpdateResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                TotalFailed = errors.Count,
+                Success = false,
+                ErrorMessage = "Ningún registro pasó la validación.",
+                Errors = errors
+            };
+        }
+
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        try
+        {
+            var results = await strategy.ExecuteAsync(async ct =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync(ct);
+                var updatedList = new List<LogServicesHeader>();
+
+                foreach (var dto in validDtos)
+                {
+                    var entity = await _context.LogServicesHeaders
+                        .FirstOrDefaultAsync(x => x.LogId == dto.LogId, ct);
+
+                    if (entity == null)
+                    {
+                        errors.Add(new BulkUpdateError
+                        {
+                            Index = dtoList.IndexOf(dto),
+                            ErrorMessage = $"LogServicesHeader con id {dto.LogId} no encontrado.",
+                            FailedItem = dto
+                        });
+                        continue;
+                    }
+
+                    if (dto.LogDateOut.HasValue)
+                        entity.LogDateOut = dto.LogDateOut.Value;
+                    if (dto.LogState.HasValue)
+                        entity.LogState = dto.LogState.Value;
+                    if (dto.ErrorCode != null)
+                        entity.ErrorCode = dto.ErrorCode;
+                    if (dto.ErrorDescription != null)
+                        entity.ErrorDescription = dto.ErrorDescription;
+                    if (dto.RequestDuration.HasValue)
+                        entity.RequestDuration = dto.RequestDuration.Value;
+
+                    _context.LogServicesHeaders.Update(entity);
+                    updatedList.Add(entity);
+                }
+
+                await _context.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+                return _mapper.Map<List<LogServicesHeaderDto>>(updatedList);
+            }, cancellationToken);
+
+            // Publicar eventos en background (fire-and-forget)
+            _ = Task.Run(async () =>
+            {
+                foreach (var entity in results)
+                {
+                    try
+                    {
+                        await _eventPublisher.PublishLogUpdatedAsync(new LogUpdatedEvent
+                        {
+                            LogId = entity.LogId,
+                            LogDateIn = entity.LogDateIn,
+                            LogDateOut = entity.LogDateOut,
+                            LogState = entity.LogState,
+                            LogMethodUrl = entity.LogMethodUrl,
+                            LogMethodName = entity.LogMethodName,
+                            LogFsId = entity.LogFsId,
+                            MethodDescription = entity.MethodDescription,
+                            TciIpPort = entity.TciIpPort,
+                            ErrorCode = entity.ErrorCode,
+                            ErrorDescription = entity.ErrorDescription,
+                            IpFs = entity.IpFs,
+                            TypeProcess = entity.TypeProcess,
+                            LogNodo = entity.LogNodo,
+                            HttpMethod = entity.HttpMethod,
+                            MicroserviceName = entity.MicroserviceName,
+                            RequestDuration = entity.RequestDuration,
+                            TransactionId = entity.TransactionId,
+                            UserId = entity.UserId,
+                            SessionId = entity.SessionId,
+                            RequestId = entity.RequestId,
+                            UpdatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch { /* Log silencioso - no bloquea respuesta */ }
+                }
+            }, CancellationToken.None);
+
+            return new BulkUpdateResultDto<LogServicesHeaderDto>
+            {
+                UpdatedItems = results,
+                TotalRequested = dtoList.Count,
+                TotalUpdated = results.Count,
+                TotalFailed = errors.Count,
+                Success = true,
+                Errors = errors
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BulkUpdateResultDto<LogServicesHeaderDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                TotalFailed = dtoList.Count,
+                Success = false,
+                ErrorMessage = ex.Message,
+                Errors = errors
+            };
+        }
+    }
+
     public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
         var entity = await _context.LogServicesHeaders

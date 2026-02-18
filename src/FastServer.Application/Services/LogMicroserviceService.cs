@@ -232,6 +232,192 @@ public class LogMicroserviceService : ILogMicroserviceService
         return result;
     }
 
+    public async Task<LogMicroserviceDto> UpdateAsync(UpdateLogMicroserviceDto dto, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.LogMicroservices
+            .FirstOrDefaultAsync(x => x.LogMicroserviceId == dto.LogMicroserviceId, cancellationToken);
+
+        if (entity == null)
+            throw new KeyNotFoundException($"LogMicroservice with id {dto.LogMicroserviceId} not found");
+
+        if (dto.EventName != null)
+            entity.EventName = dto.EventName;
+        if (dto.LogDate.HasValue)
+            entity.LogDate = dto.LogDate.Value;
+        if (dto.LogLevel != null)
+            entity.LogLevel = dto.LogLevel;
+        if (dto.LogMicroserviceText != null)
+            entity.LogMicroserviceText = dto.LogMicroserviceText;
+
+        _context.LogMicroservices.Update(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        await _eventPublisher.PublishLogMicroserviceUpdatedAsync(new LogMicroserviceUpdatedEvent
+        {
+            LogId = entity.LogId,
+            LogMicroserviceId = entity.LogMicroserviceId,
+            RequestId = entity.RequestId,
+            EventName = entity.EventName,
+            LogDate = entity.LogDate,
+            LogLevel = entity.LogLevel,
+            LogMicroserviceText = entity.LogMicroserviceText,
+            CreatedAt = DateTime.UtcNow
+        });
+
+        return _mapper.Map<LogMicroserviceDto>(entity);
+    }
+
+    public async Task<BulkUpdateResultDto<LogMicroserviceDto>> UpdateBulkAsync(
+        IEnumerable<UpdateLogMicroserviceDto> dtos,
+        CancellationToken cancellationToken = default)
+    {
+        var dtoList = dtos.ToList();
+
+        if (dtoList.Count == 0)
+        {
+            return new BulkUpdateResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = 0,
+                TotalUpdated = 0,
+                Success = true
+            };
+        }
+
+        if (dtoList.Count > 1000)
+        {
+            return new BulkUpdateResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                Success = false,
+                ErrorMessage = "El límite máximo por lote es de 1000 registros."
+            };
+        }
+
+        var validDtos = new List<UpdateLogMicroserviceDto>();
+        var errors = new List<BulkUpdateError>();
+
+        for (int i = 0; i < dtoList.Count; i++)
+        {
+            var dto = dtoList[i];
+            if (dto.LogMicroserviceId == Guid.Empty)
+            {
+                errors.Add(new BulkUpdateError
+                {
+                    Index = i,
+                    ErrorMessage = "LogMicroserviceId es requerido.",
+                    FailedItem = dto
+                });
+            }
+            else
+            {
+                validDtos.Add(dto);
+            }
+        }
+
+        if (validDtos.Count == 0)
+        {
+            return new BulkUpdateResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                TotalFailed = errors.Count,
+                Success = false,
+                ErrorMessage = "Ningún registro pasó la validación.",
+                Errors = errors
+            };
+        }
+
+        var strategy = _context.Database.CreateExecutionStrategy();
+
+        try
+        {
+            var results = await strategy.ExecuteAsync(async ct =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync(ct);
+                var updatedList = new List<LogMicroservice>();
+
+                foreach (var dto in validDtos)
+                {
+                    var entity = await _context.LogMicroservices
+                        .FirstOrDefaultAsync(x => x.LogMicroserviceId == dto.LogMicroserviceId, ct);
+
+                    if (entity == null)
+                    {
+                        errors.Add(new BulkUpdateError
+                        {
+                            Index = dtoList.IndexOf(dto),
+                            ErrorMessage = $"LogMicroservice con id {dto.LogMicroserviceId} no encontrado.",
+                            FailedItem = dto
+                        });
+                        continue;
+                    }
+
+                    if (dto.EventName != null)
+                        entity.EventName = dto.EventName;
+                    if (dto.LogDate.HasValue)
+                        entity.LogDate = dto.LogDate.Value;
+                    if (dto.LogLevel != null)
+                        entity.LogLevel = dto.LogLevel;
+                    if (dto.LogMicroserviceText != null)
+                        entity.LogMicroserviceText = dto.LogMicroserviceText;
+
+                    _context.LogMicroservices.Update(entity);
+                    updatedList.Add(entity);
+                }
+
+                await _context.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+                return _mapper.Map<List<LogMicroserviceDto>>(updatedList);
+            }, cancellationToken);
+
+            // Publicar eventos en background (fire-and-forget)
+            _ = Task.Run(async () =>
+            {
+                foreach (var result in results)
+                {
+                    try
+                    {
+                        await _eventPublisher.PublishLogMicroserviceUpdatedAsync(new LogMicroserviceUpdatedEvent
+                        {
+                            LogId = result.LogId,
+                            LogMicroserviceId = result.LogMicroserviceId,
+                            RequestId = result.RequestId,
+                            EventName = result.EventName,
+                            LogDate = result.LogDate,
+                            LogLevel = result.LogLevel,
+                            LogMicroserviceText = result.LogMicroserviceText,
+                            CreatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch { /* Log silencioso - no bloquea respuesta */ }
+                }
+            }, CancellationToken.None);
+
+            return new BulkUpdateResultDto<LogMicroserviceDto>
+            {
+                UpdatedItems = results,
+                TotalRequested = dtoList.Count,
+                TotalUpdated = results.Count,
+                TotalFailed = errors.Count,
+                Success = true,
+                Errors = errors
+            };
+        }
+        catch (Exception ex)
+        {
+            return new BulkUpdateResultDto<LogMicroserviceDto>
+            {
+                TotalRequested = dtoList.Count,
+                TotalUpdated = 0,
+                TotalFailed = dtoList.Count,
+                Success = false,
+                ErrorMessage = ex.Message,
+                Errors = errors
+            };
+        }
+    }
+
     public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
         var entities = await _context.LogMicroservices

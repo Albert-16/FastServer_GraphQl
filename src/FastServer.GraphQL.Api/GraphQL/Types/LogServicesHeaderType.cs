@@ -221,6 +221,102 @@ public class BulkInsertLogMicroserviceResultType : ObjectType<BulkInsertResultDt
 }
 
 /// <summary>
+/// Tipo GraphQL para error individual de actualización masiva
+/// </summary>
+public class BulkUpdateErrorType : ObjectType<BulkUpdateError>
+{
+    protected override void Configure(IObjectTypeDescriptor<BulkUpdateError> descriptor)
+    {
+        descriptor.Name("BulkUpdateError");
+        descriptor.Description("Error individual en actualización masiva");
+
+        descriptor.Field(x => x.Index).Name("index").Description("Índice del item que falló (base 0)");
+        descriptor.Field(x => x.ErrorMessage).Name("errorMessage").Description("Descripción del error");
+        descriptor.Ignore(x => x.FailedItem);
+    }
+}
+
+/// <summary>
+/// Tipo GraphQL para resultado de actualización masiva de LogServicesHeader
+/// </summary>
+public class BulkUpdateLogServicesHeaderResultType : ObjectType<BulkUpdateResultDto<LogServicesHeaderDto>>
+{
+    protected override void Configure(IObjectTypeDescriptor<BulkUpdateResultDto<LogServicesHeaderDto>> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogServicesHeaderResult");
+        descriptor.Description("Resultado de actualización masiva de logs de servicios");
+
+        descriptor.Field(x => x.UpdatedItems).Name("updatedItems").Description("Items actualizados exitosamente");
+        descriptor.Field(x => x.TotalRequested).Name("totalRequested").Description("Total de items solicitados");
+        descriptor.Field(x => x.TotalUpdated).Name("totalUpdated").Description("Total de items actualizados");
+        descriptor.Field(x => x.TotalFailed).Name("totalFailed").Description("Total de items que fallaron");
+        descriptor.Field(x => x.Success).Name("success").Description("Indica si la operación procesó al menos un item");
+        descriptor.Field(x => x.ErrorMessage).Name("errorMessage").Description("Mensaje de error general si la operación falló completamente");
+        descriptor.Field(x => x.Errors).Name("errors").Description("Detalle de errores por cada item que falló");
+    }
+}
+
+/// <summary>
+/// Tipo GraphQL para resultado de actualización masiva de LogMicroservice
+/// </summary>
+public class BulkUpdateLogMicroserviceResultType : ObjectType<BulkUpdateResultDto<LogMicroserviceDto>>
+{
+    protected override void Configure(IObjectTypeDescriptor<BulkUpdateResultDto<LogMicroserviceDto>> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogMicroserviceResult");
+        descriptor.Description("Resultado de actualización masiva de logs de microservicio");
+
+        descriptor.Field(x => x.UpdatedItems).Name("updatedItems").Description("Items actualizados exitosamente");
+        descriptor.Field(x => x.TotalRequested).Name("totalRequested").Description("Total de items solicitados");
+        descriptor.Field(x => x.TotalUpdated).Name("totalUpdated").Description("Total de items actualizados");
+        descriptor.Field(x => x.TotalFailed).Name("totalFailed").Description("Total de items que fallaron");
+        descriptor.Field(x => x.Success).Name("success").Description("Indica si la operación procesó al menos un item");
+        descriptor.Field(x => x.ErrorMessage).Name("errorMessage").Description("Mensaje de error general si la operación falló completamente");
+        descriptor.Field(x => x.Errors).Name("errors").Description("Detalle de errores por cada item que falló");
+    }
+}
+
+/// <summary>
+/// Tipo GraphQL para resultado de actualización masiva de LogServicesContent
+/// </summary>
+public class BulkUpdateLogServicesContentResultType : ObjectType<BulkUpdateResultDto<LogServicesContentDto>>
+{
+    protected override void Configure(IObjectTypeDescriptor<BulkUpdateResultDto<LogServicesContentDto>> descriptor)
+    {
+        descriptor.Name("BulkUpdateLogServicesContentResult");
+        descriptor.Description("Resultado de actualización masiva de contenidos de log");
+
+        descriptor.Field(x => x.UpdatedItems).Name("updatedItems").Description("Items actualizados exitosamente");
+        descriptor.Field(x => x.TotalRequested).Name("totalRequested").Description("Total de items solicitados");
+        descriptor.Field(x => x.TotalUpdated).Name("totalUpdated").Description("Total de items actualizados");
+        descriptor.Field(x => x.TotalFailed).Name("totalFailed").Description("Total de items que fallaron");
+        descriptor.Field(x => x.Success).Name("success").Description("Indica si la operación procesó al menos un item");
+        descriptor.Field(x => x.ErrorMessage).Name("errorMessage").Description("Mensaje de error general si la operación falló completamente");
+        descriptor.Field(x => x.Errors).Name("errors").Description("Detalle de errores por cada item que falló");
+    }
+}
+
+/// <summary>
+/// Tipo GraphQL para resultado de inserción masiva de LogServicesContent
+/// </summary>
+public class BulkInsertLogServicesContentResultType : ObjectType<BulkInsertResultDto<LogServicesContentDto>>
+{
+    protected override void Configure(IObjectTypeDescriptor<BulkInsertResultDto<LogServicesContentDto>> descriptor)
+    {
+        descriptor.Name("BulkInsertLogServicesContentResult");
+        descriptor.Description("Resultado de inserción masiva de contenidos de log");
+
+        descriptor.Field(x => x.InsertedItems).Name("insertedItems").Description("Items insertados exitosamente");
+        descriptor.Field(x => x.TotalRequested).Name("totalRequested").Description("Total de items solicitados");
+        descriptor.Field(x => x.TotalInserted).Name("totalInserted").Description("Total de items insertados");
+        descriptor.Field(x => x.TotalFailed).Name("totalFailed").Description("Total de items que fallaron");
+        descriptor.Field(x => x.Success).Name("success").Description("Indica si la operación procesó al menos un item");
+        descriptor.Field(x => x.ErrorMessage).Name("errorMessage").Description("Mensaje de error general si la operación falló completamente");
+        descriptor.Field(x => x.Errors).Name("errors").Description("Detalle de errores por cada item que falló");
+    }
+}
+
+/// <summary>
 /// Tipo GraphQL para resultados paginados
 /// </summary>
 public class PaginatedLogServicesHeaderType : ObjectType<PaginatedResultDto<LogServicesHeaderDto>>

@@ -16,8 +16,8 @@ public class MicroservicesMutation
     [GraphQLDescription("Crea un nuevo registro de microservicio en el sistema")]
     public async Task<MicroserviceRegisterDto> CreateMicroserviceAsync(
         [Service] MicroserviceRegisterService service,
-        [GraphQLDescription("ID del cluster al que pertenece el microservicio")] long? clusterId,
-        [GraphQLDescription("Nombre del microservicio")] string? name,
+        [GraphQLDescription("ID del cluster al que pertenece el microservicio")] long clusterId,
+        [GraphQLDescription("Nombre del microservicio")] string name,
         [GraphQLDescription("Indica si el microservicio está activo (por defecto: true)")] bool active = true,
         [GraphQLDescription("Indica si tiene conexión al Core (por defecto: false)")] bool coreConnection = false,
         CancellationToken cancellationToken = default)
@@ -64,7 +64,7 @@ public class MicroservicesMutation
     [GraphQLDescription("Crea un nuevo cluster de microservicios")]
     public async Task<MicroservicesClusterDto> CreateClusterAsync(
         [Service] MicroservicesClusterService service,
-        [GraphQLDescription("Nombre del cluster")] string? name,
+        [GraphQLDescription("Nombre del cluster")] string name,
         [GraphQLDescription("Nombre del servidor (opcional)")] string? serverName = null,
         [GraphQLDescription("Dirección IP del servidor (opcional)")] string? serverIp = null,
         [GraphQLDescription("Indica si el cluster está activo (por defecto: true)")] bool active = true,
@@ -112,8 +112,8 @@ public class MicroservicesMutation
     [GraphQLDescription("Crea un nuevo usuario en el sistema")]
     public async Task<UserDto> CreateUserAsync(
         [Service] UserService service,
-        [GraphQLDescription("Nombre del usuario")] string? name,
-        [GraphQLDescription("Correo electrónico del usuario")] string? email,
+        [GraphQLDescription("Nombre del usuario")] string name,
+        [GraphQLDescription("Correo electrónico del usuario")] string email,
         [GraphQLDescription("Código PeopleSoft del usuario (opcional)")] string? peoplesoft = null,
         [GraphQLDescription("Indica si el usuario está activo (por defecto: true)")] bool active = true,
         CancellationToken cancellationToken = default)

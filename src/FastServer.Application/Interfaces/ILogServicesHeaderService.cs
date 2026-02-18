@@ -14,6 +14,7 @@ public interface ILogServicesHeaderService
     Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, CancellationToken cancellationToken = default);
     Task<BulkInsertResultDto<LogServicesHeaderDto>> CreateBulkAsync(IEnumerable<CreateLogServicesHeaderDto> dtos, CancellationToken cancellationToken = default);
     Task<LogServicesHeaderDto> UpdateAsync(UpdateLogServicesHeaderDto dto, CancellationToken cancellationToken = default);
+    Task<BulkUpdateResultDto<LogServicesHeaderDto>> UpdateBulkAsync(IEnumerable<UpdateLogServicesHeaderDto> dtos, CancellationToken cancellationToken = default);
     Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default);
     Task<IEnumerable<LogServicesHeaderDto>> GetFailedLogsAsync(DateTime? fromDate = null, CancellationToken cancellationToken = default);
 }
