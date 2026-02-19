@@ -16,11 +16,6 @@ public class LogMicroserviceHistorico
     public long LogId { get; set; }
 
     /// <summary>
-    /// Identificador de la solicitud
-    /// </summary>
-    public long RequestId { get; set; }
-
-    /// <summary>
     /// Nombre del evento
     /// </summary>
     public string EventName { get; set; } = string.Empty;

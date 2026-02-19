@@ -22,9 +22,8 @@ public class LogServicesHeaderHistorico : BaseEntity
     public string? LogNodo { get; set; }
     public string? HttpMethod { get; set; }
     public string? MicroserviceName { get; set; }
-    public long? RequestDuration { get; set; }
+    public string? RequestDuration { get; set; }
     public string? TransactionId { get; set; }
     public string? UserId { get; set; }
     public string? SessionId { get; set; }
-    public Guid? RequestId { get; set; }
 }

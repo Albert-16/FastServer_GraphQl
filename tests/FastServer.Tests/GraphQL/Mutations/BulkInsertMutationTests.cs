@@ -159,11 +159,10 @@ public class BulkCreateLogServicesHeaderMutationTests
                     LogNodo = "node-1",
                     HttpMethod = "GET",
                     MicroserviceName = "user-service",
-                    RequestDuration = 150,
+                    RequestDuration = "150.00 ms",
                     TransactionId = "txn-001",
                     UserId = "user-123",
-                    SessionId = "sess-456",
-                    RequestId = 789
+                    SessionId = "sess-456"
                 }
             }
         };
@@ -192,8 +191,7 @@ public class BulkCreateLogServicesHeaderMutationTests
         capturedDto.TransactionId.Should().Be("txn-001");
         capturedDto.UserId.Should().Be("user-123");
         capturedDto.SessionId.Should().Be("sess-456");
-        capturedDto.RequestId.Should().Be(789);
-        capturedDto.RequestDuration.Should().Be(150);
+        capturedDto.RequestDuration.Should().Be("150.00 ms");
     }
 }
 
@@ -216,8 +214,8 @@ public class BulkCreateLogMicroserviceMutationTests
         {
             Items = new List<CreateLogMicroserviceInput>
             {
-                new() { LogId = 100, RequestId = 1, EventName = "TestEvent1", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Log 1" },
-                new() { LogId = 101, RequestId = 2, EventName = "TestEvent2", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Log 2" }
+                new() { LogId = 100, EventName = "TestEvent1", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Log 1" },
+                new() { LogId = 101, EventName = "TestEvent2", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Log 2" }
             }
         };
 
@@ -258,7 +256,7 @@ public class BulkCreateLogMicroserviceMutationTests
         {
             Items = new List<CreateLogMicroserviceInput>
             {
-                new() { LogId = 55, RequestId = 1, EventName = "FailEvent", LogDate = logDate, LogLevel = "ERROR", LogMicroserviceText = "Something failed" }
+                new() { LogId = 55, EventName = "FailEvent", LogDate = logDate, LogLevel = "ERROR", LogMicroserviceText = "Something failed" }
             }
         };
 
@@ -345,7 +343,7 @@ public class BulkCreateLogServicesHeaderServiceTests : IDisposable
                 LogDateIn = now, LogDateOut = now.AddSeconds(5), LogState = LogState.Completed,
                 LogMethodUrl = "/api/users/list", LogMethodName = "ListUsers", LogFsId = Guid.Parse("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
                 MicroserviceName = "user-management", HttpMethod = "GET",
-                TransactionId = "txn-abc-123", UserId = "admin-001", RequestDuration = 250, RequestId = 12345
+                TransactionId = "txn-abc-123", UserId = "admin-001", RequestDuration = "250.00 ms"
             }
         };
 
@@ -356,7 +354,7 @@ public class BulkCreateLogServicesHeaderServiceTests : IDisposable
         inserted.LogMethodUrl.Should().Be("/api/users/list");
         inserted.MicroserviceName.Should().Be("user-management");
         inserted.TransactionId.Should().Be("txn-abc-123");
-        inserted.RequestDuration.Should().Be(250);
+        inserted.RequestDuration.Should().Be("250.00 ms");
 
         var dbEntity = await _context.LogServicesHeaders.FirstAsync();
         dbEntity.LogMethodUrl.Should().Be("/api/users/list");
@@ -551,8 +549,7 @@ public class UpdateLogServicesHeaderMutationTests
             MicroserviceName = "updated-service",
             UserId = "user-updated",
             SessionId = "sess-updated",
-            TransactionId = "txn-updated",
-            RequestId = 999
+            TransactionId = "txn-updated"
         };
 
         UpdateLogServicesHeaderDto? capturedDto = null;
@@ -577,7 +574,6 @@ public class UpdateLogServicesHeaderMutationTests
         capturedDto.UserId.Should().Be("user-updated");
         capturedDto.SessionId.Should().Be("sess-updated");
         capturedDto.TransactionId.Should().Be("txn-updated");
-        capturedDto.RequestId.Should().Be(999);
     }
 
     [Fact]
@@ -589,7 +585,7 @@ public class UpdateLogServicesHeaderMutationTests
             Items = new List<UpdateLogServicesHeaderInput>
             {
                 new() { LogId = 1, MicroserviceName = "svc-A", UserId = "usr-1", SessionId = "sess-1", TransactionId = "txn-1" },
-                new() { LogId = 2, LogMethodName = "GetData", TypeProcess = "REST", RequestId = 888 }
+                new() { LogId = 2, LogMethodName = "GetData", TypeProcess = "REST" }
             }
         };
 
@@ -615,7 +611,6 @@ public class UpdateLogServicesHeaderMutationTests
         dtoList[1].LogId.Should().Be(2);
         dtoList[1].LogMethodName.Should().Be("GetData");
         dtoList[1].TypeProcess.Should().Be("REST");
-        dtoList[1].RequestId.Should().Be(888);
     }
 }
 
@@ -691,8 +686,7 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
             MicroserviceName = "new-service",
             UserId = "new-user",
             SessionId = "sess-new",
-            TransactionId = "txn-new",
-            RequestId = 777
+            TransactionId = "txn-new"
         };
 
         // Act
@@ -711,7 +705,6 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
         updated.UserId.Should().Be("new-user");
         updated.SessionId.Should().Be("sess-new");
         updated.TransactionId.Should().Be("txn-new");
-        updated.RequestId.Should().Be(777);
     }
 
     [Fact]
@@ -813,9 +806,9 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
     {
         var dtos = new List<CreateLogMicroserviceDto>
         {
-            new() { LogId = 1001, RequestId = 1, EventName = "TestEvent1", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Starting process" },
-            new() { LogId = 1002, RequestId = 2, EventName = "TestEvent2", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Slow response" },
-            new() { LogId = 1003, RequestId = 3, EventName = "TestEvent3", LogDate = DateTime.UtcNow, LogLevel = "ERROR", LogMicroserviceText = "Timeout" }
+            new() { LogId = 1001, EventName = "TestEvent1", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Starting process" },
+            new() { LogId = 1002, EventName = "TestEvent2", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Slow response" },
+            new() { LogId = 1003, EventName = "TestEvent3", LogDate = DateTime.UtcNow, LogLevel = "ERROR", LogMicroserviceText = "Timeout" }
         };
 
         var result = await _service.CreateBulkAsync(dtos);
@@ -836,7 +829,7 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
         var logDate = DateTime.UtcNow;
         var dtos = new List<CreateLogMicroserviceDto>
         {
-            new() { LogId = 500, RequestId = 1, EventName = "ErrorEvent", LogDate = logDate, LogLevel = "ERROR", LogMicroserviceText = "NullReferenceException en UserController.Get" }
+            new() { LogId = 500, EventName = "ErrorEvent", LogDate = logDate, LogLevel = "ERROR", LogMicroserviceText = "NullReferenceException en UserController.Get" }
         };
 
         var result = await _service.CreateBulkAsync(dtos);
@@ -866,7 +859,7 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
     {
         var dtos = Enumerable.Range(1, 1001).Select(i => new CreateLogMicroserviceDto
         {
-            LogId = i + 10000, RequestId = i, EventName = $"Event{i}", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = $"Log {i}"
+            LogId = i + 10000, EventName = $"Event{i}", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = $"Log {i}"
         }).ToList();
 
         var result = await _service.CreateBulkAsync(dtos);
@@ -886,10 +879,10 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
     {
         var dtos = new List<CreateLogMicroserviceDto>
         {
-            new() { LogId = 100, RequestId = 1, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Valid" },
-            new() { LogId = 0, RequestId = 2, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Invalid LogId" },   // inválido
-            new() { LogId = -5, RequestId = 3, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Negative LogId" }, // inválido
-            new() { LogId = 200, RequestId = 4, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "ERROR", LogMicroserviceText = "Valid too" }
+            new() { LogId = 100, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Valid" },
+            new() { LogId = 0, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Invalid LogId" },   // inválido
+            new() { LogId = -5, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "WARN", LogMicroserviceText = "Negative LogId" }, // inválido
+            new() { LogId = 200, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "ERROR", LogMicroserviceText = "Valid too" }
         };
 
         var result = await _service.CreateBulkAsync(dtos);
@@ -910,8 +903,8 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
     {
         var dtos = new List<CreateLogMicroserviceDto>
         {
-            new() { LogId = 0, RequestId = 1, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Bad 1" },
-            new() { LogId = -1, RequestId = 2, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Bad 2" }
+            new() { LogId = 0, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Bad 1" },
+            new() { LogId = -1, EventName = "TestEvent", LogDate = DateTime.UtcNow, LogLevel = "INFO", LogMicroserviceText = "Bad 2" }
         };
 
         var result = await _service.CreateBulkAsync(dtos);

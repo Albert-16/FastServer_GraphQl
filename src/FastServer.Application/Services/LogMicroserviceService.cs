@@ -160,7 +160,6 @@ public class LogMicroserviceService : ILogMicroserviceService
                         {
                             LogId = result.LogId,
                             LogMicroserviceId = result.LogMicroserviceId,
-                            RequestId = result.RequestId,
                             EventName = result.EventName,
                             LogDate = result.LogDate,
                             LogLevel = result.LogLevel,
@@ -200,8 +199,6 @@ public class LogMicroserviceService : ILogMicroserviceService
     {
         if (dto.LogId <= 0)
             return "LogId debe ser mayor a 0.";
-        if (dto.RequestId <= 0)
-            return "RequestId debe ser mayor a 0.";
         if (string.IsNullOrWhiteSpace(dto.EventName))
             return "EventName es requerido.";
         return null;
@@ -221,7 +218,6 @@ public class LogMicroserviceService : ILogMicroserviceService
         {
             LogId = result.LogId,
             LogMicroserviceId = result.LogMicroserviceId,
-            RequestId = result.RequestId,
             EventName = result.EventName,
             LogDate = result.LogDate,
             LogLevel = result.LogLevel,
@@ -256,7 +252,6 @@ public class LogMicroserviceService : ILogMicroserviceService
         {
             LogId = entity.LogId,
             LogMicroserviceId = entity.LogMicroserviceId,
-            RequestId = entity.RequestId,
             EventName = entity.EventName,
             LogDate = entity.LogDate,
             LogLevel = entity.LogLevel,
@@ -382,7 +377,6 @@ public class LogMicroserviceService : ILogMicroserviceService
                         {
                             LogId = result.LogId,
                             LogMicroserviceId = result.LogMicroserviceId,
-                            RequestId = result.RequestId,
                             EventName = result.EventName,
                             LogDate = result.LogDate,
                             LogLevel = result.LogLevel,

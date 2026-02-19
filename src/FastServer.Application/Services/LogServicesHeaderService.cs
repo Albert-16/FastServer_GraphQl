@@ -248,7 +248,6 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                             TransactionId = entity.TransactionId,
                             UserId = entity.UserId,
                             SessionId = entity.SessionId,
-                            RequestId = entity.RequestId,
                             CreatedAt = DateTime.UtcNow
                         });
                     }
@@ -322,7 +321,6 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             TransactionId = entity.TransactionId,
             UserId = entity.UserId,
             SessionId = entity.SessionId,
-            RequestId = entity.RequestId,
             CreatedAt = DateTime.UtcNow
         };
         await _eventPublisher.PublishLogCreatedAsync(logEvent);
@@ -364,14 +362,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             entity.SessionId = dto.SessionId;
         if (dto.TransactionId != null)
             entity.TransactionId = dto.TransactionId;
-        if (dto.RequestId.HasValue)
-            entity.RequestId = dto.RequestId.Value;
         if (dto.ErrorCode != null)
             entity.ErrorCode = dto.ErrorCode;
         if (dto.ErrorDescription != null)
             entity.ErrorDescription = dto.ErrorDescription;
-        if (dto.RequestDuration.HasValue)
-            entity.RequestDuration = dto.RequestDuration.Value;
+        if (dto.RequestDuration != null)
+            entity.RequestDuration = dto.RequestDuration;
 
         _context.LogServicesHeaders.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
@@ -399,7 +395,6 @@ public class LogServicesHeaderService : ILogServicesHeaderService
             TransactionId = entity.TransactionId,
             UserId = entity.UserId,
             SessionId = entity.SessionId,
-            RequestId = entity.RequestId,
             UpdatedAt = DateTime.UtcNow
         };
         await _eventPublisher.PublishLogUpdatedAsync(logEvent);
@@ -519,14 +514,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                         entity.SessionId = dto.SessionId;
                     if (dto.TransactionId != null)
                         entity.TransactionId = dto.TransactionId;
-                    if (dto.RequestId.HasValue)
-                        entity.RequestId = dto.RequestId.Value;
                     if (dto.ErrorCode != null)
                         entity.ErrorCode = dto.ErrorCode;
                     if (dto.ErrorDescription != null)
                         entity.ErrorDescription = dto.ErrorDescription;
-                    if (dto.RequestDuration.HasValue)
-                        entity.RequestDuration = dto.RequestDuration.Value;
+                    if (dto.RequestDuration != null)
+                        entity.RequestDuration = dto.RequestDuration;
 
                     _context.LogServicesHeaders.Update(entity);
                     updatedList.Add(entity);
@@ -566,7 +559,6 @@ public class LogServicesHeaderService : ILogServicesHeaderService
                             TransactionId = entity.TransactionId,
                             UserId = entity.UserId,
                             SessionId = entity.SessionId,
-                            RequestId = entity.RequestId,
                             UpdatedAt = DateTime.UtcNow
                         });
                     }

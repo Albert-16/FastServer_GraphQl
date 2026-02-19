@@ -7,7 +7,6 @@ public class LogMicroserviceUpdatedEvent
 {
     public long LogId { get; set; }
     public Guid LogMicroserviceId { get; set; }
-    public long RequestId { get; set; }
     public string EventName { get; set; } = string.Empty;
     public DateTime? LogDate { get; set; }
     public string? LogLevel { get; set; }

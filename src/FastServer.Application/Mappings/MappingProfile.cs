@@ -19,8 +19,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.LogId, opt => opt.Ignore());
 
         CreateMap<LogServicesHeaderHistorico, LogServicesHeaderDto>()
-            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId))
-            .ForMember(dest => dest.RequestId, opt => opt.MapFrom(src => src.RequestId != null ? (long?)src.RequestId.GetHashCode() : null));
+            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
 
         // LogMicroservice mappings
         CreateMap<LogMicroservice, LogMicroserviceDto>();

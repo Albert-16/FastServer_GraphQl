@@ -24,10 +24,6 @@ public class LogMicroserviceHistoricoConfiguration : IEntityTypeConfiguration<Lo
             .HasColumnName("fastserver_log_id")
             .IsRequired();
 
-        builder.Property(e => e.RequestId)
-            .HasColumnName("fastserver_request_id")
-            .IsRequired();
-
         builder.Property(e => e.EventName)
             .HasColumnName("fastserver_event_name")
             .HasMaxLength(250)

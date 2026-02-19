@@ -80,7 +80,7 @@ public class LogServicesHeaderType : ObjectType<LogServicesHeaderDto>
 
         descriptor.Field(x => x.RequestDuration)
             .Name("requestDuration")
-            .Description("Duración de la solicitud en milisegundos");
+            .Description("Duración de la solicitud (ej: 1980.67 ms)");
 
         descriptor.Field(x => x.TransactionId)
             .Name("transactionId")
@@ -93,10 +93,6 @@ public class LogServicesHeaderType : ObjectType<LogServicesHeaderDto>
         descriptor.Field(x => x.SessionId)
             .Name("sessionId")
             .Description("ID de la sesión");
-
-        descriptor.Field(x => x.RequestId)
-            .Name("requestId")
-            .Description("ID de la solicitud");
     }
 }
 
@@ -117,10 +113,6 @@ public class LogMicroserviceType : ObjectType<LogMicroserviceDto>
         descriptor.Field(x => x.LogId)
             .Name("logId")
             .Description("Identificador del log");
-
-        descriptor.Field(x => x.RequestId)
-            .Name("requestId")
-            .Description("Identificador de la solicitud");
 
         descriptor.Field(x => x.EventName)
             .Name("eventName")

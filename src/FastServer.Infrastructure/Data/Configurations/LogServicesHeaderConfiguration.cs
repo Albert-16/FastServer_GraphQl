@@ -81,7 +81,8 @@ public class LogServicesHeaderConfiguration : IEntityTypeConfiguration<LogServic
             .HasMaxLength(255);
 
         builder.Property(e => e.RequestDuration)
-            .HasColumnName("fastserver_request_duration");
+            .HasColumnName("fastserver_request_duration")
+            .HasMaxLength(50);
 
         builder.Property(e => e.TransactionId)
             .HasColumnName("fastserver_transaction_id")
@@ -94,9 +95,6 @@ public class LogServicesHeaderConfiguration : IEntityTypeConfiguration<LogServic
         builder.Property(e => e.SessionId)
             .HasColumnName("fastserver_session_id")
             .HasMaxLength(100);
-
-        builder.Property(e => e.RequestId)
-            .HasColumnName("fastserver_request_id");
 
         // Índices simples
         builder.HasIndex(e => e.LogDateIn);

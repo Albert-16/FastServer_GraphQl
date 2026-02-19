@@ -39,8 +39,7 @@ public class LogServicesMutation
             RequestDuration = input.RequestDuration,
             TransactionId = input.TransactionId,
             UserId = input.UserId,
-            SessionId = input.SessionId,
-            RequestId = input.RequestId
+            SessionId = input.SessionId
         };
 
         return await service.CreateAsync(dto, cancellationToken);
@@ -75,8 +74,7 @@ public class LogServicesMutation
             RequestDuration = i.RequestDuration,
             TransactionId = i.TransactionId,
             UserId = i.UserId,
-            SessionId = i.SessionId,
-            RequestId = i.RequestId
+            SessionId = i.SessionId
         });
 
         return await service.CreateBulkAsync(dtos, cancellationToken);
@@ -107,7 +105,6 @@ public class LogServicesMutation
             UserId = input.UserId,
             SessionId = input.SessionId,
             TransactionId = input.TransactionId,
-            RequestId = input.RequestId,
             ErrorCode = input.ErrorCode,
             ErrorDescription = input.ErrorDescription,
             RequestDuration = input.RequestDuration
@@ -141,7 +138,6 @@ public class LogServicesMutation
             UserId = i.UserId,
             SessionId = i.SessionId,
             TransactionId = i.TransactionId,
-            RequestId = i.RequestId,
             ErrorCode = i.ErrorCode,
             ErrorDescription = i.ErrorDescription,
             RequestDuration = i.RequestDuration
@@ -181,7 +177,6 @@ public class LogMicroserviceMutation
         var dto = new CreateLogMicroserviceDto
         {
             LogId = input.LogId,
-            RequestId = input.RequestId,
             EventName = input.EventName,
             LogDate = input.LogDate,
             LogLevel = input.LogLevel,
@@ -203,7 +198,6 @@ public class LogMicroserviceMutation
         var dtos = input.Items.Select(i => new CreateLogMicroserviceDto
         {
             LogId = i.LogId,
-            RequestId = i.RequestId,
             EventName = i.EventName,
             LogDate = i.LogDate,
             LogLevel = i.LogLevel,

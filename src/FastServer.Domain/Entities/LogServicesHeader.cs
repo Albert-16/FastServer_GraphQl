@@ -83,9 +83,9 @@ public class LogServicesHeader : BaseEntity
     public string? MicroserviceName { get; set; }
 
     /// <summary>
-    /// Duración de la solicitud en milisegundos
+    /// Duración de la solicitud (ej: "1980.67 ms")
     /// </summary>
-    public long? RequestDuration { get; set; }
+    public string? RequestDuration { get; set; }
 
     /// <summary>
     /// ID de la transacción
@@ -102,8 +102,4 @@ public class LogServicesHeader : BaseEntity
     /// </summary>
     public string? SessionId { get; set; }
 
-    /// <summary>
-    /// ID de la solicitud
-    /// </summary>
-    public long? RequestId { get; set; }
 }

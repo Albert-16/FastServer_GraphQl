@@ -3,6 +3,7 @@ using System;
 using FastServer.Infrastructure.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
 {
     [DbContext(typeof(PostgreSqlLogsDbContext))]
-    partial class PostgreSqlLogsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219161644_RemoveRequestIdAndChangeRequestDurationToString")]
+    partial class RemoveRequestIdAndChangeRequestDurationToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

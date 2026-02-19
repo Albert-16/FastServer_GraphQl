@@ -23,11 +23,10 @@ public record LogServicesHeaderDto
     public string? LogNodo { get; init; }
     public string? HttpMethod { get; init; }
     public string? MicroserviceName { get; init; }
-    public long? RequestDuration { get; init; }
+    public string? RequestDuration { get; init; }
     public string? TransactionId { get; init; }
     public string? UserId { get; init; }
     public string? SessionId { get; init; }
-    public long? RequestId { get; init; }
 }
 
 /// <summary>
@@ -50,11 +49,10 @@ public record CreateLogServicesHeaderDto
     public string? LogNodo { get; init; }
     public string? HttpMethod { get; init; }
     public string? MicroserviceName { get; init; }
-    public long? RequestDuration { get; init; }
+    public string? RequestDuration { get; init; }
     public string? TransactionId { get; init; }
     public string? UserId { get; init; }
     public string? SessionId { get; init; }
-    public long? RequestId { get; init; }
 }
 
 /// <summary>
@@ -76,8 +74,7 @@ public record UpdateLogServicesHeaderDto
     public string? UserId { get; init; }
     public string? SessionId { get; init; }
     public string? TransactionId { get; init; }
-    public long? RequestId { get; init; }
     public string? ErrorCode { get; init; }
     public string? ErrorDescription { get; init; }
-    public long? RequestDuration { get; init; }
+    public string? RequestDuration { get; init; }
 }
