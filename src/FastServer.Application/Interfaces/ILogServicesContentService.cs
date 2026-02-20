@@ -7,6 +7,7 @@ namespace FastServer.Application.Interfaces;
 /// </summary>
 public interface ILogServicesContentService
 {
+    Task<PaginatedResultDto<LogServicesContentDto>> GetAllAsync(PaginationParamsDto pagination, CancellationToken cancellationToken = default);
     Task<LogServicesContentDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     Task<IEnumerable<LogServicesContentDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default);
     Task<IEnumerable<LogServicesContentDto>> SearchByContentAsync(string searchText, CancellationToken cancellationToken = default);

@@ -70,7 +70,8 @@ public class CreateLogMicroserviceInput
 public class CreateLogServicesContentInput
 {
     public long LogId { get; set; }
-    public string? LogServicesDate { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public DateTime? LogServicesDate { get; set; }
     public string? LogServicesLogLevel { get; set; }
     public string? LogServicesState { get; set; }
     public string? LogServicesContentText { get; set; }
@@ -111,8 +112,9 @@ public class UpdateLogMicroserviceInput
 /// </summary>
 public class UpdateLogServicesContentInput
 {
-    public long LogId { get; set; }
-    public string? LogServicesDate { get; set; }
+    public Guid LogServicesContentId { get; set; }
+    public string? EventName { get; set; }
+    public DateTime? LogServicesDate { get; set; }
     public string? LogServicesLogLevel { get; set; }
     public string? LogServicesState { get; set; }
     public string? LogServicesContentText { get; set; }

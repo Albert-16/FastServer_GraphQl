@@ -34,9 +34,31 @@ public class LogServicesContentService : ILogServicesContentService
         _eventPublisher = eventPublisher;
     }
 
+    public async Task<PaginatedResultDto<LogServicesContentDto>> GetAllAsync(
+        PaginationParamsDto pagination,
+        CancellationToken cancellationToken = default)
+    {
+        int totalCount = await _context.LogServicesContents.CountAsync(cancellationToken);
+
+        List<LogServicesContent> entities = await _context.LogServicesContents
+            .AsNoTracking()
+            .OrderByDescending(x => x.LogServicesDate)
+            .Skip(pagination.Skip)
+            .Take(pagination.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PaginatedResultDto<LogServicesContentDto>
+        {
+            Items = _mapper.Map<IEnumerable<LogServicesContentDto>>(entities),
+            TotalCount = totalCount,
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize
+        };
+    }
+
     public async Task<LogServicesContentDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.LogServicesContents
+        LogServicesContent? entity = await _context.LogServicesContents
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
 
@@ -45,7 +67,7 @@ public class LogServicesContentService : ILogServicesContentService
 
     public async Task<IEnumerable<LogServicesContentDto>> GetByLogIdAsync(long logId, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.LogServicesContents
+        List<LogServicesContent> entities = await _context.LogServicesContents
             .AsNoTracking()
             .Where(x => x.LogId == logId)
             .OrderBy(x => x.LogServicesDate)
@@ -56,7 +78,7 @@ public class LogServicesContentService : ILogServicesContentService
 
     public async Task<IEnumerable<LogServicesContentDto>> SearchByContentAsync(string searchText, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.LogServicesContents
+        List<LogServicesContent> entities = await _context.LogServicesContents
             .AsNoTracking()
             .Where(x => x.LogServicesContentText != null && x.LogServicesContentText.Contains(searchText))
             .OrderByDescending(x => x.LogServicesDate)
@@ -67,23 +89,25 @@ public class LogServicesContentService : ILogServicesContentService
 
     public async Task<LogServicesContentDto> CreateAsync(CreateLogServicesContentDto dto, CancellationToken cancellationToken = default)
     {
-        var entity = _mapper.Map<LogServicesContent>(dto);
+        LogServicesContent entity = _mapper.Map<LogServicesContent>(dto);
+        entity.LogServicesContentId = Guid.CreateVersion7();
+
         await _context.LogServicesContents.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var result = _mapper.Map<LogServicesContentDto>(entity);
+        LogServicesContentDto result = _mapper.Map<LogServicesContentDto>(entity);
 
-        // Crear evento con los campos correctos
-        var createdEvent = new LogServicesContentCreatedEvent
+        await _eventPublisher.PublishLogServicesContentCreatedAsync(new LogServicesContentCreatedEvent
         {
+            LogServicesContentId = result.LogServicesContentId,
             LogId = result.LogId,
+            EventName = result.EventName,
             LogServicesDate = result.LogServicesDate,
             LogServicesLogLevel = result.LogServicesLogLevel,
             LogServicesState = result.LogServicesState,
             LogServicesContentText = result.LogServicesContentText,
             CreatedAt = DateTime.UtcNow
-        };
-        await _eventPublisher.PublishLogServicesContentCreatedAsync(createdEvent);
+        });
 
         return result;
     }
@@ -92,7 +116,7 @@ public class LogServicesContentService : ILogServicesContentService
         IEnumerable<CreateLogServicesContentDto> dtos,
         CancellationToken cancellationToken = default)
     {
-        var dtoList = dtos.ToList();
+        List<CreateLogServicesContentDto> dtoList = dtos.ToList();
 
         if (dtoList.Count == 0)
         {
@@ -120,8 +144,8 @@ public class LogServicesContentService : ILogServicesContentService
 
         for (int i = 0; i < dtoList.Count; i++)
         {
-            var dto = dtoList[i];
-            var validationError = ValidateLogServicesContent(dto);
+            CreateLogServicesContentDto dto = dtoList[i];
+            string? validationError = ValidateLogServicesContent(dto);
             if (validationError != null)
             {
                 errors.Add(new BulkInsertError
@@ -150,12 +174,19 @@ public class LogServicesContentService : ILogServicesContentService
             };
         }
 
-        var entities = _mapper.Map<List<LogServicesContent>>(validDtos);
+        List<LogServicesContent> entities = _mapper.Map<List<LogServicesContent>>(validDtos);
+
+        // Generar LogServicesContentId para cada entidad
+        foreach (LogServicesContent entity in entities)
+        {
+            entity.LogServicesContentId = Guid.CreateVersion7();
+        }
+
         var strategy = _context.Database.CreateExecutionStrategy();
 
         try
         {
-            var results = await strategy.ExecuteAsync(async ct =>
+            List<LogServicesContentDto> results = await strategy.ExecuteAsync(async ct =>
             {
                 using var transaction = await _context.Database.BeginTransactionAsync(ct);
                 await _context.LogServicesContents.AddRangeAsync(entities, ct);
@@ -167,13 +198,15 @@ public class LogServicesContentService : ILogServicesContentService
             // Publicar eventos en background (fire-and-forget)
             _ = Task.Run(async () =>
             {
-                foreach (var result in results)
+                foreach (LogServicesContentDto result in results)
                 {
                     try
                     {
                         await _eventPublisher.PublishLogServicesContentCreatedAsync(new LogServicesContentCreatedEvent
                         {
+                            LogServicesContentId = result.LogServicesContentId,
                             LogId = result.LogId,
+                            EventName = result.EventName,
                             LogServicesDate = result.LogServicesDate,
                             LogServicesLogLevel = result.LogServicesLogLevel,
                             LogServicesState = result.LogServicesState,
@@ -213,19 +246,23 @@ public class LogServicesContentService : ILogServicesContentService
     {
         if (dto.LogId <= 0)
             return "LogId debe ser mayor a 0.";
+        if (string.IsNullOrWhiteSpace(dto.EventName))
+            return "EventName es requerido.";
         return null;
     }
 
     public async Task<LogServicesContentDto> UpdateAsync(UpdateLogServicesContentDto dto, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.LogServicesContents
-            .FirstOrDefaultAsync(x => x.LogId == dto.LogId, cancellationToken);
+        LogServicesContent? entity = await _context.LogServicesContents
+            .FirstOrDefaultAsync(x => x.LogServicesContentId == dto.LogServicesContentId, cancellationToken);
 
         if (entity == null)
-            throw new KeyNotFoundException($"LogServicesContent with id {dto.LogId} not found");
+            throw new KeyNotFoundException($"LogServicesContent with id {dto.LogServicesContentId} not found");
 
-        if (dto.LogServicesDate != null)
-            entity.LogServicesDate = dto.LogServicesDate;
+        if (dto.EventName != null)
+            entity.EventName = dto.EventName;
+        if (dto.LogServicesDate.HasValue)
+            entity.LogServicesDate = dto.LogServicesDate.Value;
         if (dto.LogServicesLogLevel != null)
             entity.LogServicesLogLevel = dto.LogServicesLogLevel;
         if (dto.LogServicesState != null)
@@ -238,7 +275,9 @@ public class LogServicesContentService : ILogServicesContentService
 
         await _eventPublisher.PublishLogServicesContentUpdatedAsync(new LogServicesContentUpdatedEvent
         {
+            LogServicesContentId = entity.LogServicesContentId,
             LogId = entity.LogId,
+            EventName = entity.EventName,
             LogServicesDate = entity.LogServicesDate,
             LogServicesLogLevel = entity.LogServicesLogLevel,
             LogServicesState = entity.LogServicesState,
@@ -253,7 +292,7 @@ public class LogServicesContentService : ILogServicesContentService
         IEnumerable<UpdateLogServicesContentDto> dtos,
         CancellationToken cancellationToken = default)
     {
-        var dtoList = dtos.ToList();
+        List<UpdateLogServicesContentDto> dtoList = dtos.ToList();
 
         if (dtoList.Count == 0)
         {
@@ -281,13 +320,13 @@ public class LogServicesContentService : ILogServicesContentService
 
         for (int i = 0; i < dtoList.Count; i++)
         {
-            var dto = dtoList[i];
-            if (dto.LogId <= 0)
+            UpdateLogServicesContentDto dto = dtoList[i];
+            if (dto.LogServicesContentId == Guid.Empty)
             {
                 errors.Add(new BulkUpdateError
                 {
                     Index = i,
-                    ErrorMessage = "LogId debe ser mayor a 0.",
+                    ErrorMessage = "LogServicesContentId es requerido.",
                     FailedItem = dto
                 });
             }
@@ -314,29 +353,31 @@ public class LogServicesContentService : ILogServicesContentService
 
         try
         {
-            var results = await strategy.ExecuteAsync(async ct =>
+            List<LogServicesContentDto> results = await strategy.ExecuteAsync(async ct =>
             {
                 using var transaction = await _context.Database.BeginTransactionAsync(ct);
                 var updatedList = new List<LogServicesContent>();
 
-                foreach (var dto in validDtos)
+                foreach (UpdateLogServicesContentDto dto in validDtos)
                 {
-                    var entity = await _context.LogServicesContents
-                        .FirstOrDefaultAsync(x => x.LogId == dto.LogId, ct);
+                    LogServicesContent? entity = await _context.LogServicesContents
+                        .FirstOrDefaultAsync(x => x.LogServicesContentId == dto.LogServicesContentId, ct);
 
                     if (entity == null)
                     {
                         errors.Add(new BulkUpdateError
                         {
                             Index = dtoList.IndexOf(dto),
-                            ErrorMessage = $"LogServicesContent con id {dto.LogId} no encontrado.",
+                            ErrorMessage = $"LogServicesContent con id {dto.LogServicesContentId} no encontrado.",
                             FailedItem = dto
                         });
                         continue;
                     }
 
-                    if (dto.LogServicesDate != null)
-                        entity.LogServicesDate = dto.LogServicesDate;
+                    if (dto.EventName != null)
+                        entity.EventName = dto.EventName;
+                    if (dto.LogServicesDate.HasValue)
+                        entity.LogServicesDate = dto.LogServicesDate.Value;
                     if (dto.LogServicesLogLevel != null)
                         entity.LogServicesLogLevel = dto.LogServicesLogLevel;
                     if (dto.LogServicesState != null)
@@ -356,13 +397,15 @@ public class LogServicesContentService : ILogServicesContentService
             // Publicar eventos en background (fire-and-forget)
             _ = Task.Run(async () =>
             {
-                foreach (var result in results)
+                foreach (LogServicesContentDto result in results)
                 {
                     try
                     {
                         await _eventPublisher.PublishLogServicesContentUpdatedAsync(new LogServicesContentUpdatedEvent
                         {
+                            LogServicesContentId = result.LogServicesContentId,
                             LogId = result.LogId,
+                            EventName = result.EventName,
                             LogServicesDate = result.LogServicesDate,
                             LogServicesLogLevel = result.LogServicesLogLevel,
                             LogServicesState = result.LogServicesState,
@@ -400,24 +443,21 @@ public class LogServicesContentService : ILogServicesContentService
 
     public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.LogServicesContents
-            .FirstOrDefaultAsync(x => x.LogId == id, cancellationToken);
+        List<LogServicesContent> entities = await _context.LogServicesContents
+            .Where(x => x.LogId == id)
+            .ToListAsync(cancellationToken);
 
-        if (entity == null)
+        if (entities.Count == 0)
             return false;
 
-        _context.LogServicesContents.Remove(entity);
+        _context.LogServicesContents.RemoveRange(entities);
         await _context.SaveChangesAsync(cancellationToken);
 
-        // Crear evento con los campos correctos
-        var deletedEvent = new LogServicesContentDeletedEvent
+        await _eventPublisher.PublishLogServicesContentDeletedAsync(new LogServicesContentDeletedEvent
         {
-            LogId = entity.LogId,
-            LogServicesLogLevel = entity.LogServicesLogLevel,
-            LogServicesState = entity.LogServicesState,
+            LogId = id,
             DeletedAt = DateTime.UtcNow
-        };
-        await _eventPublisher.PublishLogServicesContentDeletedAsync(deletedEvent);
+        });
 
         return true;
     }

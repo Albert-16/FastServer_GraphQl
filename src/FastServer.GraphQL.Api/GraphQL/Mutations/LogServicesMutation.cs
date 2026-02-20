@@ -280,6 +280,7 @@ public class LogServicesContentMutation
         var dto = new CreateLogServicesContentDto
         {
             LogId = input.LogId,
+            EventName = input.EventName,
             LogServicesDate = input.LogServicesDate,
             LogServicesLogLevel = input.LogServicesLogLevel,
             LogServicesState = input.LogServicesState,
@@ -301,6 +302,7 @@ public class LogServicesContentMutation
         var dtos = input.Items.Select(i => new CreateLogServicesContentDto
         {
             LogId = i.LogId,
+            EventName = i.EventName,
             LogServicesDate = i.LogServicesDate,
             LogServicesLogLevel = i.LogServicesLogLevel,
             LogServicesState = i.LogServicesState,
@@ -321,7 +323,8 @@ public class LogServicesContentMutation
     {
         var dto = new UpdateLogServicesContentDto
         {
-            LogId = input.LogId,
+            LogServicesContentId = input.LogServicesContentId,
+            EventName = input.EventName,
             LogServicesDate = input.LogServicesDate,
             LogServicesLogLevel = input.LogServicesLogLevel,
             LogServicesState = input.LogServicesState,
@@ -342,7 +345,8 @@ public class LogServicesContentMutation
     {
         var dtos = input.Items.Select(i => new UpdateLogServicesContentDto
         {
-            LogId = i.LogId,
+            LogServicesContentId = i.LogServicesContentId,
+            EventName = i.EventName,
             LogServicesDate = i.LogServicesDate,
             LogServicesLogLevel = i.LogServicesLogLevel,
             LogServicesState = i.LogServicesState,

@@ -30,12 +30,11 @@ public class MappingProfile : Profile
         CreateMap<LogMicroserviceHistorico, LogMicroserviceDto>();
 
         // LogServicesContent mappings
-        CreateMap<LogServicesContent, LogServicesContentDto>()
-            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
+        CreateMap<LogServicesContent, LogServicesContentDto>();
 
-        CreateMap<CreateLogServicesContentDto, LogServicesContent>();
+        CreateMap<CreateLogServicesContentDto, LogServicesContent>()
+            .ForMember(dest => dest.LogServicesContentId, opt => opt.Ignore());
 
-        CreateMap<LogServicesContentHistorico, LogServicesContentDto>()
-            .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
+        CreateMap<LogServicesContentHistorico, LogServicesContentDto>();
     }
 }

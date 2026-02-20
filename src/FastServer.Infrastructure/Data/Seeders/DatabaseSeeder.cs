@@ -93,16 +93,20 @@ public static class DatabaseSeeder
         modelBuilder.Entity<LogServicesContent>().HasData(
             new LogServicesContent
             {
+                LogServicesContentId = Guid.Parse("01965b00-0000-7000-8000-000000000001"),
                 LogId = 1,
-                LogServicesDate = "2025-01-01 10:00:00",
+                EventName = "AuthenticateUser",
+                LogServicesDate = new DateTime(2025, 1, 1, 10, 0, 0, DateTimeKind.Utc),
                 LogServicesLogLevel = "INFO",
                 LogServicesState = "SUCCESS",
                 LogServicesContentText = "{\"username\": \"admin\", \"timestamp\": \"2025-01-01T10:00:00Z\", \"ip\": \"192.168.1.100\"}"
             },
             new LogServicesContent
             {
+                LogServicesContentId = Guid.Parse("01965b00-0000-7000-8000-000000000002"),
                 LogId = 2,
-                LogServicesDate = "2025-01-01 10:05:00",
+                EventName = "SearchProducts",
+                LogServicesDate = new DateTime(2025, 1, 1, 10, 5, 0, DateTimeKind.Utc),
                 LogServicesLogLevel = "INFO",
                 LogServicesState = "SUCCESS",
                 LogServicesContentText = "{\"searchTerm\": \"laptop gaming\", \"resultsCount\": 15, \"executionTime\": \"320ms\"}"
@@ -181,8 +185,10 @@ public static class DatabaseSeeder
         modelBuilder.Entity<LogServicesContentHistorico>().HasData(
             new LogServicesContentHistorico
             {
+                LogServicesContentId = Guid.Parse("01965b00-0000-7000-8000-000000000003"),
                 LogId = 1,
-                LogServicesDate = "2024-12-15 10:00:00",
+                EventName = "AuthenticateUser",
+                LogServicesDate = new DateTime(2024, 12, 15, 10, 0, 0, DateTimeKind.Utc),
                 LogServicesLogLevel = "INFO",
                 LogServicesState = "SUCCESS",
                 LogServicesContentText = "{\"username\": \"admin\", \"timestamp\": \"2024-12-15T10:00:00Z\", \"ip\": \"192.168.1.50\", \"archived\": true}"
@@ -190,7 +196,9 @@ public static class DatabaseSeeder
             new LogServicesContentHistorico
             {
                 LogId = 2,
-                LogServicesDate = "2024-12-15 10:10:00",
+                LogServicesContentId = Guid.Parse("01965b00-0000-7000-8000-000000000004"),
+                EventName = "SearchProducts",
+                LogServicesDate = new DateTime(2024, 12, 15, 10, 10, 0, DateTimeKind.Utc),
                 LogServicesLogLevel = "INFO",
                 LogServicesState = "SUCCESS",
                 LogServicesContentText = "{\"searchTerm\": \"gaming keyboard\", \"resultsCount\": 12, \"executionTime\": \"280ms\", \"archived\": true}"

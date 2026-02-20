@@ -8,9 +8,9 @@ namespace FastServer.Domain.Entities;
 public class LogServicesHeaderHistorico : BaseEntity
 {
     public DateTime LogDateIn { get; set; }
-    public DateTime LogDateOut { get; set; }
+    public DateTime? LogDateOut { get; set; }
     public LogState LogState { get; set; }
-    public string LogMethodUrl { get; set; } = string.Empty;
+    public string? LogMethodUrl { get; set; }
     public string? LogMethodName { get; set; }
     public Guid? LogFsId { get; set; }
     public string? MethodDescription { get; set; }

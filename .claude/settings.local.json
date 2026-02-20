@@ -67,7 +67,8 @@
       "Bash(popd:*)",
       "Bash(cmd /c:*)",
       "Bash(cmd //c:*)",
-      "Bash(wmic process where \"ProcessId=20540\" delete)"
+      "Bash(wmic process where \"ProcessId=20540\" delete)",
+      "Bash(git -C \"/c/Users/MSI MAG/FastServer\" diff HEAD~1 HEAD -- \"src/FastServer.Infrastructure/Configurations/LogMicroserviceConfiguration.cs\" \"src/FastServer.Infrastructure/Configurations/LogMicroserviceHistoricoConfiguration.cs\")"
     ]
   },
   "outputStyle": "Learning"

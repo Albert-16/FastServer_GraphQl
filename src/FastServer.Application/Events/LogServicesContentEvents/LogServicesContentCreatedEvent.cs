@@ -5,8 +5,10 @@ namespace FastServer.Application.Events.LogServicesContentEvents;
 /// </summary>
 public class LogServicesContentCreatedEvent
 {
+    public Guid LogServicesContentId { get; set; }
     public long LogId { get; set; }
-    public string? LogServicesDate { get; set; }
+    public string EventName { get; set; } = string.Empty;
+    public DateTime? LogServicesDate { get; set; }
     public string? LogServicesLogLevel { get; set; }
     public string? LogServicesState { get; set; }
     public string? LogServicesContentText { get; set; }

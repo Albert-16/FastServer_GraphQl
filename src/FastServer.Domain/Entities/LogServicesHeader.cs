@@ -15,7 +15,7 @@ public class LogServicesHeader : BaseEntity
     /// <summary>
     /// Fecha y hora de salida del log
     /// </summary>
-    public DateTime LogDateOut { get; set; }
+    public DateTime? LogDateOut { get; set; }
 
     /// <summary>
     /// Estado del log
@@ -25,7 +25,7 @@ public class LogServicesHeader : BaseEntity
     /// <summary>
     /// URL del método invocado
     /// </summary>
-    public string LogMethodUrl { get; set; } = string.Empty;
+    public string? LogMethodUrl { get; set; }
 
     /// <summary>
     /// Nombre del método invocado

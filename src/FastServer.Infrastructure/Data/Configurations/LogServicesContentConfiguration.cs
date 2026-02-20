@@ -13,14 +13,25 @@ public class LogServicesContentConfiguration : IEntityTypeConfiguration<LogServi
     {
         builder.ToTable("FastServer_LogServices_Content");
 
-        builder.HasKey(e => e.LogId);
+        builder.HasKey(e => e.LogServicesContentId);
+
+        builder.Property(e => e.LogServicesContentId)
+            .HasColumnName("fastserver_logservices_content_id")
+            .HasColumnType("uuid")
+            .IsRequired();
 
         builder.Property(e => e.LogId)
-            .HasColumnName("fastserver_log_id");
+            .HasColumnName("fastserver_log_id")
+            .IsRequired();
+
+        builder.Property(e => e.EventName)
+            .HasColumnName("fastserver_event_name")
+            .HasMaxLength(250)
+            .IsRequired();
 
         builder.Property(e => e.LogServicesDate)
             .HasColumnName("fastserver_logservices_date")
-            .HasMaxLength(255);
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(e => e.LogServicesLogLevel)
             .HasColumnName("fastserver_logservices_log_level")
@@ -28,12 +39,13 @@ public class LogServicesContentConfiguration : IEntityTypeConfiguration<LogServi
 
         builder.Property(e => e.LogServicesState)
             .HasColumnName("fastserver_logservices_state")
-            .HasMaxLength(50);
+            .HasMaxLength(250);
 
         builder.Property(e => e.LogServicesContentText)
             .HasColumnName("fastserver_logservices_content_text")
             .HasColumnType("text");
 
-        // Índice en LogId eliminado - es redundante con la clave primaria
+        builder.HasIndex(e => e.LogId)
+            .HasDatabaseName("IX_FastServer_LogServices_Content_LogId");
     }
 }

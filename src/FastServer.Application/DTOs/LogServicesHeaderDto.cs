@@ -35,9 +35,9 @@ public record LogServicesHeaderDto
 public record CreateLogServicesHeaderDto
 {
     public DateTime LogDateIn { get; init; }
-    public DateTime LogDateOut { get; init; }
+    public DateTime? LogDateOut { get; init; }
     public LogState LogState { get; init; }
-    public string LogMethodUrl { get; init; } = string.Empty;
+    public string? LogMethodUrl { get; init; }
     public string? LogMethodName { get; init; }
     public Guid? LogFsId { get; init; }
     public string? MethodDescription { get; init; }

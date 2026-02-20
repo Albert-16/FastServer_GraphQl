@@ -134,6 +134,24 @@ public class LogMicroserviceQuery
 public class LogServicesContentQuery
 {
     /// <summary>
+    /// Obtiene todos los contenidos de log paginados
+    /// </summary>
+    [GraphQLDescription("Obtiene todos los contenidos de log con paginación desde FastServer_Logs (PostgreSQL)")]
+    public async Task<PaginatedResultDto<LogServicesContentDto>> GetAllLogContents(
+        [Service] ILogServicesContentService service,
+        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
+        CancellationToken cancellationToken = default)
+    {
+        var paginationParams = new PaginationParamsDto
+        {
+            PageNumber = pagination?.PageNumber ?? 1,
+            PageSize = pagination?.PageSize ?? 10
+        };
+
+        return await service.GetAllAsync(paginationParams, cancellationToken);
+    }
+
+    /// <summary>
     /// Obtiene contenidos de log por ID de log
     /// </summary>
     [GraphQLDescription("Obtiene los contenidos de log asociados a un log específico desde FastServer_Logs (PostgreSQL)")]
@@ -156,4 +174,5 @@ public class LogServicesContentQuery
     {
         return await service.SearchByContentAsync(searchText, cancellationToken);
     }
+
 }
