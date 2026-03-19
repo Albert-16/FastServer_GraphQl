@@ -19,9 +19,6 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasColumnName("microservice_id")
             .ValueGeneratedOnAdd();
 
-        builder.Property(e => e.MicroserviceClusterId)
-            .HasColumnName("microservice_cluster_id");
-
         builder.Property(e => e.MicroserviceName)
             .HasColumnName("microservice_name")
             .HasMaxLength(255);
@@ -45,11 +42,6 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasColumnName("delete_at");
 
         // Relaciones
-        builder.HasOne(e => e.MicroserviceCluster)
-            .WithMany(c => c.MicroserviceRegisters)
-            .HasForeignKey(e => e.MicroserviceClusterId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasMany(e => e.MicroserviceCoreConnectors)
             .WithOne(c => c.MicroserviceRegister)
             .HasForeignKey(c => c.MicroserviceId)
@@ -60,13 +52,7 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasForeignKey(m => m.MicroserviceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Índices simples
+        // Índices
         builder.HasIndex(e => e.MicroserviceName);
-        // Índices en Active y Deleted eliminados - baja selectividad (booleanos)
-        builder.HasIndex(e => e.MicroserviceClusterId);
-
-        // Índice compuesto para búsquedas por cluster y nombre
-        builder.HasIndex(e => new { e.MicroserviceClusterId, e.MicroserviceName })
-            .HasDatabaseName("IX_MicroserviceRegister_ClusterId_Name");
     }
 }

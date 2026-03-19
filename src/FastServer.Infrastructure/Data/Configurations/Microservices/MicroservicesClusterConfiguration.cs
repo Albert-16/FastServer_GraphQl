@@ -47,9 +47,9 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
             .HasColumnName("delete_at");
 
         // Relaciones
-        builder.HasMany(e => e.MicroserviceRegisters)
-            .WithOne(m => m.MicroserviceCluster)
-            .HasForeignKey(m => m.MicroserviceClusterId)
+        builder.HasMany(e => e.MicroserviceMethods)
+            .WithOne(m => m.MicroservicesCluster)
+            .HasForeignKey(m => m.MicroservicesClusterId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices

@@ -11,11 +11,6 @@ public class MicroserviceRegister : BaseMicroserviceEntity
     public long MicroserviceId { get; set; }
 
     /// <summary>
-    /// ID del cluster al que pertenece
-    /// </summary>
-    public long? MicroserviceClusterId { get; set; }
-
-    /// <summary>
     /// Nombre del microservicio
     /// </summary>
     public string? MicroserviceName { get; set; }
@@ -41,7 +36,6 @@ public class MicroserviceRegister : BaseMicroserviceEntity
     public DateTime? DeleteAt { get; set; }
 
     // Navegación
-    public virtual MicroservicesCluster? MicroserviceCluster { get; set; }
     public virtual ICollection<MicroserviceCoreConnector> MicroserviceCoreConnectors { get; set; } = new List<MicroserviceCoreConnector>();
     public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
 }

@@ -36,16 +36,6 @@ public class MicroservicesQuery
             .Where(m => m.MicroserviceActive == true && m.MicroserviceDeleted != true);
     }
 
-    [GraphQLDescription("Obtiene microservicios por ID de cluster desde FastServer (PostgreSQL)")]
-    [UseProjection]
-    public IQueryable<MicroserviceRegister> GetMicroservicesByClusterId(
-        [Service] IMicroservicesDbContext context,
-        long clusterId)
-    {
-        return context.MicroserviceRegisters
-            .Where(m => m.MicroserviceClusterId == clusterId);
-    }
-
     // ========================================
     // MICROSERVICES CLUSTERS
     // ========================================
@@ -188,5 +178,39 @@ public class MicroservicesQuery
     {
         return context.MicroserviceCoreConnectors
             .Where(c => c.MicroserviceId == microserviceId);
+    }
+
+    // ========================================
+    // MICROSERVICE METHODS
+    // ========================================
+
+    [GraphQLDescription("Obtiene todos los métodos de microservicios desde FastServer (PostgreSQL)")]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<MicroserviceMethod> GetAllMicroserviceMethods(
+        [Service] IMicroservicesDbContext context)
+    {
+        return context.MicroserviceMethods;
+    }
+
+    [GraphQLDescription("Obtiene métodos por ID de microservicio desde FastServer (PostgreSQL)")]
+    [UseProjection]
+    public IQueryable<MicroserviceMethod> GetMethodsByMicroserviceId(
+        [Service] IMicroservicesDbContext context,
+        long microserviceId)
+    {
+        return context.MicroserviceMethods
+            .Where(m => m.MicroserviceId == microserviceId);
+    }
+
+    [GraphQLDescription("Obtiene métodos por ID de cluster desde FastServer (PostgreSQL)")]
+    [UseProjection]
+    public IQueryable<MicroserviceMethod> GetMethodsByClusterId(
+        [Service] IMicroservicesDbContext context,
+        long clusterId)
+    {
+        return context.MicroserviceMethods
+            .Where(m => m.MicroservicesClusterId == clusterId);
     }
 }

@@ -56,19 +56,7 @@ public class MicroserviceRegisterService
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
 
-    public async Task<List<MicroserviceRegisterDto>> GetByClusterIdAsync(
-        long clusterId,
-        CancellationToken cancellationToken = default)
-    {
-        var entities = await _context.MicroserviceRegisters
-            .AsNoTracking()
-            .Where(m => m.MicroserviceClusterId == clusterId && m.MicroserviceDeleted != true)
-            .ToListAsync(cancellationToken);
-        return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
-    }
-
     public async Task<MicroserviceRegisterDto> CreateAsync(
-        long? clusterId,
         string? name,
         bool active,
         bool coreConnection,
@@ -76,7 +64,6 @@ public class MicroserviceRegisterService
     {
         var entity = new MicroserviceRegister
         {
-            MicroserviceClusterId = clusterId,
             MicroserviceName = name,
             MicroserviceActive = active,
             MicroserviceDeleted = false,
@@ -94,7 +81,6 @@ public class MicroserviceRegisterService
         var createdEvent = new MicroserviceRegisterCreatedEvent
         {
             MicroserviceId = result.MicroserviceId,
-            MicroserviceClusterId = result.MicroserviceClusterId,
             MicroserviceName = result.MicroserviceName,
             MicroserviceActive = result.MicroserviceActive,
             MicroserviceDeleted = result.MicroserviceDeleted,
@@ -109,7 +95,6 @@ public class MicroserviceRegisterService
 
     public async Task<MicroserviceRegisterDto?> UpdateAsync(
         long id,
-        long? clusterId,
         string? name,
         bool? active,
         bool? coreConnection,
@@ -119,7 +104,6 @@ public class MicroserviceRegisterService
             .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
         if (entity == null) return null;
 
-        if (clusterId.HasValue) entity.MicroserviceClusterId = clusterId;
         if (name != null) entity.MicroserviceName = name;
         if (active.HasValue) entity.MicroserviceActive = active.Value;
         if (coreConnection.HasValue) entity.MicroserviceCoreConnection = coreConnection.Value;
@@ -133,7 +117,6 @@ public class MicroserviceRegisterService
         var updatedEvent = new MicroserviceRegisterUpdatedEvent
         {
             MicroserviceId = result.MicroserviceId,
-            MicroserviceClusterId = result.MicroserviceClusterId,
             MicroserviceName = result.MicroserviceName,
             MicroserviceActive = result.MicroserviceActive,
             MicroserviceDeleted = result.MicroserviceDeleted,

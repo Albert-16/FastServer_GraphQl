@@ -6,7 +6,6 @@ namespace FastServer.Application.Events.MicroserviceRegisterEvents;
 public class MicroserviceRegisterCreatedEvent
 {
     public long MicroserviceId { get; set; }
-    public long? MicroserviceClusterId { get; set; }
     public string? MicroserviceName { get; set; }
     public bool? MicroserviceActive { get; set; }
     public bool? MicroserviceDeleted { get; set; }

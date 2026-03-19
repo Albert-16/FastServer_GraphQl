@@ -16,5 +16,5 @@ public class MicroservicesClusterDto
     public DateTime? DeleteAt { get; set; }
 
     // Relaciones
-    public List<MicroserviceRegisterDto>? MicroserviceRegisters { get; set; }
+    public List<MicroserviceMethodDto>? MicroserviceMethods { get; set; }
 }

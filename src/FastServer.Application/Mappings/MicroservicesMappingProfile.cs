@@ -24,12 +24,16 @@ public class MicroservicesMappingProfile : Profile
 
         // MicroservicesCluster
         CreateMap<MicroservicesCluster, MicroservicesClusterDto>()
-            .ForMember(dest => dest.MicroserviceRegisters, opt => opt.MapFrom(src => src.MicroserviceRegisters));
+            .ForMember(dest => dest.MicroserviceMethods, opt => opt.MapFrom(src => src.MicroserviceMethods));
 
         // MicroserviceRegister
         CreateMap<MicroserviceRegister, MicroserviceRegisterDto>()
-            .ForMember(dest => dest.Cluster, opt => opt.MapFrom(src => src.MicroserviceCluster))
             .ForMember(dest => dest.CoreConnectors, opt => opt.MapFrom(src => src.MicroserviceCoreConnectors));
+
+        // MicroserviceMethod
+        CreateMap<MicroserviceMethod, MicroserviceMethodDto>()
+            .ForMember(dest => dest.Microservice, opt => opt.MapFrom(src => src.MicroserviceRegister))
+            .ForMember(dest => dest.Cluster, opt => opt.MapFrom(src => src.MicroservicesCluster));
 
         // CoreConnectorCredential (Excluir password en el mapeo de lectura)
         CreateMap<CoreConnectorCredential, CoreConnectorCredentialDto>()

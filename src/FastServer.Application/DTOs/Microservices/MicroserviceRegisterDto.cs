@@ -6,7 +6,6 @@ namespace FastServer.Application.DTOs.Microservices;
 public class MicroserviceRegisterDto
 {
     public long MicroserviceId { get; set; }
-    public long? MicroserviceClusterId { get; set; }
     public string? MicroserviceName { get; set; }
     public bool? MicroserviceActive { get; set; }
     public bool? MicroserviceDeleted { get; set; }
@@ -16,6 +15,5 @@ public class MicroserviceRegisterDto
     public DateTime? DeleteAt { get; set; }
 
     // Relaciones
-    public MicroservicesClusterDto? Cluster { get; set; }
     public List<MicroserviceCoreConnectorDto>? CoreConnectors { get; set; }
 }

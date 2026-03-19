@@ -300,7 +300,7 @@ public class BulkCreateLogServicesHeaderServiceTests : IDisposable
 
         _context = new TestLogsDbContext(options);
 
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
         _mapper = mapperConfig.CreateMapper();
 
         _mockEventPublisher = new Mock<ILogEventPublisher>();
@@ -634,7 +634,7 @@ public class UpdateLogServicesHeaderServiceTests : IDisposable
 
         _context = new TestLogsDbContext(options);
 
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
         _mapper = mapperConfig.CreateMapper();
 
         _mockEventPublisher = new Mock<ILogEventPublisher>();
@@ -791,7 +791,7 @@ public class BulkCreateLogMicroserviceServiceTests : IDisposable
 
         _context = new TestLogsDbContext(options);
 
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>());
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>(), Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
         _mapper = mapperConfig.CreateMapper();
 
         _mockEventPublisher = new Mock<ILogMicroserviceEventPublisher>();

@@ -16,26 +16,24 @@ public class MicroservicesMutation
     [GraphQLDescription("Crea un nuevo registro de microservicio en el sistema")]
     public async Task<MicroserviceRegisterDto> CreateMicroserviceAsync(
         [Service] MicroserviceRegisterService service,
-        [GraphQLDescription("ID del cluster al que pertenece el microservicio")] long clusterId,
         [GraphQLDescription("Nombre del microservicio")] string name,
         [GraphQLDescription("Indica si el microservicio está activo (por defecto: true)")] bool active = true,
         [GraphQLDescription("Indica si tiene conexión al Core (por defecto: false)")] bool coreConnection = false,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(clusterId, name, active, coreConnection, cancellationToken);
+        return await service.CreateAsync(name, active, coreConnection, cancellationToken);
     }
 
     [GraphQLDescription("Actualiza un registro de microservicio existente. Solo se modifican los campos proporcionados")]
     public async Task<MicroserviceRegisterDto?> UpdateMicroserviceAsync(
         [Service] MicroserviceRegisterService service,
         [GraphQLDescription("ID del microservicio a actualizar")] long id,
-        [GraphQLDescription("Nuevo ID de cluster (opcional)")] long? clusterId = null,
         [GraphQLDescription("Nuevo nombre del microservicio (opcional)")] string? name = null,
         [GraphQLDescription("Nuevo estado activo/inactivo (opcional)")] bool? active = null,
         [GraphQLDescription("Nueva conexión al Core (opcional)")] bool? coreConnection = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, clusterId, name, active, coreConnection, cancellationToken);
+        return await service.UpdateAsync(id, name, active, coreConnection, cancellationToken);
     }
 
     [GraphQLDescription("Elimina lógicamente un microservicio (soft delete). Retorna true si se eliminó correctamente")]
@@ -279,5 +277,43 @@ public class MicroservicesMutation
         CancellationToken cancellationToken = default)
     {
         return await service.DeleteAsync(id, cancellationToken);
+    }
+
+    // ========================================
+    // MICROSERVICE METHODS - MUTATIONS
+    // ========================================
+
+    [GraphQLDescription("Crea un nuevo método de microservicio")]
+    public async Task<MicroserviceMethodDto> CreateMethodAsync(
+        [Service] MicroserviceMethodService service,
+        [GraphQLDescription("ID del microservicio al que pertenece")] long microserviceId,
+        [GraphQLDescription("ID del cluster al que pertenece (opcional)")] long? clusterId = null,
+        [GraphQLDescription("Nombre del método/endpoint")] string? name = null,
+        [GraphQLDescription("URL del método/endpoint")] string? url = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.CreateAsync(microserviceId, clusterId, name, url, cancellationToken);
+    }
+
+    [GraphQLDescription("Actualiza un método de microservicio existente. Solo se modifican los campos proporcionados")]
+    public async Task<MicroserviceMethodDto?> UpdateMethodAsync(
+        [Service] MicroserviceMethodService service,
+        [GraphQLDescription("ID del método a actualizar")] long id,
+        [GraphQLDescription("Nuevo ID de microservicio (opcional)")] long? microserviceId = null,
+        [GraphQLDescription("Nuevo ID de cluster (opcional)")] long? clusterId = null,
+        [GraphQLDescription("Nuevo nombre del método (opcional)")] string? name = null,
+        [GraphQLDescription("Nueva URL del método (opcional)")] string? url = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.UpdateAsync(id, microserviceId, clusterId, name, url, cancellationToken);
+    }
+
+    [GraphQLDescription("Elimina lógicamente un método de microservicio (soft delete). Retorna true si se eliminó correctamente")]
+    public async Task<bool> SoftDeleteMethodAsync(
+        [Service] MicroserviceMethodService service,
+        [GraphQLDescription("ID del método a eliminar")] long id,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.SoftDeleteAsync(id, cancellationToken);
     }
 }

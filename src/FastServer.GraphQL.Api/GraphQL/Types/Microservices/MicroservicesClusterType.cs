@@ -49,8 +49,8 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
 
-        descriptor.Field(f => f.MicroserviceRegisters)
-            .Type<ListType<MicroserviceRegisterType>>()
-            .Description("Microservicios del cluster");
+        descriptor.Field(f => f.MicroserviceMethods)
+            .Type<ListType<MicroserviceMethodType>>()
+            .Description("Métodos de microservicios del cluster");
     }
 }

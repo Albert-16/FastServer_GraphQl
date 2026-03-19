@@ -16,6 +16,11 @@ public class MicroserviceMethod : BaseMicroserviceEntity
     public long MicroserviceId { get; set; }
 
     /// <summary>
+    /// ID del cluster al que pertenece
+    /// </summary>
+    public long? MicroservicesClusterId { get; set; }
+
+    /// <summary>
     /// Indica si el método está eliminado (soft delete)
     /// </summary>
     public bool? MicroserviceMethodDelete { get; set; }
@@ -32,4 +37,5 @@ public class MicroserviceMethod : BaseMicroserviceEntity
 
     // Navegación
     public virtual MicroserviceRegister? MicroserviceRegister { get; set; }
+    public virtual MicroservicesCluster? MicroservicesCluster { get; set; }
 }

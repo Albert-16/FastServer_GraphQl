@@ -60,7 +60,6 @@ public static class MicroservicesSeeder
             new MicroserviceRegister
             {
                 MicroserviceId = 1,
-                MicroserviceClusterId = 1,
                 MicroserviceName = "AuthService",
                 MicroserviceActive = true,
                 MicroserviceDeleted = false,
@@ -71,7 +70,6 @@ public static class MicroservicesSeeder
             new MicroserviceRegister
             {
                 MicroserviceId = 2,
-                MicroserviceClusterId = 1,
                 MicroserviceName = "ProductService",
                 MicroserviceActive = true,
                 MicroserviceDeleted = false,
@@ -89,6 +87,7 @@ public static class MicroservicesSeeder
             {
                 MicroserviceMethodId = 1,
                 MicroserviceId = 1,
+                MicroservicesClusterId = 1,
                 MicroserviceMethodDelete = false,
                 MicroserviceMethodName = "AuthenticateUser",
                 MicroserviceMethodUrl = "/api/users/authenticate",
@@ -99,6 +98,7 @@ public static class MicroservicesSeeder
             {
                 MicroserviceMethodId = 2,
                 MicroserviceId = 2,
+                MicroservicesClusterId = 1,
                 MicroserviceMethodDelete = false,
                 MicroserviceMethodName = "SearchProducts",
                 MicroserviceMethodUrl = "/api/products/search",

@@ -41,5 +41,5 @@ public class MicroservicesCluster : BaseMicroserviceEntity
     public DateTime? DeleteAt { get; set; }
 
     // Navegación
-    public virtual ICollection<MicroserviceRegister> MicroserviceRegisters { get; set; } = new List<MicroserviceRegister>();
+    public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
 }

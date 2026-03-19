@@ -17,10 +17,6 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
             .Type<NonNullType<LongType>>()
             .Description("ID único del microservicio");
 
-        descriptor.Field(f => f.MicroserviceClusterId)
-            .Type<LongType>()
-            .Description("ID del cluster al que pertenece");
-
         descriptor.Field(f => f.MicroserviceName)
             .Type<StringType>()
             .Description("Nombre del microservicio");
@@ -48,10 +44,6 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
         descriptor.Field(f => f.DeleteAt)
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
-
-        descriptor.Field(f => f.MicroserviceCluster)
-            .Type<MicroservicesClusterType>()
-            .Description("Cluster al que pertenece");
 
         descriptor.Field(f => f.MicroserviceCoreConnectors)
             .Type<ListType<MicroserviceCoreConnectorType>>()

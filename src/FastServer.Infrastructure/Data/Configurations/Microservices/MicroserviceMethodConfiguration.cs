@@ -29,6 +29,9 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
             .HasColumnName("microservice_method_name")
             .HasMaxLength(255);
 
+        builder.Property(e => e.MicroservicesClusterId)
+            .HasColumnName("microservices_cluster_id");
+
         builder.Property(e => e.MicroserviceMethodUrl)
             .HasColumnName("microservice_method_url")
             .HasMaxLength(500);
@@ -45,9 +48,14 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
             .HasForeignKey(e => e.MicroserviceId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne(e => e.MicroservicesCluster)
+            .WithMany(c => c.MicroserviceMethods)
+            .HasForeignKey(e => e.MicroservicesClusterId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Índices
         builder.HasIndex(e => e.MicroserviceId);
+        builder.HasIndex(e => e.MicroservicesClusterId);
         builder.HasIndex(e => e.MicroserviceMethodName);
-        // Índice en MicroserviceMethodDelete eliminado - baja selectividad (booleano)
     }
 }
