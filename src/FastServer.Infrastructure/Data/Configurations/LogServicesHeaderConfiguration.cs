@@ -18,7 +18,7 @@ public class LogServicesHeaderConfiguration : IEntityTypeConfiguration<LogServic
 
         builder.Property(e => e.LogId)
             .HasColumnName("fastserver_log_id")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedNever();
 
         builder.Property(e => e.LogDateIn)
             .HasColumnName("fastserver_log_date_in")

@@ -7,6 +7,7 @@ namespace FastServer.GraphQL.Api.GraphQL.Types;
 /// </summary>
 public class CreateLogServicesHeaderInput
 {
+    public long LogId { get; set; }
     public DateTime LogDateIn { get; set; }
     public DateTime LogDateOut { get; set; }
     public LogState LogState { get; set; }

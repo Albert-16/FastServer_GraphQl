@@ -21,6 +21,7 @@ public class LogServicesMutation
     {
         var dto = new CreateLogServicesHeaderDto
         {
+            LogId = input.LogId,
             LogDateIn = input.LogDateIn,
             LogDateOut = input.LogDateOut,
             LogState = input.LogState,
@@ -56,6 +57,7 @@ public class LogServicesMutation
     {
         var dtos = input.Items.Select(i => new CreateLogServicesHeaderDto
         {
+            LogId = i.LogId,
             LogDateIn = i.LogDateIn,
             LogDateOut = i.LogDateOut,
             LogState = i.LogState,

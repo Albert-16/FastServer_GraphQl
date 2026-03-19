@@ -281,6 +281,8 @@ public class LogServicesHeaderService : ILogServicesHeaderService
 
     private static string? ValidateLogServicesHeader(CreateLogServicesHeaderDto dto)
     {
+        if (dto.LogId == 0)
+            return "LogId es requerido y no puede ser 0.";
         if (string.IsNullOrWhiteSpace(dto.LogMethodUrl))
             return "LogMethodUrl es requerido.";
         if (dto.LogDateIn == default)
@@ -294,6 +296,9 @@ public class LogServicesHeaderService : ILogServicesHeaderService
 
     public async Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, CancellationToken cancellationToken = default)
     {
+        if (dto.LogId == 0)
+            throw new ArgumentException("LogId es requerido y no puede ser 0.", nameof(dto));
+
         var entity = _mapper.Map<LogServicesHeader>(dto);
         await _context.LogServicesHeaders.AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -435,12 +440,12 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         for (int i = 0; i < dtoList.Count; i++)
         {
             var dto = dtoList[i];
-            if (dto.LogId <= 0)
+            if (dto.LogId == 0)
             {
                 errors.Add(new BulkUpdateError
                 {
                     Index = i,
-                    ErrorMessage = "LogId debe ser mayor a 0.",
+                    ErrorMessage = "LogId es requerido y no puede ser 0.",
                     FailedItem = dto
                 });
             }

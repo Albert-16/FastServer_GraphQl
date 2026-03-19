@@ -15,8 +15,7 @@ public class MappingProfile : Profile
         CreateMap<LogServicesHeader, LogServicesHeaderDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));
 
-        CreateMap<CreateLogServicesHeaderDto, LogServicesHeader>()
-            .ForMember(dest => dest.LogId, opt => opt.Ignore());
+        CreateMap<CreateLogServicesHeaderDto, LogServicesHeader>();
 
         CreateMap<LogServicesHeaderHistorico, LogServicesHeaderDto>()
             .ForMember(dest => dest.LogId, opt => opt.MapFrom(src => src.LogId));

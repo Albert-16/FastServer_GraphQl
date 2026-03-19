@@ -34,6 +34,7 @@ public record LogServicesHeaderDto
 /// </summary>
 public record CreateLogServicesHeaderDto
 {
+    public long LogId { get; init; }
     public DateTime LogDateIn { get; init; }
     public DateTime? LogDateOut { get; init; }
     public LogState LogState { get; init; }

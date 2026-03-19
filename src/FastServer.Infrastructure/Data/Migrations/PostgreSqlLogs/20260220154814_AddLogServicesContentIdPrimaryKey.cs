@@ -59,7 +59,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                   ALTER COLUMN fastserver_logservices_date TYPE timestamp with time zone
                   USING CASE
                     WHEN fastserver_logservices_date IS NULL OR fastserver_logservices_date = '' THEN NULL
-                    WHEN fastserver_logservices_date LIKE '%Z' OR fastserver_logservices_date LIKE '%+%'
+                    WHEN fastserver_logservices_date LIKE '%Z' OR fastserver_logservices_date ~ '[+-]\d{2}:\d{2}\s*$'
                     THEN fastserver_logservices_date::timestamp with time zone
                     ELSE (fastserver_logservices_date || ' UTC')::timestamp with time zone
                   END;");
@@ -111,7 +111,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                   ALTER COLUMN fastserver_logservices_date TYPE timestamp with time zone
                   USING CASE
                     WHEN fastserver_logservices_date IS NULL OR fastserver_logservices_date = '' THEN NULL
-                    WHEN fastserver_logservices_date LIKE '%Z' OR fastserver_logservices_date LIKE '%+%'
+                    WHEN fastserver_logservices_date LIKE '%Z' OR fastserver_logservices_date ~ '[+-]\d{2}:\d{2}\s*$'
                     THEN fastserver_logservices_date::timestamp with time zone
                     ELSE (fastserver_logservices_date || ' UTC')::timestamp with time zone
                   END;");

@@ -16,7 +16,8 @@ public class LogServicesHeaderHistoricoConfiguration : IEntityTypeConfiguration<
         builder.HasKey(e => e.LogId);
 
         builder.Property(e => e.LogId)
-            .HasColumnName("fastserver_log_id");
+            .HasColumnName("fastserver_log_id")
+            .ValueGeneratedNever();
 
         builder.Property(e => e.LogDateIn)
             .HasColumnName("fastserver_log_date_in")
