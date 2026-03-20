@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 {
     [DbContext(typeof(PostgreSqlMicroservicesDbContext))]
-    [Migration("20260319062630_MoveClusterFkFromRegisterToMethod")]
-    partial class MoveClusterFkFromRegisterToMethod
+    [Migration("20260320164432_PostgreSqlMicroservicesInitialClean")]
+    partial class PostgreSqlMicroservicesInitialClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -206,6 +206,93 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             EventTypeDescription = "Configuration Change",
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.FastServerCluster", b =>
+                {
+                    b.Property<Guid>("FastServerClusterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("fastserver_cluster_id");
+
+                    b.Property<DateTimeOffset?>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
+                    b.Property<DateTimeOffset?>("DeleteAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("delete_at");
+
+                    b.Property<bool?>("FastServerClusterActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("fastserver_cluster_active");
+
+                    b.Property<bool?>("FastServerClusterDelete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("fastserver_cluster_delete");
+
+                    b.Property<string>("FastServerClusterName")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("fastserver_cluster_name");
+
+                    b.Property<string>("FastServerClusterServerIp")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_cluster_server_ip");
+
+                    b.Property<string>("FastServerClusterServerName")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("fastserver_cluster_server_name");
+
+                    b.Property<string>("FastServerClusterUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("fastserver_cluster_url");
+
+                    b.Property<string>("FastServerClusterVersion")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("fastserver_cluster_version");
+
+                    b.Property<DateTimeOffset?>("ModifyAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modify_at");
+
+                    b.HasKey("FastServerClusterId");
+
+                    b.HasIndex("FastServerClusterName");
+
+                    b.ToTable("fastserver_clusters", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            FastServerClusterId = new Guid("a0000000-0000-0000-0000-000000000001"),
+                            CreateAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            FastServerClusterActive = true,
+                            FastServerClusterDelete = false,
+                            FastServerClusterName = "FS Production Cluster",
+                            FastServerClusterServerIp = "10.10.1.100",
+                            FastServerClusterServerName = "fs-prod-node-01",
+                            FastServerClusterUrl = "https://fs-prod.davivienda.hn:8443",
+                            FastServerClusterVersion = "1.0.0",
+                            ModifyAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
+                        },
+                        new
+                        {
+                            FastServerClusterId = new Guid("a0000000-0000-0000-0000-000000000002"),
+                            CreateAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            FastServerClusterActive = true,
+                            FastServerClusterDelete = false,
+                            FastServerClusterName = "FS Development Cluster",
+                            FastServerClusterServerIp = "10.10.2.100",
+                            FastServerClusterServerName = "fs-dev-node-01",
+                            FastServerClusterUrl = "https://fs-dev.davivienda.hn:8443",
+                            FastServerClusterVersion = "1.0.0-dev",
+                            ModifyAt = new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
                         });
                 });
 

@@ -17,6 +17,7 @@ public interface IMicroservicesDbContext
     DbSet<MicroserviceCoreConnector> MicroserviceCoreConnectors { get; }
     DbSet<CoreConnectorCredential> CoreConnectorCredentials { get; }
     DbSet<MicroserviceMethod> MicroserviceMethods { get; }
+    DbSet<FastServerCluster> FastServerClusters { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

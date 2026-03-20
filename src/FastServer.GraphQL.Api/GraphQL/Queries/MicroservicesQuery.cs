@@ -213,4 +213,39 @@ public class MicroservicesQuery
         return context.MicroserviceMethods
             .Where(m => m.MicroservicesClusterId == clusterId);
     }
+
+    // ========================================
+    // FASTSERVER CLUSTERS
+    // ========================================
+
+    [GraphQLDescription("Obtiene todos los clusters de FastServer desde PostgreSQL")]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<FastServerCluster> GetAllFastServerClusters(
+        [Service] IMicroservicesDbContext context)
+    {
+        return context.FastServerClusters;
+    }
+
+    [GraphQLDescription("Obtiene los clusters de FastServer activos desde PostgreSQL")]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<FastServerCluster> GetActiveFastServerClusters(
+        [Service] IMicroservicesDbContext context)
+    {
+        return context.FastServerClusters
+            .Where(c => c.FastServerClusterActive == true && c.FastServerClusterDelete != true);
+    }
+
+    [GraphQLDescription("Obtiene un cluster de FastServer por su ID (GUID)")]
+    [UseProjection]
+    public IQueryable<FastServerCluster> GetFastServerClusterById(
+        [Service] IMicroservicesDbContext context,
+        Guid id)
+    {
+        return context.FastServerClusters
+            .Where(c => c.FastServerClusterId == id);
+    }
 }

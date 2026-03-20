@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IActivityLogEventPublisher, ActivityLogEventPublisher>();
         services.AddScoped<ICoreConnectorCredentialEventPublisher, CoreConnectorCredentialEventPublisher>();
         services.AddScoped<IMicroserviceMethodEventPublisher, MicroserviceMethodEventPublisher>();
+        services.AddScoped<IFastServerClusterEventPublisher, FastServerClusterEventPublisher>();
 
         return services;
     }

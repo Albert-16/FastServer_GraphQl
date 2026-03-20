@@ -24,6 +24,7 @@ public class PostgreSqlMicroservicesDbContext : DbContext, IMicroservicesDbConte
     public DbSet<MicroserviceCoreConnector> MicroserviceCoreConnectors => Set<MicroserviceCoreConnector>();
     public DbSet<CoreConnectorCredential> CoreConnectorCredentials => Set<CoreConnectorCredential>();
     public DbSet<MicroserviceMethod> MicroserviceMethods => Set<MicroserviceMethod>();
+    public DbSet<FastServerCluster> FastServerClusters => Set<FastServerCluster>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,6 +39,7 @@ public class PostgreSqlMicroservicesDbContext : DbContext, IMicroservicesDbConte
         modelBuilder.ApplyConfiguration(new MicroserviceCoreConnectorConfiguration());
         modelBuilder.ApplyConfiguration(new CoreConnectorCredentialConfiguration());
         modelBuilder.ApplyConfiguration(new MicroserviceMethodConfiguration());
+        modelBuilder.ApplyConfiguration(new FastServerClusterConfiguration());
 
         // Aplicar datos de prueba (siempre para migraciones)
         MicroservicesSeeder.Seed(modelBuilder);

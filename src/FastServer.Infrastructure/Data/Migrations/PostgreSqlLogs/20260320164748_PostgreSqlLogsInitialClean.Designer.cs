@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
 {
     [DbContext(typeof(PostgreSqlLogsDbContext))]
-    [Migration("20260220154814_AddLogServicesContentIdPrimaryKey")]
-    partial class AddLogServicesContentIdPrimaryKey
+    [Migration("20260320164748_PostgreSqlLogsInitialClean")]
+    partial class PostgreSqlLogsInitialClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,11 +275,8 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
             modelBuilder.Entity("FastServer.Domain.Entities.LogServicesHeader", b =>
                 {
                     b.Property<long>("LogId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
 
                     b.Property<string>("ErrorCode")
                         .HasMaxLength(50)
@@ -432,11 +429,8 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
             modelBuilder.Entity("FastServer.Domain.Entities.LogServicesHeaderHistorico", b =>
                 {
                     b.Property<long>("LogId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasColumnName("fastserver_log_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("LogId"));
 
                     b.Property<string>("ErrorCode")
                         .HasMaxLength(50)

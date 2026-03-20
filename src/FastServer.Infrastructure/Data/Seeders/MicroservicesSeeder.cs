@@ -24,6 +24,7 @@ public static class MicroservicesSeeder
         SeedCoreConnectorCredentials(modelBuilder);
         SeedMicroserviceCoreConnectors(modelBuilder);
         SeedActivityLogs(modelBuilder);
+        SeedFastServerClusters(modelBuilder);
     }
 
     private static void SeedMicroservicesClusters(ModelBuilder modelBuilder)
@@ -205,6 +206,38 @@ public static class MicroservicesSeeder
                 CoreConnectorCredentialId = 2,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
+            }
+        );
+    }
+
+    private static void SeedFastServerClusters(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<FastServerCluster>().HasData(
+            new FastServerCluster
+            {
+                FastServerClusterId = Guid.Parse("a0000000-0000-0000-0000-000000000001"),
+                FastServerClusterName = "FS Production Cluster",
+                FastServerClusterUrl = "https://fs-prod.davivienda.hn:8443",
+                FastServerClusterVersion = "1.0.0",
+                FastServerClusterServerName = "fs-prod-node-01",
+                FastServerClusterServerIp = "10.10.1.100",
+                FastServerClusterActive = true,
+                FastServerClusterDelete = false,
+                CreateAt = new DateTimeOffset(BaseDate, TimeSpan.Zero),
+                ModifyAt = new DateTimeOffset(BaseDate, TimeSpan.Zero)
+            },
+            new FastServerCluster
+            {
+                FastServerClusterId = Guid.Parse("a0000000-0000-0000-0000-000000000002"),
+                FastServerClusterName = "FS Development Cluster",
+                FastServerClusterUrl = "https://fs-dev.davivienda.hn:8443",
+                FastServerClusterVersion = "1.0.0-dev",
+                FastServerClusterServerName = "fs-dev-node-01",
+                FastServerClusterServerIp = "10.10.2.100",
+                FastServerClusterActive = true,
+                FastServerClusterDelete = false,
+                CreateAt = new DateTimeOffset(BaseDate, TimeSpan.Zero),
+                ModifyAt = new DateTimeOffset(BaseDate, TimeSpan.Zero)
             }
         );
     }

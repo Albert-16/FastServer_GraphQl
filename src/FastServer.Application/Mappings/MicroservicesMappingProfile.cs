@@ -44,5 +44,8 @@ public class MicroservicesMappingProfile : Profile
         CreateMap<MicroserviceCoreConnector, MicroserviceCoreConnectorDto>()
             .ForMember(dest => dest.Credential, opt => opt.MapFrom(src => src.CoreConnectorCredential))
             .ForMember(dest => dest.Microservice, opt => opt.MapFrom(src => src.MicroserviceRegister));
+
+        // FastServerCluster
+        CreateMap<FastServerCluster, FastServerClusterDto>();
     }
 }

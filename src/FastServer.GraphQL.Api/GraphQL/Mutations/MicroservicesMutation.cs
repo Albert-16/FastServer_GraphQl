@@ -316,4 +316,56 @@ public class MicroservicesMutation
     {
         return await service.SoftDeleteAsync(id, cancellationToken);
     }
+
+    // ========================================
+    // FASTSERVER CLUSTERS - MUTATIONS
+    // ========================================
+
+    [GraphQLDescription("Crea un nuevo cluster de FastServer con GUID v7")]
+    public async Task<FastServerClusterDto> CreateFastServerClusterAsync(
+        [Service] FastServerClusterService service,
+        [GraphQLDescription("Nombre del cluster")] string name,
+        [GraphQLDescription("URL base del cluster (opcional)")] string? url = null,
+        [GraphQLDescription("Versión del software desplegada (opcional)")] string? version = null,
+        [GraphQLDescription("Nombre del servidor (opcional)")] string? serverName = null,
+        [GraphQLDescription("Dirección IP del servidor (opcional)")] string? serverIp = null,
+        [GraphQLDescription("Indica si el cluster está activo (por defecto: true)")] bool active = true,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.CreateAsync(name, url, version, serverName, serverIp, active, cancellationToken);
+    }
+
+    [GraphQLDescription("Actualiza un cluster de FastServer existente. Solo se modifican los campos proporcionados")]
+    public async Task<FastServerClusterDto?> UpdateFastServerClusterAsync(
+        [Service] FastServerClusterService service,
+        [GraphQLDescription("ID (GUID) del cluster a actualizar")] Guid id,
+        [GraphQLDescription("Nuevo nombre del cluster (opcional)")] string? name = null,
+        [GraphQLDescription("Nueva URL base del cluster (opcional)")] string? url = null,
+        [GraphQLDescription("Nueva versión del software (opcional)")] string? version = null,
+        [GraphQLDescription("Nuevo nombre del servidor (opcional)")] string? serverName = null,
+        [GraphQLDescription("Nueva IP del servidor (opcional)")] string? serverIp = null,
+        [GraphQLDescription("Nuevo estado activo/inactivo (opcional)")] bool? active = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.UpdateAsync(id, name, url, version, serverName, serverIp, active, cancellationToken);
+    }
+
+    [GraphQLDescription("Elimina lógicamente un cluster de FastServer (soft delete). Retorna true si se eliminó correctamente")]
+    public async Task<bool> SoftDeleteFastServerClusterAsync(
+        [Service] FastServerClusterService service,
+        [GraphQLDescription("ID (GUID) del cluster a eliminar")] Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.SoftDeleteAsync(id, cancellationToken);
+    }
+
+    [GraphQLDescription("Activa o desactiva un cluster de FastServer. Retorna true si se actualizó correctamente")]
+    public async Task<bool> SetFastServerClusterActiveAsync(
+        [Service] FastServerClusterService service,
+        [GraphQLDescription("ID (GUID) del cluster")] Guid id,
+        [GraphQLDescription("true para activar, false para desactivar")] bool active,
+        CancellationToken cancellationToken = default)
+    {
+        return await service.SetActiveAsync(id, active, cancellationToken);
+    }
 }

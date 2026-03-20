@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 {
     /// <inheritdoc />
-    public partial class PostgreSqlMicroservicesInitial : Migration
+    public partial class PostgreSqlMicroservicesInitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,6 +44,46 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_event_types", x => x.event_type_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "fastserver_clusters",
+                columns: table => new
+                {
+                    fastserver_cluster_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    fastserver_cluster_name = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
+                    fastserver_cluster_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    fastserver_cluster_version = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    fastserver_cluster_server_name = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
+                    fastserver_cluster_server_ip = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    fastserver_cluster_active = table.Column<bool>(type: "boolean", nullable: true),
+                    fastserver_cluster_delete = table.Column<bool>(type: "boolean", nullable: true),
+                    create_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    delete_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fastserver_clusters", x => x.fastserver_cluster_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "microservice_registers",
+                columns: table => new
+                {
+                    microservice_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    microservice_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservice_active = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_deleted = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_core_connection = table.Column<bool>(type: "boolean", nullable: true),
+                    delete_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_microservice_registers", x => x.microservice_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,26 +130,59 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 });
 
             migrationBuilder.CreateTable(
-                name: "microservice_registers",
+                name: "microservice_core_connector",
                 columns: table => new
                 {
-                    microservice_id = table.Column<long>(type: "bigint", nullable: false)
+                    microservice_core_connector_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    microservice_cluster_id = table.Column<long>(type: "bigint", nullable: true),
-                    microservice_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    microservice_active = table.Column<bool>(type: "boolean", nullable: true),
-                    microservice_deleted = table.Column<bool>(type: "boolean", nullable: true),
-                    microservice_core_connection = table.Column<bool>(type: "boolean", nullable: true),
-                    delete_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    core_connector_credential_id = table.Column<long>(type: "bigint", nullable: true),
+                    microservice_id = table.Column<long>(type: "bigint", nullable: true),
                     create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_microservice_registers", x => x.microservice_id);
+                    table.PrimaryKey("PK_microservice_core_connector", x => x.microservice_core_connector_id);
                     table.ForeignKey(
-                        name: "FK_microservice_registers_microservices_clusters_microservice_~",
-                        column: x => x.microservice_cluster_id,
+                        name: "FK_microservice_core_connector_core_connector_credentials_core~",
+                        column: x => x.core_connector_credential_id,
+                        principalTable: "core_connector_credentials",
+                        principalColumn: "core_connector_credential_id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_microservice_core_connector_microservice_registers_microser~",
+                        column: x => x.microservice_id,
+                        principalTable: "microservice_registers",
+                        principalColumn: "microservice_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "microservice_methods",
+                columns: table => new
+                {
+                    microservice_method_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    microservice_id = table.Column<long>(type: "bigint", nullable: false),
+                    microservices_cluster_id = table.Column<long>(type: "bigint", nullable: true),
+                    microservice_method_delete = table.Column<bool>(type: "boolean", nullable: true),
+                    microservice_method_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    microservice_method_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_microservice_methods", x => x.microservice_method_id);
+                    table.ForeignKey(
+                        name: "FK_microservice_methods_microservice_registers_microservice_id",
+                        column: x => x.microservice_id,
+                        principalTable: "microservice_registers",
+                        principalColumn: "microservice_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_microservice_methods_microservices_clusters_microservices_c~",
+                        column: x => x.microservices_cluster_id,
                         principalTable: "microservices_clusters",
                         principalColumn: "microservices_cluster_id",
                         onDelete: ReferentialAction.Restrict);
@@ -145,58 +218,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "microservice_core_connector",
-                columns: table => new
-                {
-                    microservice_core_connector_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    core_connector_credential_id = table.Column<long>(type: "bigint", nullable: true),
-                    microservice_id = table.Column<long>(type: "bigint", nullable: true),
-                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_microservice_core_connector", x => x.microservice_core_connector_id);
-                    table.ForeignKey(
-                        name: "FK_microservice_core_connector_core_connector_credentials_core~",
-                        column: x => x.core_connector_credential_id,
-                        principalTable: "core_connector_credentials",
-                        principalColumn: "core_connector_credential_id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_microservice_core_connector_microservice_registers_microser~",
-                        column: x => x.microservice_id,
-                        principalTable: "microservice_registers",
-                        principalColumn: "microservice_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "microservice_methods",
-                columns: table => new
-                {
-                    microservice_method_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    microservice_id = table.Column<long>(type: "bigint", nullable: false),
-                    microservice_method_delete = table.Column<bool>(type: "boolean", nullable: true),
-                    microservice_method_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    microservice_method_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    modify_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_microservice_methods", x => x.microservice_method_id);
-                    table.ForeignKey(
-                        name: "FK_microservice_methods_microservice_registers_microservice_id",
-                        column: x => x.microservice_id,
-                        principalTable: "microservice_registers",
-                        principalColumn: "microservice_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.InsertData(
                 table: "core_connector_credentials",
                 columns: new[] { "core_connector_credential_id", "core_connector_credential_key", "core_connector_credential_pass", "core_connector_credential_user", "create_at", "modify_at" },
@@ -213,6 +234,24 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 {
                     { 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), "Microservice Registration", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) },
                     { 2L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), "Configuration Change", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "fastserver_clusters",
+                columns: new[] { "fastserver_cluster_id", "create_at", "delete_at", "fastserver_cluster_active", "fastserver_cluster_delete", "fastserver_cluster_name", "fastserver_cluster_server_ip", "fastserver_cluster_server_name", "fastserver_cluster_url", "fastserver_cluster_version", "modify_at" },
+                values: new object[,]
+                {
+                    { new Guid("a0000000-0000-0000-0000-000000000001"), new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, true, false, "FS Production Cluster", "10.10.1.100", "fs-prod-node-01", "https://fs-prod.davivienda.hn:8443", "1.0.0", new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)) },
+                    { new Guid("a0000000-0000-0000-0000-000000000002"), new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, true, false, "FS Development Cluster", "10.10.2.100", "fs-dev-node-01", "https://fs-dev.davivienda.hn:8443", "1.0.0-dev", new DateTimeOffset(new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "microservice_registers",
+                columns: new[] { "microservice_id", "create_at", "delete_at", "microservice_active", "microservice_core_connection", "microservice_deleted", "microservice_name", "modify_at" },
+                values: new object[,]
+                {
+                    { 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, true, true, false, "AuthService", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) },
+                    { 2L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, true, true, false, "ProductService", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.InsertData(
@@ -243,15 +282,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 });
 
             migrationBuilder.InsertData(
-                table: "microservice_registers",
-                columns: new[] { "microservice_id", "create_at", "delete_at", "microservice_active", "microservice_cluster_id", "microservice_core_connection", "microservice_deleted", "microservice_name", "modify_at" },
-                values: new object[,]
-                {
-                    { 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, true, 1L, true, false, "AuthService", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) },
-                    { 2L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), null, true, 1L, true, false, "ProductService", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) }
-                });
-
-            migrationBuilder.InsertData(
                 table: "microservice_core_connector",
                 columns: new[] { "microservice_core_connector_id", "core_connector_credential_id", "create_at", "microservice_id", "modify_at" },
                 values: new object[,]
@@ -262,11 +292,11 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
             migrationBuilder.InsertData(
                 table: "microservice_methods",
-                columns: new[] { "microservice_method_id", "create_at", "microservice_id", "microservice_method_delete", "microservice_method_name", "microservice_method_url", "modify_at" },
+                columns: new[] { "microservice_method_id", "create_at", "microservice_id", "microservice_method_delete", "microservice_method_name", "microservice_method_url", "microservices_cluster_id", "modify_at" },
                 values: new object[,]
                 {
-                    { 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), 1L, false, "AuthenticateUser", "/api/users/authenticate", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) },
-                    { 2L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), 2L, false, "SearchProducts", "/api/products/search", new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) }
+                    { 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), 1L, false, "AuthenticateUser", "/api/users/authenticate", 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) },
+                    { 2L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc), 2L, false, "SearchProducts", "/api/products/search", 1L, new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -307,6 +337,11 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 column: "event_type_description");
 
             migrationBuilder.CreateIndex(
+                name: "IX_fastserver_clusters_fastserver_cluster_name",
+                table: "fastserver_clusters",
+                column: "fastserver_cluster_name");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_microservice_core_connector_core_connector_credential_id",
                 table: "microservice_core_connector",
                 column: "core_connector_credential_id");
@@ -327,19 +362,14 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                 column: "microservice_method_name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_microservice_registers_microservice_cluster_id",
-                table: "microservice_registers",
-                column: "microservice_cluster_id");
+                name: "IX_microservice_methods_microservices_cluster_id",
+                table: "microservice_methods",
+                column: "microservices_cluster_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_microservice_registers_microservice_name",
                 table: "microservice_registers",
                 column: "microservice_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MicroserviceRegister_ClusterId_Name",
-                table: "microservice_registers",
-                columns: new[] { "microservice_cluster_id", "microservice_name" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_microservices_clusters_microservices_cluster_name",
@@ -363,6 +393,9 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
         {
             migrationBuilder.DropTable(
                 name: "activity_logs");
+
+            migrationBuilder.DropTable(
+                name: "fastserver_clusters");
 
             migrationBuilder.DropTable(
                 name: "microservice_core_connector");
