@@ -5,7 +5,7 @@ namespace FastServer.Application.DTOs.Microservices;
 /// </summary>
 public class EventTypeDto
 {
-    public long EventTypeId { get; set; }
+    public Guid EventTypeId { get; set; }
     public string? EventTypeDescription { get; set; }
     public DateTime? CreateAt { get; set; }
     public DateTime? ModifyAt { get; set; }

@@ -5,7 +5,7 @@ namespace FastServer.Application.Events.MicroservicesClusterEvents;
 /// </summary>
 public class MicroservicesClusterDeletedEvent
 {
-    public long MicroservicesClusterId { get; set; }
+    public Guid MicroservicesClusterId { get; set; }
     public string? MicroservicesClusterName { get; set; }
     public DateTime DeletedAt { get; set; }
 }

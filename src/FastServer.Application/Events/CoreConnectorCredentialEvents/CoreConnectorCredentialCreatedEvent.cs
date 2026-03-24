@@ -5,7 +5,7 @@ namespace FastServer.Application.Events.CoreConnectorCredentialEvents;
 /// </summary>
 public class CoreConnectorCredentialCreatedEvent
 {
-    public long CoreConnectorCredentialId { get; set; }
+    public Guid CoreConnectorCredentialId { get; set; }
     public string? CoreConnectorCredentialUser { get; set; }
     public string? CoreConnectorCredentialPass { get; set; }
     public string? CoreConnectorCredentialKey { get; set; }

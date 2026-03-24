@@ -5,9 +5,9 @@ namespace FastServer.Application.DTOs.Microservices;
 /// </summary>
 public class MicroserviceCoreConnectorDto
 {
-    public long MicroserviceCoreConnectorId { get; set; }
-    public long? CoreConnectorCredentialId { get; set; }
-    public long? MicroserviceId { get; set; }
+    public Guid MicroserviceCoreConnectorId { get; set; }
+    public Guid? CoreConnectorCredentialId { get; set; }
+    public Guid? MicroserviceId { get; set; }
     public DateTime? CreateAt { get; set; }
     public DateTime? ModifyAt { get; set; }
 

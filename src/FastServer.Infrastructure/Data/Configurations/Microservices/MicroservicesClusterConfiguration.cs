@@ -16,8 +16,7 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
         builder.HasKey(e => e.MicroservicesClusterId);
 
         builder.Property(e => e.MicroservicesClusterId)
-            .HasColumnName("microservices_cluster_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("microservices_cluster_id");
 
         builder.Property(e => e.MicroservicesClusterName)
             .HasColumnName("microservices_cluster_name")
@@ -30,6 +29,10 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
         builder.Property(e => e.MicroservicesClusterServerIp)
             .HasColumnName("microservices_cluster_server_ip")
             .HasMaxLength(50);
+
+        builder.Property(e => e.MicroservicesClusterProtocol)
+            .HasColumnName("microservices_cluster_protocol")
+            .HasMaxLength(250);
 
         builder.Property(e => e.MicroservicesClusterActive)
             .HasColumnName("microservices_cluster_active");
@@ -47,13 +50,12 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
             .HasColumnName("delete_at");
 
         // Relaciones
-        builder.HasMany(e => e.MicroserviceMethods)
-            .WithOne(m => m.MicroservicesCluster)
-            .HasForeignKey(m => m.MicroservicesClusterId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(e => e.Nodos)
+            .WithOne(n => n.MicroservicesCluster)
+            .HasForeignKey(n => n.MicroservicesClusterId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
         builder.HasIndex(e => e.MicroservicesClusterName);
-        // Índices en Active y Deleted eliminados - baja selectividad (booleanos)
     }
 }

@@ -16,8 +16,7 @@ public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
         builder.HasKey(e => e.ActivityLogId);
 
         builder.Property(e => e.ActivityLogId)
-            .HasColumnName("activity_log_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("activity_log_id");
 
         builder.Property(e => e.EventTypeId)
             .HasColumnName("event_type_id");

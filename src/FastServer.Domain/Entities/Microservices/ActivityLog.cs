@@ -13,7 +13,7 @@ public class ActivityLog : BaseMicroserviceEntity
     /// <summary>
     /// ID del tipo de evento
     /// </summary>
-    public long? EventTypeId { get; set; }
+    public Guid? EventTypeId { get; set; }
 
     /// <summary>
     /// Nombre de la entidad afectada

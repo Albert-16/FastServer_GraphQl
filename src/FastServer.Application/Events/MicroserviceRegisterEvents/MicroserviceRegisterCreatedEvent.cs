@@ -5,11 +5,13 @@ namespace FastServer.Application.Events.MicroserviceRegisterEvents;
 /// </summary>
 public class MicroserviceRegisterCreatedEvent
 {
-    public long MicroserviceId { get; set; }
+    public Guid MicroserviceId { get; set; }
     public string? MicroserviceName { get; set; }
     public bool? MicroserviceActive { get; set; }
     public bool? MicroserviceDeleted { get; set; }
     public bool? MicroserviceCoreConnection { get; set; }
+    public string? SoapBase { get; set; }
+    public Guid? MicroserviceTypeId { get; set; }
     public DateTime? DeleteAt { get; set; }
     public DateTime CreatedAt { get; set; }
 }

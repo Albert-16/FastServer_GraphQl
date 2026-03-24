@@ -5,10 +5,11 @@ namespace FastServer.Application.Events.MicroservicesClusterEvents;
 /// </summary>
 public class MicroservicesClusterUpdatedEvent
 {
-    public long MicroservicesClusterId { get; set; }
+    public Guid MicroservicesClusterId { get; set; }
     public string? MicroservicesClusterName { get; set; }
     public string? MicroservicesClusterServerName { get; set; }
     public string? MicroservicesClusterServerIp { get; set; }
+    public string? MicroservicesClusterProtocol { get; set; }
     public bool? MicroservicesClusterActive { get; set; }
     public bool? MicroservicesClusterDeleted { get; set; }
     public DateTime? DeleteAt { get; set; }

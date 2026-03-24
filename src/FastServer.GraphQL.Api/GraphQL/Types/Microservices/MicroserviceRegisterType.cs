@@ -14,7 +14,7 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
         descriptor.Description("Registro de microservicio");
 
         descriptor.Field(f => f.MicroserviceId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único del microservicio");
 
         descriptor.Field(f => f.MicroserviceName)
@@ -33,6 +33,14 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
             .Type<BooleanType>()
             .Description("Indica si tiene conexión con el core");
 
+        descriptor.Field(f => f.SoapBase)
+            .Type<StringType>()
+            .Description("URL base SOAP del microservicio");
+
+        descriptor.Field(f => f.MicroserviceTypeId)
+            .Type<UuidType>()
+            .Description("ID del tipo de microservicio");
+
         descriptor.Field(f => f.CreateAt)
             .Type<DateTimeType>()
             .Description("Fecha de creación");
@@ -45,8 +53,16 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
 
+        descriptor.Field(f => f.MicroserviceType)
+            .Type<MicroservicesRegisterTypeType>()
+            .Description("Tipo de registro del microservicio");
+
         descriptor.Field(f => f.MicroserviceCoreConnectors)
             .Type<ListType<MicroserviceCoreConnectorType>>()
             .Description("Conectores del core asociados");
+
+        descriptor.Field(f => f.MicroserviceMethods)
+            .Type<ListType<MicroserviceMethodType>>()
+            .Description("Métodos del microservicio");
     }
 }

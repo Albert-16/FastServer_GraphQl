@@ -1,8 +1,10 @@
 using AutoMapper;
+using FastServer.Application.DTOs;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.MicroserviceRegisterEvents;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar registros de microservicios en PostgreSQL (BD: FastServer)
 /// </summary>
-public class MicroserviceRegisterService
+public class MicroserviceRegisterService : IMicroserviceRegisterService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -28,7 +30,7 @@ public class MicroserviceRegisterService
     }
 
     public async Task<MicroserviceRegisterDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceRegisters
@@ -56,18 +58,44 @@ public class MicroserviceRegisterService
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
 
+    public async Task<PaginatedResultDto<MicroserviceRegisterDto>> GetAllPaginatedAsync(
+        PaginationParamsDto pagination, CancellationToken ct = default)
+    {
+        int totalCount = await _context.MicroserviceRegisters.CountAsync(ct);
+        var items = await _context.MicroserviceRegisters
+            .AsNoTracking()
+            .Include(x => x.MicroserviceType)
+            .OrderByDescending(x => x.CreateAt)
+            .Skip(pagination.Skip)
+            .Take(pagination.PageSize)
+            .ToListAsync(ct);
+
+        return new PaginatedResultDto<MicroserviceRegisterDto>
+        {
+            Items = _mapper.Map<IEnumerable<MicroserviceRegisterDto>>(items),
+            TotalCount = totalCount,
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize
+        };
+    }
+
     public async Task<MicroserviceRegisterDto> CreateAsync(
         string? name,
         bool active,
         bool coreConnection,
+        string? soapBase,
+        Guid? microserviceTypeId,
         CancellationToken cancellationToken = default)
     {
         var entity = new MicroserviceRegister
         {
+            MicroserviceId = Guid.CreateVersion7(),
             MicroserviceName = name,
             MicroserviceActive = active,
             MicroserviceDeleted = false,
             MicroserviceCoreConnection = coreConnection,
+            SoapBase = soapBase,
+            MicroserviceTypeId = microserviceTypeId,
             CreateAt = DateTime.UtcNow,
             ModifyAt = DateTime.UtcNow
         };
@@ -85,6 +113,8 @@ public class MicroserviceRegisterService
             MicroserviceActive = result.MicroserviceActive,
             MicroserviceDeleted = result.MicroserviceDeleted,
             MicroserviceCoreConnection = result.MicroserviceCoreConnection,
+            SoapBase = result.SoapBase,
+            MicroserviceTypeId = result.MicroserviceTypeId,
             DeleteAt = result.DeleteAt,
             CreatedAt = DateTime.UtcNow
         };
@@ -94,10 +124,12 @@ public class MicroserviceRegisterService
     }
 
     public async Task<MicroserviceRegisterDto?> UpdateAsync(
-        long id,
+        Guid id,
         string? name,
         bool? active,
         bool? coreConnection,
+        string? soapBase,
+        Guid? microserviceTypeId,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceRegisters
@@ -107,6 +139,8 @@ public class MicroserviceRegisterService
         if (name != null) entity.MicroserviceName = name;
         if (active.HasValue) entity.MicroserviceActive = active.Value;
         if (coreConnection.HasValue) entity.MicroserviceCoreConnection = coreConnection.Value;
+        if (soapBase != null) entity.SoapBase = soapBase;
+        if (microserviceTypeId.HasValue) entity.MicroserviceTypeId = microserviceTypeId;
         entity.ModifyAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -121,6 +155,8 @@ public class MicroserviceRegisterService
             MicroserviceActive = result.MicroserviceActive,
             MicroserviceDeleted = result.MicroserviceDeleted,
             MicroserviceCoreConnection = result.MicroserviceCoreConnection,
+            SoapBase = result.SoapBase,
+            MicroserviceTypeId = result.MicroserviceTypeId,
             DeleteAt = result.DeleteAt,
             UpdatedAt = DateTime.UtcNow
         };
@@ -130,7 +166,7 @@ public class MicroserviceRegisterService
     }
 
     public async Task<bool> SoftDeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceRegisters
@@ -156,7 +192,7 @@ public class MicroserviceRegisterService
     }
 
     public async Task<bool> SetActiveAsync(
-        long id,
+        Guid id,
         bool active,
         CancellationToken cancellationToken = default)
     {

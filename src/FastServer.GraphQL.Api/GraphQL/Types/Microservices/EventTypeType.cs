@@ -14,7 +14,7 @@ public class EventTypeType : ObjectType<EventType>
         descriptor.Description("Tipo de evento para logs de actividad");
 
         descriptor.Field(f => f.EventTypeId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único del tipo de evento");
 
         descriptor.Field(f => f.EventTypeDescription)

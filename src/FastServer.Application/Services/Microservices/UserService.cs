@@ -65,7 +65,7 @@ public class UserService
     {
         var entity = new User
         {
-            UserId = Guid.NewGuid(),
+            UserId = Guid.CreateVersion7(),
             UserPeoplesoft = peoplesoft,
             UserName = name,
             UserEmail = email,

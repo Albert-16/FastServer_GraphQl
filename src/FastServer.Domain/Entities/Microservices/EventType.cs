@@ -8,7 +8,7 @@ public class EventType : BaseMicroserviceEntity
     /// <summary>
     /// ID del tipo de evento
     /// </summary>
-    public long EventTypeId { get; set; }
+    public Guid EventTypeId { get; set; }
 
     /// <summary>
     /// Descripción del tipo de evento

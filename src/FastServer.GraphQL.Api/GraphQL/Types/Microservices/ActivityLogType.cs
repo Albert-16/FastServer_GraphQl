@@ -18,7 +18,7 @@ public class ActivityLogType : ObjectType<ActivityLog>
             .Description("ID único del log de actividad");
 
         descriptor.Field(f => f.EventTypeId)
-            .Type<LongType>()
+            .Type<UuidType>()
             .Description("ID del tipo de evento");
 
         descriptor.Field(f => f.ActivityLogEntityName)

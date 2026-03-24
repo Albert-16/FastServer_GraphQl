@@ -5,10 +5,11 @@ namespace FastServer.Application.DTOs.Microservices;
 /// </summary>
 public class MicroservicesClusterDto
 {
-    public long MicroservicesClusterId { get; set; }
+    public Guid MicroservicesClusterId { get; set; }
     public string? MicroservicesClusterName { get; set; }
     public string? MicroservicesClusterServerName { get; set; }
     public string? MicroservicesClusterServerIp { get; set; }
+    public string? MicroservicesClusterProtocol { get; set; }
     public bool? MicroservicesClusterActive { get; set; }
     public bool? MicroservicesClusterDeleted { get; set; }
     public DateTime? CreateAt { get; set; }
@@ -16,5 +17,5 @@ public class MicroservicesClusterDto
     public DateTime? DeleteAt { get; set; }
 
     // Relaciones
-    public List<MicroserviceMethodDto>? MicroserviceMethods { get; set; }
+    public List<NodoDto>? Nodos { get; set; }
 }

@@ -8,17 +8,17 @@ public class MicroserviceCoreConnector : BaseMicroserviceEntity
     /// <summary>
     /// ID único del conector
     /// </summary>
-    public long MicroserviceCoreConnectorId { get; set; }
+    public Guid MicroserviceCoreConnectorId { get; set; }
 
     /// <summary>
     /// ID de la credencial asociada
     /// </summary>
-    public long? CoreConnectorCredentialId { get; set; }
+    public Guid? CoreConnectorCredentialId { get; set; }
 
     /// <summary>
     /// ID del microservicio asociado
     /// </summary>
-    public long? MicroserviceId { get; set; }
+    public Guid? MicroserviceId { get; set; }
 
     // Navegación
     public virtual CoreConnectorCredential? CoreConnectorCredential { get; set; }

@@ -8,7 +8,7 @@ public class CoreConnectorCredential : BaseMicroserviceEntity
     /// <summary>
     /// ID único de la credencial
     /// </summary>
-    public long CoreConnectorCredentialId { get; set; }
+    public Guid CoreConnectorCredentialId { get; set; }
 
     /// <summary>
     /// Usuario de la credencial

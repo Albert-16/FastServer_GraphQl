@@ -1,6 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar tipos de eventos en PostgreSQL (BD: FastServer)
 /// </summary>
-public class EventTypeService
+public class EventTypeService : IEventTypeService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -21,7 +22,7 @@ public class EventTypeService
     }
 
     public async Task<EventTypeDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.EventTypes
@@ -45,6 +46,7 @@ public class EventTypeService
     {
         var entity = new EventType
         {
+            EventTypeId = Guid.CreateVersion7(),
             EventTypeDescription = description,
             CreateAt = DateTime.UtcNow,
             ModifyAt = DateTime.UtcNow
@@ -57,7 +59,7 @@ public class EventTypeService
     }
 
     public async Task<EventTypeDto?> UpdateAsync(
-        long id,
+        Guid id,
         string description,
         CancellationToken cancellationToken = default)
     {
@@ -74,7 +76,7 @@ public class EventTypeService
     }
 
     public async Task<bool> DeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.EventTypes

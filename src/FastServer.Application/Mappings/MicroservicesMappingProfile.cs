@@ -24,16 +24,17 @@ public class MicroservicesMappingProfile : Profile
 
         // MicroservicesCluster
         CreateMap<MicroservicesCluster, MicroservicesClusterDto>()
-            .ForMember(dest => dest.MicroserviceMethods, opt => opt.MapFrom(src => src.MicroserviceMethods));
+            .ForMember(dest => dest.Nodos, opt => opt.MapFrom(src => src.Nodos));
 
         // MicroserviceRegister
         CreateMap<MicroserviceRegister, MicroserviceRegisterDto>()
-            .ForMember(dest => dest.CoreConnectors, opt => opt.MapFrom(src => src.MicroserviceCoreConnectors));
+            .ForMember(dest => dest.CoreConnectors, opt => opt.MapFrom(src => src.MicroserviceCoreConnectors))
+            .ForMember(dest => dest.MicroserviceType, opt => opt.MapFrom(src => src.MicroserviceType));
 
         // MicroserviceMethod
         CreateMap<MicroserviceMethod, MicroserviceMethodDto>()
             .ForMember(dest => dest.Microservice, opt => opt.MapFrom(src => src.MicroserviceRegister))
-            .ForMember(dest => dest.Cluster, opt => opt.MapFrom(src => src.MicroservicesCluster));
+            .ForMember(dest => dest.Nodos, opt => opt.MapFrom(src => src.Nodos));
 
         // CoreConnectorCredential (Excluir password en el mapeo de lectura)
         CreateMap<CoreConnectorCredential, CoreConnectorCredentialDto>()
@@ -47,5 +48,13 @@ public class MicroservicesMappingProfile : Profile
 
         // FastServerCluster
         CreateMap<FastServerCluster, FastServerClusterDto>();
+
+        // MicroservicesRegisterType
+        CreateMap<MicroservicesRegisterType, MicroservicesRegisterTypeDto>();
+
+        // Nodo
+        CreateMap<Nodo, NodoDto>()
+            .ForMember(dest => dest.MicroserviceMethod, opt => opt.MapFrom(src => src.MicroserviceMethod))
+            .ForMember(dest => dest.MicroservicesCluster, opt => opt.MapFrom(src => src.MicroservicesCluster));
     }
 }

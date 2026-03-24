@@ -56,12 +56,14 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.EventTypeService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.UserService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.ActivityLogService>();
-builder.Services.AddScoped<FastServer.Application.Services.Microservices.MicroserviceRegisterService>();
+builder.Services.AddScoped<FastServer.Application.Interfaces.Microservices.IMicroserviceRegisterService, FastServer.Application.Services.Microservices.MicroserviceRegisterService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.MicroservicesClusterService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.CoreConnectorCredentialService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.MicroserviceCoreConnectorService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.MicroserviceMethodService>();
 builder.Services.AddScoped<FastServer.Application.Services.Microservices.FastServerClusterService>();
+builder.Services.AddScoped<FastServer.Application.Interfaces.Microservices.INodoService, FastServer.Application.Services.Microservices.NodoService>();
+builder.Services.AddScoped<FastServer.Application.Interfaces.Microservices.IMicroservicesRegisterTypeService, FastServer.Application.Services.Microservices.MicroservicesRegisterTypeService>();
 
 // ========================================
 // VALIDACIÓN DE CONFIGURACIÓN DE BASES DE DATOS POSTGRESQL
@@ -124,6 +126,8 @@ builder.Services
     .AddTypeExtension<CoreConnectorCredentialSubscription>() // Suscripciones para CoreConnectorCredential
     .AddTypeExtension<MicroserviceMethodSubscription>()      // Suscripciones para MicroserviceMethod
     .AddTypeExtension<FastServerClusterSubscription>()     // Suscripciones para FastServerCluster
+    .AddTypeExtension<NodoSubscription>()                  // Suscripciones para Nodo
+    .AddTypeExtension<MicroservicesRegisterTypeSubscription>() // Suscripciones para MicroservicesRegisterType
 
     // Tipos de objetos GraphQL (representan entidades del dominio)
     .AddType<LogServicesHeaderType>()
@@ -141,6 +145,9 @@ builder.Services
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.MicroserviceCoreConnectorType>()
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.MicroserviceMethodType>()
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.FastServerClusterType>()
+    .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.NodoType>()
+    .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.MicroservicesRegisterTypeType>()
+    .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.PaginatedMicroserviceRegisterType>()
 
     // Tipos de input (para recibir datos en mutations)
     .AddType<CreateLogServicesHeaderInputType>()

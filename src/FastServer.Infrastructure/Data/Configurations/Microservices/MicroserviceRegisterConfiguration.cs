@@ -16,8 +16,7 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
         builder.HasKey(e => e.MicroserviceId);
 
         builder.Property(e => e.MicroserviceId)
-            .HasColumnName("microservice_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("microservice_id");
 
         builder.Property(e => e.MicroserviceName)
             .HasColumnName("microservice_name")
@@ -32,6 +31,13 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
         builder.Property(e => e.MicroserviceCoreConnection)
             .HasColumnName("microservice_core_connection");
 
+        builder.Property(e => e.SoapBase)
+            .HasColumnName("soap_base")
+            .HasMaxLength(250);
+
+        builder.Property(e => e.MicroserviceTypeId)
+            .HasColumnName("microservice_type_id");
+
         builder.Property(e => e.CreateAt)
             .HasColumnName("create_at");
 
@@ -42,6 +48,11 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasColumnName("delete_at");
 
         // Relaciones
+        builder.HasOne(e => e.MicroserviceType)
+            .WithMany(t => t.MicroserviceRegisters)
+            .HasForeignKey(e => e.MicroserviceTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(e => e.MicroserviceCoreConnectors)
             .WithOne(c => c.MicroserviceRegister)
             .HasForeignKey(c => c.MicroserviceId)
@@ -54,5 +65,6 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
 
         // Índices
         builder.HasIndex(e => e.MicroserviceName);
+        builder.HasIndex(e => e.MicroserviceTypeId);
     }
 }

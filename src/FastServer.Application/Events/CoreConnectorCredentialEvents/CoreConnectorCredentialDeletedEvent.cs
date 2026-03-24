@@ -5,7 +5,7 @@ namespace FastServer.Application.Events.CoreConnectorCredentialEvents;
 /// </summary>
 public class CoreConnectorCredentialDeletedEvent
 {
-    public long CoreConnectorCredentialId { get; set; }
+    public Guid CoreConnectorCredentialId { get; set; }
     public string? CoreConnectorCredentialUser { get; set; }
     public DateTime DeletedAt { get; set; }
 }

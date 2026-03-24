@@ -17,8 +17,7 @@ public class FastServerClusterConfiguration : IEntityTypeConfiguration<FastServe
         builder.HasKey(e => e.FastServerClusterId);
 
         builder.Property(e => e.FastServerClusterId)
-            .HasColumnName("fastserver_cluster_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("fastserver_cluster_id");
 
         builder.Property(e => e.FastServerClusterName)
             .HasColumnName("fastserver_cluster_name")

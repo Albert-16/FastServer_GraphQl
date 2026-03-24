@@ -3,6 +3,7 @@ using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.MicroservicesClusterEvents;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar clusters de microservicios en PostgreSQL (BD: FastServer)
 /// </summary>
-public class MicroservicesClusterService
+public class MicroservicesClusterService : IMicroservicesClusterService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -28,7 +29,7 @@ public class MicroservicesClusterService
     }
 
     public async Task<MicroservicesClusterDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroservicesClusters
@@ -60,14 +61,17 @@ public class MicroservicesClusterService
         string? name,
         string? serverName,
         string? serverIp,
+        string? protocol,
         bool active,
         CancellationToken cancellationToken = default)
     {
         var entity = new MicroservicesCluster
         {
+            MicroservicesClusterId = Guid.CreateVersion7(),
             MicroservicesClusterName = name,
             MicroservicesClusterServerName = serverName,
             MicroservicesClusterServerIp = serverIp,
+            MicroservicesClusterProtocol = protocol,
             MicroservicesClusterActive = active,
             MicroservicesClusterDeleted = false,
             CreateAt = DateTime.UtcNow,
@@ -86,6 +90,7 @@ public class MicroservicesClusterService
             MicroservicesClusterName = result.MicroservicesClusterName,
             MicroservicesClusterServerName = result.MicroservicesClusterServerName,
             MicroservicesClusterServerIp = result.MicroservicesClusterServerIp,
+            MicroservicesClusterProtocol = result.MicroservicesClusterProtocol,
             MicroservicesClusterActive = result.MicroservicesClusterActive,
             MicroservicesClusterDeleted = result.MicroservicesClusterDeleted,
             DeleteAt = result.DeleteAt,
@@ -97,10 +102,11 @@ public class MicroservicesClusterService
     }
 
     public async Task<MicroservicesClusterDto?> UpdateAsync(
-        long id,
+        Guid id,
         string? name,
         string? serverName,
         string? serverIp,
+        string? protocol,
         bool? active,
         CancellationToken cancellationToken = default)
     {
@@ -111,6 +117,7 @@ public class MicroservicesClusterService
         if (name != null) entity.MicroservicesClusterName = name;
         if (serverName != null) entity.MicroservicesClusterServerName = serverName;
         if (serverIp != null) entity.MicroservicesClusterServerIp = serverIp;
+        if (protocol != null) entity.MicroservicesClusterProtocol = protocol;
         if (active.HasValue) entity.MicroservicesClusterActive = active.Value;
         entity.ModifyAt = DateTime.UtcNow;
 
@@ -125,6 +132,7 @@ public class MicroservicesClusterService
             MicroservicesClusterName = result.MicroservicesClusterName,
             MicroservicesClusterServerName = result.MicroservicesClusterServerName,
             MicroservicesClusterServerIp = result.MicroservicesClusterServerIp,
+            MicroservicesClusterProtocol = result.MicroservicesClusterProtocol,
             MicroservicesClusterActive = result.MicroservicesClusterActive,
             MicroservicesClusterDeleted = result.MicroservicesClusterDeleted,
             DeleteAt = result.DeleteAt,
@@ -136,7 +144,7 @@ public class MicroservicesClusterService
     }
 
     public async Task<bool> SoftDeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroservicesClusters
@@ -162,7 +170,7 @@ public class MicroservicesClusterService
     }
 
     public async Task<bool> SetActiveAsync(
-        long id,
+        Guid id,
         bool active,
         CancellationToken cancellationToken = default)
     {

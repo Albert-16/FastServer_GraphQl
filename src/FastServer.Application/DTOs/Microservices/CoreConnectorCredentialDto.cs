@@ -5,7 +5,7 @@ namespace FastServer.Application.DTOs.Microservices;
 /// </summary>
 public class CoreConnectorCredentialDto
 {
-    public long CoreConnectorCredentialId { get; set; }
+    public Guid CoreConnectorCredentialId { get; set; }
     public string? CoreConnectorCredentialUser { get; set; }
     // NOTA: Por seguridad, el password no se expone en el DTO de lectura
     public string? CoreConnectorCredentialKey { get; set; }

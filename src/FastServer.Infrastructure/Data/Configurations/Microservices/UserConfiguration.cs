@@ -16,8 +16,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(e => e.UserId);
 
         builder.Property(e => e.UserId)
-            .HasColumnName("user_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("user_id");
 
         builder.Property(e => e.UserPeoplesoft)
             .HasColumnName("user_peoplesoft")

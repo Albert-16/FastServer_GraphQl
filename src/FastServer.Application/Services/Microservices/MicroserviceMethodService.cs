@@ -3,6 +3,7 @@ using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.MicroserviceMethodEvents;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar métodos de microservicios en PostgreSQL (BD: FastServer)
 /// </summary>
-public class MicroserviceMethodService
+public class MicroserviceMethodService : IMicroserviceMethodService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -28,7 +29,7 @@ public class MicroserviceMethodService
     }
 
     public async Task<MicroserviceMethodDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         MicroserviceMethod? entity = await _context.MicroserviceMethods
@@ -47,7 +48,7 @@ public class MicroserviceMethodService
     }
 
     public async Task<List<MicroserviceMethodDto>> GetByMicroserviceIdAsync(
-        long microserviceId,
+        Guid microserviceId,
         CancellationToken cancellationToken = default)
     {
         List<MicroserviceMethod> entities = await _context.MicroserviceMethods
@@ -57,30 +58,20 @@ public class MicroserviceMethodService
         return _mapper.Map<List<MicroserviceMethodDto>>(entities);
     }
 
-    public async Task<List<MicroserviceMethodDto>> GetByClusterIdAsync(
-        long clusterId,
-        CancellationToken cancellationToken = default)
-    {
-        List<MicroserviceMethod> entities = await _context.MicroserviceMethods
-            .AsNoTracking()
-            .Where(m => m.MicroservicesClusterId == clusterId && m.MicroserviceMethodDelete != true)
-            .ToListAsync(cancellationToken);
-        return _mapper.Map<List<MicroserviceMethodDto>>(entities);
-    }
-
     public async Task<MicroserviceMethodDto> CreateAsync(
-        long microserviceId,
-        long? clusterId,
+        Guid microserviceId,
         string? name,
         string? url,
+        string? httpMethod,
         CancellationToken cancellationToken = default)
     {
         var entity = new MicroserviceMethod
         {
+            MicroserviceMethodId = Guid.CreateVersion7(),
             MicroserviceId = microserviceId,
-            MicroservicesClusterId = clusterId,
             MicroserviceMethodName = name,
             MicroserviceMethodUrl = url,
+            HttpMethod = httpMethod,
             MicroserviceMethodDelete = false,
             CreateAt = DateTime.UtcNow,
             ModifyAt = DateTime.UtcNow
@@ -95,9 +86,9 @@ public class MicroserviceMethodService
         {
             MicroserviceMethodId = result.MicroserviceMethodId,
             MicroserviceId = result.MicroserviceId,
-            MicroservicesClusterId = result.MicroservicesClusterId,
             MicroserviceMethodName = result.MicroserviceMethodName,
             MicroserviceMethodUrl = result.MicroserviceMethodUrl,
+            HttpMethod = result.HttpMethod,
             MicroserviceMethodDelete = result.MicroserviceMethodDelete,
             CreatedAt = DateTime.UtcNow
         };
@@ -107,11 +98,11 @@ public class MicroserviceMethodService
     }
 
     public async Task<MicroserviceMethodDto?> UpdateAsync(
-        long id,
-        long? microserviceId,
-        long? clusterId,
+        Guid id,
+        Guid? microserviceId,
         string? name,
         string? url,
+        string? httpMethod,
         CancellationToken cancellationToken = default)
     {
         MicroserviceMethod? entity = await _context.MicroserviceMethods
@@ -119,9 +110,9 @@ public class MicroserviceMethodService
         if (entity == null) return null;
 
         if (microserviceId.HasValue) entity.MicroserviceId = microserviceId.Value;
-        if (clusterId.HasValue) entity.MicroservicesClusterId = clusterId;
         if (name != null) entity.MicroserviceMethodName = name;
         if (url != null) entity.MicroserviceMethodUrl = url;
+        if (httpMethod != null) entity.HttpMethod = httpMethod;
         entity.ModifyAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -132,9 +123,9 @@ public class MicroserviceMethodService
         {
             MicroserviceMethodId = result.MicroserviceMethodId,
             MicroserviceId = result.MicroserviceId,
-            MicroservicesClusterId = result.MicroservicesClusterId,
             MicroserviceMethodName = result.MicroserviceMethodName,
             MicroserviceMethodUrl = result.MicroserviceMethodUrl,
+            HttpMethod = result.HttpMethod,
             MicroserviceMethodDelete = result.MicroserviceMethodDelete,
             UpdatedAt = DateTime.UtcNow
         };
@@ -144,7 +135,7 @@ public class MicroserviceMethodService
     }
 
     public async Task<bool> SoftDeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         MicroserviceMethod? entity = await _context.MicroserviceMethods

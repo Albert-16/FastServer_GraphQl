@@ -3,6 +3,7 @@ using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.ActivityLogEvents;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar logs de actividad en PostgreSQL (BD: FastServer)
 /// </summary>
-public class ActivityLogService
+public class ActivityLogService : IActivityLogService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -67,7 +68,7 @@ public class ActivityLogService
     }
 
     public async Task<ActivityLogDto> CreateAsync(
-        long? eventTypeId,
+        Guid? eventTypeId,
         string? entityName,
         Guid? entityId,
         string? description,
@@ -76,7 +77,7 @@ public class ActivityLogService
     {
         var entity = new ActivityLog
         {
-            ActivityLogId = Guid.NewGuid(),
+            ActivityLogId = Guid.CreateVersion7(),
             EventTypeId = eventTypeId,
             ActivityLogEntityName = entityName,
             ActivityLogEntityId = entityId,

@@ -6,7 +6,7 @@ namespace FastServer.Application.Events.ActivityLogEvents;
 public class ActivityLogUpdatedEvent
 {
     public Guid ActivityLogId { get; set; }
-    public long? EventTypeId { get; set; }
+    public Guid? EventTypeId { get; set; }
     public string? ActivityLogEntityName { get; set; }
     public Guid? ActivityLogEntityId { get; set; }
     public string? ActivityLogDescription { get; set; }

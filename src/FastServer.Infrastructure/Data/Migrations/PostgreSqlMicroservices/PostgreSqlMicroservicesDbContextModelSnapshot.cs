@@ -47,8 +47,8 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
-                    b.Property<long?>("EventTypeId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("EventTypeId")
+                        .HasColumnType("uuid")
                         .HasColumnName("event_type_id");
 
                     b.Property<DateTime?>("ModifyAt")
@@ -83,7 +83,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                             ActivityLogEntityId = new Guid("20000000-0000-0000-0000-000000000001"),
                             ActivityLogEntityName = "MicroserviceRegister",
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                            EventTypeId = 1L,
+                            EventTypeId = new Guid("ee000000-0000-0000-0000-000000000001"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             UserId = new Guid("00000000-0000-0000-0000-000000000001")
                         },
@@ -94,7 +94,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                             ActivityLogEntityId = new Guid("20000000-0000-0000-0000-000000000002"),
                             ActivityLogEntityName = "MicroserviceRegister",
                             CreateAt = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
-                            EventTypeId = 2L,
+                            EventTypeId = new Guid("ee000000-0000-0000-0000-000000000002"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 5, 0, 0, DateTimeKind.Utc),
                             UserId = new Guid("00000000-0000-0000-0000-000000000002")
                         });
@@ -102,12 +102,10 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.CoreConnectorCredential", b =>
                 {
-                    b.Property<long>("CoreConnectorCredentialId")
+                    b.Property<Guid>("CoreConnectorCredentialId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("core_connector_credential_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("CoreConnectorCredentialId"));
 
                     b.Property<string>("CoreConnectorCredentialKey")
                         .HasMaxLength(500)
@@ -143,7 +141,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.HasData(
                         new
                         {
-                            CoreConnectorCredentialId = 1L,
+                            CoreConnectorCredentialId = new Guid("ff000000-0000-0000-0000-000000000001"),
                             CoreConnectorCredentialKey = "api_key_001",
                             CoreConnectorCredentialPass = "encrypted_pass_001",
                             CoreConnectorCredentialUser = "auth_service_user",
@@ -152,7 +150,7 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         },
                         new
                         {
-                            CoreConnectorCredentialId = 2L,
+                            CoreConnectorCredentialId = new Guid("ff000000-0000-0000-0000-000000000002"),
                             CoreConnectorCredentialKey = "api_key_002",
                             CoreConnectorCredentialPass = "encrypted_pass_002",
                             CoreConnectorCredentialUser = "product_service_user",
@@ -163,12 +161,10 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.EventType", b =>
                 {
-                    b.Property<long>("EventTypeId")
+                    b.Property<Guid>("EventTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("event_type_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("EventTypeId"));
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
@@ -192,14 +188,14 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.HasData(
                         new
                         {
-                            EventTypeId = 1L,
+                            EventTypeId = new Guid("ee000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             EventTypeDescription = "Microservice Registration",
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            EventTypeId = 2L,
+                            EventTypeId = new Guid("ee000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             EventTypeDescription = "Configuration Change",
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
@@ -295,23 +291,21 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceCoreConnector", b =>
                 {
-                    b.Property<long>("MicroserviceCoreConnectorId")
+                    b.Property<Guid>("MicroserviceCoreConnectorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservice_core_connector_id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceCoreConnectorId"));
-
-                    b.Property<long?>("CoreConnectorCredentialId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("CoreConnectorCredentialId")
+                        .HasColumnType("uuid")
                         .HasColumnName("core_connector_credential_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
-                    b.Property<long?>("MicroserviceId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("MicroserviceId")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservice_id");
 
                     b.Property<DateTime?>("ModifyAt")
@@ -329,37 +323,40 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.HasData(
                         new
                         {
-                            MicroserviceCoreConnectorId = 1L,
-                            CoreConnectorCredentialId = 1L,
+                            MicroserviceCoreConnectorId = new Guid("11000000-0000-0000-0000-000000000001"),
+                            CoreConnectorCredentialId = new Guid("ff000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                            MicroserviceId = 1L,
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000001"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            MicroserviceCoreConnectorId = 2L,
-                            CoreConnectorCredentialId = 2L,
+                            MicroserviceCoreConnectorId = new Guid("11000000-0000-0000-0000-000000000002"),
+                            CoreConnectorCredentialId = new Guid("ff000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                            MicroserviceId = 2L,
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000002"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceMethod", b =>
                 {
-                    b.Property<long>("MicroserviceMethodId")
+                    b.Property<Guid>("MicroserviceMethodId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservice_method_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceMethodId"));
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("create_at");
 
-                    b.Property<long>("MicroserviceId")
-                        .HasColumnType("bigint")
+                    b.Property<string>("HttpMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("http_method");
+
+                    b.Property<Guid>("MicroserviceId")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservice_id");
 
                     b.Property<bool?>("MicroserviceMethodDelete")
@@ -376,10 +373,6 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         .HasColumnType("character varying(500)")
                         .HasColumnName("microservice_method_url");
 
-                    b.Property<long?>("MicroservicesClusterId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("microservices_cluster_id");
-
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
@@ -390,43 +383,39 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
                     b.HasIndex("MicroserviceMethodName");
 
-                    b.HasIndex("MicroservicesClusterId");
-
                     b.ToTable("microservice_methods", (string)null);
 
                     b.HasData(
                         new
                         {
-                            MicroserviceMethodId = 1L,
+                            MicroserviceMethodId = new Guid("dd000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                            MicroserviceId = 1L,
+                            HttpMethod = "POST",
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000001"),
                             MicroserviceMethodDelete = false,
                             MicroserviceMethodName = "AuthenticateUser",
                             MicroserviceMethodUrl = "/api/users/authenticate",
-                            MicroservicesClusterId = 1L,
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            MicroserviceMethodId = 2L,
+                            MicroserviceMethodId = new Guid("dd000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
-                            MicroserviceId = 2L,
+                            HttpMethod = "GET",
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000002"),
                             MicroserviceMethodDelete = false,
                             MicroserviceMethodName = "SearchProducts",
                             MicroserviceMethodUrl = "/api/products/search",
-                            MicroservicesClusterId = 1L,
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
                 {
-                    b.Property<long>("MicroserviceId")
+                    b.Property<Guid>("MicroserviceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservice_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroserviceId"));
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
@@ -453,47 +442,59 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         .HasColumnType("character varying(255)")
                         .HasColumnName("microservice_name");
 
+                    b.Property<Guid?>("MicroserviceTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("microservice_type_id");
+
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("modify_at");
 
+                    b.Property<string>("SoapBase")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("soap_base");
+
                     b.HasKey("MicroserviceId");
 
                     b.HasIndex("MicroserviceName");
+
+                    b.HasIndex("MicroserviceTypeId");
 
                     b.ToTable("microservice_registers", (string)null);
 
                     b.HasData(
                         new
                         {
-                            MicroserviceId = 1L,
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             MicroserviceActive = true,
                             MicroserviceCoreConnection = true,
                             MicroserviceDeleted = false,
                             MicroserviceName = "AuthService",
+                            MicroserviceTypeId = new Guid("aa000000-0000-0000-0000-000000000001"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            MicroserviceId = 2L,
+                            MicroserviceId = new Guid("cc000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             MicroserviceActive = true,
                             MicroserviceCoreConnection = true,
                             MicroserviceDeleted = false,
                             MicroserviceName = "ProductService",
-                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                            MicroserviceTypeId = new Guid("aa000000-0000-0000-0000-000000000002"),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            SoapBase = "https://core.davivienda.hn/soap/products"
                         });
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesCluster", b =>
                 {
-                    b.Property<long>("MicroservicesClusterId")
+                    b.Property<Guid>("MicroservicesClusterId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uuid")
                         .HasColumnName("microservices_cluster_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("MicroservicesClusterId"));
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
@@ -515,6 +516,11 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("microservices_cluster_name");
+
+                    b.Property<string>("MicroservicesClusterProtocol")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)")
+                        .HasColumnName("microservices_cluster_protocol");
 
                     b.Property<string>("MicroservicesClusterServerIp")
                         .HasMaxLength(50)
@@ -539,24 +545,128 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.HasData(
                         new
                         {
-                            MicroservicesClusterId = 1L,
+                            MicroservicesClusterId = new Guid("bb000000-0000-0000-0000-000000000001"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             MicroservicesClusterActive = true,
                             MicroservicesClusterDeleted = false,
                             MicroservicesClusterName = "Production Cluster",
+                            MicroservicesClusterProtocol = "HTTPS",
                             MicroservicesClusterServerIp = "10.0.1.100",
                             MicroservicesClusterServerName = "prod-cluster-01",
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            MicroservicesClusterId = 2L,
+                            MicroservicesClusterId = new Guid("bb000000-0000-0000-0000-000000000002"),
                             CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
                             MicroservicesClusterActive = true,
                             MicroservicesClusterDeleted = false,
                             MicroservicesClusterName = "Development Cluster",
+                            MicroservicesClusterProtocol = "HTTP",
                             MicroservicesClusterServerIp = "10.0.2.100",
                             MicroservicesClusterServerName = "dev-cluster-01",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesRegisterType", b =>
+                {
+                    b.Property<Guid>("MicroservicesRegisterTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("microservices_register_type_id");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
+                    b.Property<string>("MicroservicesRegisterTypeDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("microservices_register_type_description");
+
+                    b.Property<string>("MicroservicesRegisterTypeName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("microservices_register_type_name");
+
+                    b.Property<DateTime?>("ModifyAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modify_at");
+
+                    b.HasKey("MicroservicesRegisterTypeId");
+
+                    b.HasIndex("MicroservicesRegisterTypeName");
+
+                    b.ToTable("microservices_register_types", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MicroservicesRegisterTypeId = new Guid("aa000000-0000-0000-0000-000000000001"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroservicesRegisterTypeDescription = "Microservicio basado en API REST",
+                            MicroservicesRegisterTypeName = "REST",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            MicroservicesRegisterTypeId = new Guid("aa000000-0000-0000-0000-000000000002"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroservicesRegisterTypeDescription = "Microservicio basado en SOAP/XML",
+                            MicroservicesRegisterTypeName = "SOAP",
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.Nodo", b =>
+                {
+                    b.Property<Guid>("NodoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("nodo_id");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("create_at");
+
+                    b.Property<Guid>("MicroserviceMethodId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("microservice_method_id");
+
+                    b.Property<Guid>("MicroservicesClusterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("microservices_cluster_id");
+
+                    b.Property<DateTime?>("ModifyAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("modify_at");
+
+                    b.HasKey("NodoId");
+
+                    b.HasIndex("MicroservicesClusterId");
+
+                    b.HasIndex("MicroserviceMethodId", "MicroservicesClusterId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Nodo_Method_Cluster");
+
+                    b.ToTable("nodos", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            NodoId = new Guid("22000000-0000-0000-0000-000000000001"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceMethodId = new Guid("dd000000-0000-0000-0000-000000000001"),
+                            MicroservicesClusterId = new Guid("bb000000-0000-0000-0000-000000000001"),
+                            ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            NodoId = new Guid("22000000-0000-0000-0000-000000000002"),
+                            CreateAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+                            MicroserviceMethodId = new Guid("dd000000-0000-0000-0000-000000000002"),
+                            MicroservicesClusterId = new Guid("bb000000-0000-0000-0000-000000000001"),
                             ModifyAt = new DateTime(2025, 1, 1, 10, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -701,12 +811,34 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FastServer.Domain.Entities.Microservices.MicroservicesCluster", "MicroservicesCluster")
-                        .WithMany("MicroserviceMethods")
-                        .HasForeignKey("MicroservicesClusterId")
+                    b.Navigation("MicroserviceRegister");
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
+                {
+                    b.HasOne("FastServer.Domain.Entities.Microservices.MicroservicesRegisterType", "MicroserviceType")
+                        .WithMany("MicroserviceRegisters")
+                        .HasForeignKey("MicroserviceTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("MicroserviceRegister");
+                    b.Navigation("MicroserviceType");
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.Nodo", b =>
+                {
+                    b.HasOne("FastServer.Domain.Entities.Microservices.MicroserviceMethod", "MicroserviceMethod")
+                        .WithMany("Nodos")
+                        .HasForeignKey("MicroserviceMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FastServer.Domain.Entities.Microservices.MicroservicesCluster", "MicroservicesCluster")
+                        .WithMany("Nodos")
+                        .HasForeignKey("MicroservicesClusterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MicroserviceMethod");
 
                     b.Navigation("MicroservicesCluster");
                 });
@@ -721,6 +853,11 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Navigation("ActivityLogs");
                 });
 
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceMethod", b =>
+                {
+                    b.Navigation("Nodos");
+                });
+
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroserviceRegister", b =>
                 {
                     b.Navigation("MicroserviceCoreConnectors");
@@ -730,7 +867,12 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesCluster", b =>
                 {
-                    b.Navigation("MicroserviceMethods");
+                    b.Navigation("Nodos");
+                });
+
+            modelBuilder.Entity("FastServer.Domain.Entities.Microservices.MicroservicesRegisterType", b =>
+                {
+                    b.Navigation("MicroserviceRegisters");
                 });
 
             modelBuilder.Entity("FastServer.Domain.Entities.Microservices.User", b =>

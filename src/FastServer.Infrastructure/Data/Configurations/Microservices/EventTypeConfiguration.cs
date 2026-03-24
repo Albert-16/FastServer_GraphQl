@@ -16,8 +16,7 @@ public class EventTypeConfiguration : IEntityTypeConfiguration<EventType>
         builder.HasKey(e => e.EventTypeId);
 
         builder.Property(e => e.EventTypeId)
-            .HasColumnName("event_type_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("event_type_id");
 
         builder.Property(e => e.EventTypeDescription)
             .HasColumnName("event_type_description")

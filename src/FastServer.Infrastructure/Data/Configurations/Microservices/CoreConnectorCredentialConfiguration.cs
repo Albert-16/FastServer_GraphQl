@@ -16,8 +16,7 @@ public class CoreConnectorCredentialConfiguration : IEntityTypeConfiguration<Cor
         builder.HasKey(e => e.CoreConnectorCredentialId);
 
         builder.Property(e => e.CoreConnectorCredentialId)
-            .HasColumnName("core_connector_credential_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("core_connector_credential_id");
 
         builder.Property(e => e.CoreConnectorCredentialUser)
             .HasColumnName("core_connector_credential_user")

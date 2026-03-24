@@ -16,8 +16,7 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
         builder.HasKey(e => e.MicroserviceMethodId);
 
         builder.Property(e => e.MicroserviceMethodId)
-            .HasColumnName("microservice_method_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("microservice_method_id");
 
         builder.Property(e => e.MicroserviceId)
             .HasColumnName("microservice_id");
@@ -29,12 +28,13 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
             .HasColumnName("microservice_method_name")
             .HasMaxLength(255);
 
-        builder.Property(e => e.MicroservicesClusterId)
-            .HasColumnName("microservices_cluster_id");
-
         builder.Property(e => e.MicroserviceMethodUrl)
             .HasColumnName("microservice_method_url")
             .HasMaxLength(500);
+
+        builder.Property(e => e.HttpMethod)
+            .HasColumnName("http_method")
+            .HasMaxLength(50);
 
         builder.Property(e => e.CreateAt)
             .HasColumnName("create_at");
@@ -48,14 +48,13 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
             .HasForeignKey(e => e.MicroserviceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(e => e.MicroservicesCluster)
-            .WithMany(c => c.MicroserviceMethods)
-            .HasForeignKey(e => e.MicroservicesClusterId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(e => e.Nodos)
+            .WithOne(n => n.MicroserviceMethod)
+            .HasForeignKey(n => n.MicroserviceMethodId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
         builder.HasIndex(e => e.MicroserviceId);
-        builder.HasIndex(e => e.MicroservicesClusterId);
         builder.HasIndex(e => e.MicroserviceMethodName);
     }
 }

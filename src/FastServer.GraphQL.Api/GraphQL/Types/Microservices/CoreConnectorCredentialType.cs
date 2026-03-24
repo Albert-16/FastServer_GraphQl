@@ -14,7 +14,7 @@ public class CoreConnectorCredentialType : ObjectType<CoreConnectorCredential>
         descriptor.Description("Credenciales para conectores del core");
 
         descriptor.Field(f => f.CoreConnectorCredentialId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único de la credencial");
 
         descriptor.Field(f => f.CoreConnectorCredentialUser)

@@ -6,9 +6,9 @@ namespace FastServer.Domain.Entities.Microservices;
 public class MicroserviceRegister : BaseMicroserviceEntity
 {
     /// <summary>
-    /// ID único del microservicio
+    /// ID único del microservicio (GUID v7)
     /// </summary>
-    public long MicroserviceId { get; set; }
+    public Guid MicroserviceId { get; set; }
 
     /// <summary>
     /// Nombre del microservicio
@@ -31,11 +31,22 @@ public class MicroserviceRegister : BaseMicroserviceEntity
     public bool? MicroserviceCoreConnection { get; set; }
 
     /// <summary>
+    /// URL base SOAP del microservicio
+    /// </summary>
+    public string? SoapBase { get; set; }
+
+    /// <summary>
+    /// ID del tipo de microservicio (FK a MicroservicesRegisterType)
+    /// </summary>
+    public Guid? MicroserviceTypeId { get; set; }
+
+    /// <summary>
     /// Fecha de eliminación (soft delete)
     /// </summary>
     public DateTime? DeleteAt { get; set; }
 
     // Navegación
+    public virtual MicroservicesRegisterType? MicroserviceType { get; set; }
     public virtual ICollection<MicroserviceCoreConnector> MicroserviceCoreConnectors { get; set; } = new List<MicroserviceCoreConnector>();
     public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
 }

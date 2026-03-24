@@ -5,7 +5,7 @@ namespace FastServer.Application.Events.MicroserviceMethodEvents;
 /// </summary>
 public class MicroserviceMethodDeletedEvent
 {
-    public long MicroserviceMethodId { get; set; }
+    public Guid MicroserviceMethodId { get; set; }
     public string? MicroserviceMethodName { get; set; }
     public DateTime DeletedAt { get; set; }
 }

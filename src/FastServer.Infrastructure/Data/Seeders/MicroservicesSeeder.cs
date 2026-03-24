@@ -4,21 +4,56 @@ using Microsoft.EntityFrameworkCore;
 namespace FastServer.Infrastructure.Data.Seeders;
 
 /// <summary>
-/// Clase para poblar la base de datos SQL Server con datos de prueba de microservicios
+/// Clase para poblar la base de datos PostgreSQL con datos de prueba de microservicios
 /// </summary>
 public static class MicroservicesSeeder
 {
     // Fecha fija para evitar cambios en cada compilación
     private static readonly DateTime BaseDate = new DateTime(2025, 1, 1, 10, 0, 0, DateTimeKind.Utc);
 
+    // GUIDs determinísticos para seed data
+    // MicroservicesRegisterType
+    private static readonly Guid RegisterTypeRestId = Guid.Parse("aa000000-0000-0000-0000-000000000001");
+    private static readonly Guid RegisterTypeSoapId = Guid.Parse("aa000000-0000-0000-0000-000000000002");
+
+    // MicroservicesClusters
+    private static readonly Guid ClusterProdId = Guid.Parse("bb000000-0000-0000-0000-000000000001");
+    private static readonly Guid ClusterDevId = Guid.Parse("bb000000-0000-0000-0000-000000000002");
+
+    // MicroserviceRegisters
+    private static readonly Guid RegisterAuthId = Guid.Parse("cc000000-0000-0000-0000-000000000001");
+    private static readonly Guid RegisterProductId = Guid.Parse("cc000000-0000-0000-0000-000000000002");
+
+    // MicroserviceMethods
+    private static readonly Guid MethodAuthenticateId = Guid.Parse("dd000000-0000-0000-0000-000000000001");
+    private static readonly Guid MethodSearchId = Guid.Parse("dd000000-0000-0000-0000-000000000002");
+
+    // EventTypes
+    private static readonly Guid EventTypeRegistrationId = Guid.Parse("ee000000-0000-0000-0000-000000000001");
+    private static readonly Guid EventTypeConfigChangeId = Guid.Parse("ee000000-0000-0000-0000-000000000002");
+
+    // CoreConnectorCredentials
+    private static readonly Guid CredentialAuthId = Guid.Parse("ff000000-0000-0000-0000-000000000001");
+    private static readonly Guid CredentialProductId = Guid.Parse("ff000000-0000-0000-0000-000000000002");
+
+    // MicroserviceCoreConnectors
+    private static readonly Guid ConnectorAuthId = Guid.Parse("11000000-0000-0000-0000-000000000001");
+    private static readonly Guid ConnectorProductId = Guid.Parse("11000000-0000-0000-0000-000000000002");
+
+    // Nodos
+    private static readonly Guid NodoAuthProdId = Guid.Parse("22000000-0000-0000-0000-000000000001");
+    private static readonly Guid NodoSearchProdId = Guid.Parse("22000000-0000-0000-0000-000000000002");
+
     /// <summary>
-    /// Aplica el seeding de datos de prueba para SQL Server (Microservices)
+    /// Aplica el seeding de datos de prueba para PostgreSQL (Microservices)
     /// </summary>
     public static void Seed(ModelBuilder modelBuilder)
     {
+        SeedMicroservicesRegisterTypes(modelBuilder);
         SeedMicroservicesClusters(modelBuilder);
         SeedMicroserviceRegisters(modelBuilder);
         SeedMicroserviceMethods(modelBuilder);
+        SeedNodos(modelBuilder);
         SeedEventTypes(modelBuilder);
         SeedUsers(modelBuilder);
         SeedCoreConnectorCredentials(modelBuilder);
@@ -27,15 +62,38 @@ public static class MicroservicesSeeder
         SeedFastServerClusters(modelBuilder);
     }
 
+    private static void SeedMicroservicesRegisterTypes(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<MicroservicesRegisterType>().HasData(
+            new MicroservicesRegisterType
+            {
+                MicroservicesRegisterTypeId = RegisterTypeRestId,
+                MicroservicesRegisterTypeName = "REST",
+                MicroservicesRegisterTypeDescription = "Microservicio basado en API REST",
+                CreateAt = BaseDate,
+                ModifyAt = BaseDate
+            },
+            new MicroservicesRegisterType
+            {
+                MicroservicesRegisterTypeId = RegisterTypeSoapId,
+                MicroservicesRegisterTypeName = "SOAP",
+                MicroservicesRegisterTypeDescription = "Microservicio basado en SOAP/XML",
+                CreateAt = BaseDate,
+                ModifyAt = BaseDate
+            }
+        );
+    }
+
     private static void SeedMicroservicesClusters(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MicroservicesCluster>().HasData(
             new MicroservicesCluster
             {
-                MicroservicesClusterId = 1,
+                MicroservicesClusterId = ClusterProdId,
                 MicroservicesClusterName = "Production Cluster",
                 MicroservicesClusterServerName = "prod-cluster-01",
                 MicroservicesClusterServerIp = "10.0.1.100",
+                MicroservicesClusterProtocol = "HTTPS",
                 MicroservicesClusterActive = true,
                 MicroservicesClusterDeleted = false,
                 CreateAt = BaseDate,
@@ -43,10 +101,11 @@ public static class MicroservicesSeeder
             },
             new MicroservicesCluster
             {
-                MicroservicesClusterId = 2,
+                MicroservicesClusterId = ClusterDevId,
                 MicroservicesClusterName = "Development Cluster",
                 MicroservicesClusterServerName = "dev-cluster-01",
                 MicroservicesClusterServerIp = "10.0.2.100",
+                MicroservicesClusterProtocol = "HTTP",
                 MicroservicesClusterActive = true,
                 MicroservicesClusterDeleted = false,
                 CreateAt = BaseDate,
@@ -60,21 +119,25 @@ public static class MicroservicesSeeder
         modelBuilder.Entity<MicroserviceRegister>().HasData(
             new MicroserviceRegister
             {
-                MicroserviceId = 1,
+                MicroserviceId = RegisterAuthId,
                 MicroserviceName = "AuthService",
                 MicroserviceActive = true,
                 MicroserviceDeleted = false,
                 MicroserviceCoreConnection = true,
+                SoapBase = null,
+                MicroserviceTypeId = RegisterTypeRestId,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             },
             new MicroserviceRegister
             {
-                MicroserviceId = 2,
+                MicroserviceId = RegisterProductId,
                 MicroserviceName = "ProductService",
                 MicroserviceActive = true,
                 MicroserviceDeleted = false,
                 MicroserviceCoreConnection = true,
+                SoapBase = "https://core.davivienda.hn/soap/products",
+                MicroserviceTypeId = RegisterTypeSoapId,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             }
@@ -86,23 +149,45 @@ public static class MicroservicesSeeder
         modelBuilder.Entity<MicroserviceMethod>().HasData(
             new MicroserviceMethod
             {
-                MicroserviceMethodId = 1,
-                MicroserviceId = 1,
-                MicroservicesClusterId = 1,
+                MicroserviceMethodId = MethodAuthenticateId,
+                MicroserviceId = RegisterAuthId,
                 MicroserviceMethodDelete = false,
                 MicroserviceMethodName = "AuthenticateUser",
                 MicroserviceMethodUrl = "/api/users/authenticate",
+                HttpMethod = "POST",
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             },
             new MicroserviceMethod
             {
-                MicroserviceMethodId = 2,
-                MicroserviceId = 2,
-                MicroservicesClusterId = 1,
+                MicroserviceMethodId = MethodSearchId,
+                MicroserviceId = RegisterProductId,
                 MicroserviceMethodDelete = false,
                 MicroserviceMethodName = "SearchProducts",
                 MicroserviceMethodUrl = "/api/products/search",
+                HttpMethod = "GET",
+                CreateAt = BaseDate,
+                ModifyAt = BaseDate
+            }
+        );
+    }
+
+    private static void SeedNodos(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Nodo>().HasData(
+            new Nodo
+            {
+                NodoId = NodoAuthProdId,
+                MicroserviceMethodId = MethodAuthenticateId,
+                MicroservicesClusterId = ClusterProdId,
+                CreateAt = BaseDate,
+                ModifyAt = BaseDate
+            },
+            new Nodo
+            {
+                NodoId = NodoSearchProdId,
+                MicroserviceMethodId = MethodSearchId,
+                MicroservicesClusterId = ClusterProdId,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             }
@@ -114,14 +199,14 @@ public static class MicroservicesSeeder
         modelBuilder.Entity<EventType>().HasData(
             new EventType
             {
-                EventTypeId = 1,
+                EventTypeId = EventTypeRegistrationId,
                 EventTypeDescription = "Microservice Registration",
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             },
             new EventType
             {
-                EventTypeId = 2,
+                EventTypeId = EventTypeConfigChangeId,
                 EventTypeDescription = "Configuration Change",
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
@@ -169,7 +254,7 @@ public static class MicroservicesSeeder
         modelBuilder.Entity<CoreConnectorCredential>().HasData(
             new CoreConnectorCredential
             {
-                CoreConnectorCredentialId = 1,
+                CoreConnectorCredentialId = CredentialAuthId,
                 CoreConnectorCredentialUser = "auth_service_user",
                 CoreConnectorCredentialPass = "encrypted_pass_001",
                 CoreConnectorCredentialKey = "api_key_001",
@@ -178,7 +263,7 @@ public static class MicroservicesSeeder
             },
             new CoreConnectorCredential
             {
-                CoreConnectorCredentialId = 2,
+                CoreConnectorCredentialId = CredentialProductId,
                 CoreConnectorCredentialUser = "product_service_user",
                 CoreConnectorCredentialPass = "encrypted_pass_002",
                 CoreConnectorCredentialKey = "api_key_002",
@@ -193,17 +278,17 @@ public static class MicroservicesSeeder
         modelBuilder.Entity<MicroserviceCoreConnector>().HasData(
             new MicroserviceCoreConnector
             {
-                MicroserviceCoreConnectorId = 1,
-                MicroserviceId = 1,
-                CoreConnectorCredentialId = 1,
+                MicroserviceCoreConnectorId = ConnectorAuthId,
+                MicroserviceId = RegisterAuthId,
+                CoreConnectorCredentialId = CredentialAuthId,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             },
             new MicroserviceCoreConnector
             {
-                MicroserviceCoreConnectorId = 2,
-                MicroserviceId = 2,
-                CoreConnectorCredentialId = 2,
+                MicroserviceCoreConnectorId = ConnectorProductId,
+                MicroserviceId = RegisterProductId,
+                CoreConnectorCredentialId = CredentialProductId,
                 CreateAt = BaseDate,
                 ModifyAt = BaseDate
             }
@@ -248,7 +333,7 @@ public static class MicroservicesSeeder
             new ActivityLog
             {
                 ActivityLogId = Guid.Parse("10000000-0000-0000-0000-000000000001"),
-                EventTypeId = 1,
+                EventTypeId = EventTypeRegistrationId,
                 ActivityLogEntityName = "MicroserviceRegister",
                 ActivityLogEntityId = Guid.Parse("20000000-0000-0000-0000-000000000001"),
                 ActivityLogDescription = "AuthService registered successfully",
@@ -259,7 +344,7 @@ public static class MicroservicesSeeder
             new ActivityLog
             {
                 ActivityLogId = Guid.Parse("10000000-0000-0000-0000-000000000002"),
-                EventTypeId = 2,
+                EventTypeId = EventTypeConfigChangeId,
                 ActivityLogEntityName = "MicroserviceRegister",
                 ActivityLogEntityId = Guid.Parse("20000000-0000-0000-0000-000000000002"),
                 ActivityLogDescription = "ProductService configuration updated",

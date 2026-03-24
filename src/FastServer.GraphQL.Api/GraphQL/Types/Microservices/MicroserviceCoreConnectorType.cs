@@ -14,15 +14,15 @@ public class MicroserviceCoreConnectorType : ObjectType<MicroserviceCoreConnecto
         descriptor.Description("Conector entre microservicio y core");
 
         descriptor.Field(f => f.MicroserviceCoreConnectorId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único del conector");
 
         descriptor.Field(f => f.CoreConnectorCredentialId)
-            .Type<LongType>()
+            .Type<UuidType>()
             .Description("ID de la credencial asociada");
 
         descriptor.Field(f => f.MicroserviceId)
-            .Type<LongType>()
+            .Type<UuidType>()
             .Description("ID del microservicio asociado");
 
         descriptor.Field(f => f.CoreConnectorCredential)

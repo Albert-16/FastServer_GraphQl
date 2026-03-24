@@ -1,8 +1,11 @@
+using FastServer.Application.DTOs;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Application.Services.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using FastServer.GraphQL.Api.GraphQL.Queries;
+using FastServer.GraphQL.Api.GraphQL.Types;
 using HotChocolate;
 using HotChocolate.Types;
 
@@ -15,14 +18,18 @@ public class MicroservicesQuery
     // MICROSERVICE REGISTERS
     // ========================================
 
-    [GraphQLDescription("Obtiene todos los microservicios desde FastServer (PostgreSQL)")]
-    [UseProjection]
-    [UseFiltering]
-    [UseSorting]
-    public IQueryable<MicroserviceRegister> GetAllMicroservices(
-        [Service] IMicroservicesDbContext context)
+    [GraphQLDescription("Obtiene todos los microservicios con paginación")]
+    public async Task<PaginatedResultDto<MicroserviceRegisterDto>> GetAllMicroservices(
+        [Service] IMicroserviceRegisterService service,
+        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
+        CancellationToken cancellationToken = default)
     {
-        return context.MicroserviceRegisters;
+        var paginationParams = new PaginationParamsDto
+        {
+            PageNumber = pagination?.PageNumber ?? 1,
+            PageSize = pagination?.PageSize ?? 10
+        };
+        return await service.GetAllPaginatedAsync(paginationParams, cancellationToken);
     }
 
     [GraphQLDescription("Obtiene los microservicios activos desde FastServer (PostgreSQL)")]
@@ -174,7 +181,7 @@ public class MicroservicesQuery
     [UseProjection]
     public IQueryable<MicroserviceCoreConnector> GetConnectorsByMicroserviceId(
         [Service] IMicroservicesDbContext context,
-        long microserviceId)
+        Guid microserviceId)
     {
         return context.MicroserviceCoreConnectors
             .Where(c => c.MicroserviceId == microserviceId);
@@ -198,21 +205,49 @@ public class MicroservicesQuery
     [UseProjection]
     public IQueryable<MicroserviceMethod> GetMethodsByMicroserviceId(
         [Service] IMicroservicesDbContext context,
-        long microserviceId)
+        Guid microserviceId)
     {
         return context.MicroserviceMethods
             .Where(m => m.MicroserviceId == microserviceId);
     }
 
-    [GraphQLDescription("Obtiene métodos por ID de cluster desde FastServer (PostgreSQL)")]
+    // ========================================
+    // MICROSERVICES REGISTER TYPES
+    // ========================================
+
     [UseProjection]
-    public IQueryable<MicroserviceMethod> GetMethodsByClusterId(
+    [UseFiltering]
+    [UseSorting]
+    [GraphQLDescription("Obtiene todos los tipos de registro de microservicios")]
+    public IQueryable<MicroservicesRegisterType> GetAllMicroservicesRegisterTypes(
+        [Service] IMicroservicesDbContext context) => context.MicroservicesRegisterTypes;
+
+    // ========================================
+    // NODOS
+    // ========================================
+
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [GraphQLDescription("Obtiene todos los nodos")]
+    public IQueryable<Nodo> GetAllNodos(
+        [Service] IMicroservicesDbContext context) => context.Nodos;
+
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [GraphQLDescription("Obtiene nodos por ID de método")]
+    public IQueryable<Nodo> GetNodosByMethodId(
         [Service] IMicroservicesDbContext context,
-        long clusterId)
-    {
-        return context.MicroserviceMethods
-            .Where(m => m.MicroservicesClusterId == clusterId);
-    }
+        Guid methodId) => context.Nodos.Where(n => n.MicroserviceMethodId == methodId);
+
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    [GraphQLDescription("Obtiene nodos por ID de cluster")]
+    public IQueryable<Nodo> GetNodosByClusterId(
+        [Service] IMicroservicesDbContext context,
+        Guid clusterId) => context.Nodos.Where(n => n.MicroservicesClusterId == clusterId);
 
     // ========================================
     // FASTSERVER CLUSTERS

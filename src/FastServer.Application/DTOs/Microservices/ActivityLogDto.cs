@@ -6,7 +6,7 @@ namespace FastServer.Application.DTOs.Microservices;
 public class ActivityLogDto
 {
     public Guid ActivityLogId { get; set; }
-    public long? EventTypeId { get; set; }
+    public Guid? EventTypeId { get; set; }
     public string? ActivityLogEntityName { get; set; }
     public Guid? ActivityLogEntityId { get; set; }
     public string? ActivityLogDescription { get; set; }

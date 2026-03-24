@@ -6,9 +6,9 @@ namespace FastServer.Domain.Entities.Microservices;
 public class MicroservicesCluster : BaseMicroserviceEntity
 {
     /// <summary>
-    /// ID único del cluster
+    /// ID único del cluster (GUID v7)
     /// </summary>
-    public long MicroservicesClusterId { get; set; }
+    public Guid MicroservicesClusterId { get; set; }
 
     /// <summary>
     /// Nombre del cluster
@@ -26,6 +26,11 @@ public class MicroservicesCluster : BaseMicroserviceEntity
     public string? MicroservicesClusterServerIp { get; set; }
 
     /// <summary>
+    /// Protocolo del cluster
+    /// </summary>
+    public string? MicroservicesClusterProtocol { get; set; }
+
+    /// <summary>
     /// Indica si el cluster está activo
     /// </summary>
     public bool? MicroservicesClusterActive { get; set; }
@@ -41,5 +46,5 @@ public class MicroservicesCluster : BaseMicroserviceEntity
     public DateTime? DeleteAt { get; set; }
 
     // Navegación
-    public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
+    public virtual ICollection<Nodo> Nodos { get; set; } = new List<Nodo>();
 }

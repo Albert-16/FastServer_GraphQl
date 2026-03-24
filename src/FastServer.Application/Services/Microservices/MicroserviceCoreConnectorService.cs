@@ -1,6 +1,7 @@
 using AutoMapper;
 using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar conectores entre microservicios y el core en PostgreSQL (BD: FastServer)
 /// </summary>
-public class MicroserviceCoreConnectorService
+public class MicroserviceCoreConnectorService : IMicroserviceCoreConnectorService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -21,7 +22,7 @@ public class MicroserviceCoreConnectorService
     }
 
     public async Task<MicroserviceCoreConnectorDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceCoreConnectors
@@ -31,7 +32,7 @@ public class MicroserviceCoreConnectorService
     }
 
     public async Task<List<MicroserviceCoreConnectorDto>> GetByMicroserviceIdAsync(
-        long microserviceId,
+        Guid microserviceId,
         CancellationToken cancellationToken = default)
     {
         var entities = await _context.MicroserviceCoreConnectors
@@ -42,12 +43,13 @@ public class MicroserviceCoreConnectorService
     }
 
     public async Task<MicroserviceCoreConnectorDto> CreateAsync(
-        long? credentialId,
-        long? microserviceId,
+        Guid? credentialId,
+        Guid? microserviceId,
         CancellationToken cancellationToken = default)
     {
         var entity = new MicroserviceCoreConnector
         {
+            MicroserviceCoreConnectorId = Guid.CreateVersion7(),
             CoreConnectorCredentialId = credentialId,
             MicroserviceId = microserviceId,
             CreateAt = DateTime.UtcNow,
@@ -61,9 +63,9 @@ public class MicroserviceCoreConnectorService
     }
 
     public async Task<MicroserviceCoreConnectorDto?> UpdateAsync(
-        long id,
-        long? credentialId,
-        long? microserviceId,
+        Guid id,
+        Guid? credentialId,
+        Guid? microserviceId,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceCoreConnectors
@@ -80,7 +82,7 @@ public class MicroserviceCoreConnectorService
     }
 
     public async Task<bool> DeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceCoreConnectors

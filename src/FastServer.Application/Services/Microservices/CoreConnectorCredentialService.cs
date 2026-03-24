@@ -3,6 +3,7 @@ using FastServer.Application.DTOs.Microservices;
 using FastServer.Application.EventPublishers;
 using FastServer.Application.Events.CoreConnectorCredentialEvents;
 using FastServer.Application.Interfaces;
+using FastServer.Application.Interfaces.Microservices;
 using FastServer.Domain.Entities.Microservices;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ namespace FastServer.Application.Services.Microservices;
 /// <summary>
 /// Servicio para gestionar credenciales de conectores del core en PostgreSQL (BD: FastServer)
 /// </summary>
-public class CoreConnectorCredentialService
+public class CoreConnectorCredentialService : ICoreConnectorCredentialService
 {
     private readonly IMicroservicesDbContext _context;
     private readonly IMapper _mapper;
@@ -28,7 +29,7 @@ public class CoreConnectorCredentialService
     }
 
     public async Task<CoreConnectorCredentialDto?> GetByIdAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.CoreConnectorCredentials
@@ -54,6 +55,7 @@ public class CoreConnectorCredentialService
     {
         var entity = new CoreConnectorCredential
         {
+            CoreConnectorCredentialId = Guid.CreateVersion7(),
             CoreConnectorCredentialUser = user,
             CoreConnectorCredentialPass = password, // TODO: Implementar encriptación
             CoreConnectorCredentialKey = key,
@@ -84,7 +86,7 @@ public class CoreConnectorCredentialService
     }
 
     public async Task<CoreConnectorCredentialDto?> UpdateAsync(
-        long id,
+        Guid id,
         string? user,
         string? password,
         string? key,
@@ -121,7 +123,7 @@ public class CoreConnectorCredentialService
     }
 
     public async Task<bool> DeleteAsync(
-        long id,
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.CoreConnectorCredentials

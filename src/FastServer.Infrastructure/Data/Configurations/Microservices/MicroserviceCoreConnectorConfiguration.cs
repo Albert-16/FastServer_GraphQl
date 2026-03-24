@@ -16,8 +16,7 @@ public class MicroserviceCoreConnectorConfiguration : IEntityTypeConfiguration<M
         builder.HasKey(e => e.MicroserviceCoreConnectorId);
 
         builder.Property(e => e.MicroserviceCoreConnectorId)
-            .HasColumnName("microservice_core_connector_id")
-            .ValueGeneratedOnAdd();
+            .HasColumnName("microservice_core_connector_id");
 
         builder.Property(e => e.CoreConnectorCredentialId)
             .HasColumnName("core_connector_credential_id");

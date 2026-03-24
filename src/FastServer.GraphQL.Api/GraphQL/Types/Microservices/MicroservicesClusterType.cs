@@ -14,7 +14,7 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
         descriptor.Description("Cluster de microservicios");
 
         descriptor.Field(f => f.MicroservicesClusterId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único del cluster");
 
         descriptor.Field(f => f.MicroservicesClusterName)
@@ -28,6 +28,10 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
         descriptor.Field(f => f.MicroservicesClusterServerIp)
             .Type<StringType>()
             .Description("IP del servidor");
+
+        descriptor.Field(f => f.MicroservicesClusterProtocol)
+            .Type<StringType>()
+            .Description("Protocolo del cluster");
 
         descriptor.Field(f => f.MicroservicesClusterActive)
             .Type<BooleanType>()
@@ -49,8 +53,8 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
 
-        descriptor.Field(f => f.MicroserviceMethods)
-            .Type<ListType<MicroserviceMethodType>>()
-            .Description("Métodos de microservicios del cluster");
+        descriptor.Field(f => f.Nodos)
+            .Type<ListType<NodoType>>()
+            .Description("Nodos (relaciones con métodos)");
     }
 }

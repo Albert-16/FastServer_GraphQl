@@ -14,16 +14,12 @@ public class MicroserviceMethodType : ObjectType<MicroserviceMethod>
         descriptor.Description("Método/endpoint de un microservicio");
 
         descriptor.Field(f => f.MicroserviceMethodId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID único del método");
 
         descriptor.Field(f => f.MicroserviceId)
-            .Type<NonNullType<LongType>>()
+            .Type<NonNullType<UuidType>>()
             .Description("ID del microservicio al que pertenece");
-
-        descriptor.Field(f => f.MicroservicesClusterId)
-            .Type<LongType>()
-            .Description("ID del cluster al que pertenece");
 
         descriptor.Field(f => f.MicroserviceMethodDelete)
             .Type<BooleanType>()
@@ -37,6 +33,10 @@ public class MicroserviceMethodType : ObjectType<MicroserviceMethod>
             .Type<StringType>()
             .Description("URL del método/endpoint");
 
+        descriptor.Field(f => f.HttpMethod)
+            .Type<StringType>()
+            .Description("Método HTTP (GET, POST, PUT, DELETE, etc.)");
+
         descriptor.Field(f => f.CreateAt)
             .Type<DateTimeType>()
             .Description("Fecha de creación");
@@ -49,8 +49,8 @@ public class MicroserviceMethodType : ObjectType<MicroserviceMethod>
             .Type<MicroserviceRegisterType>()
             .Description("Microservicio al que pertenece");
 
-        descriptor.Field(f => f.MicroservicesCluster)
-            .Type<MicroservicesClusterType>()
-            .Description("Cluster al que pertenece");
+        descriptor.Field(f => f.Nodos)
+            .Type<ListType<NodoType>>()
+            .Description("Nodos (relaciones con clusters)");
     }
 }
