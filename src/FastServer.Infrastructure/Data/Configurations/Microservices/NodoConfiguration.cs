@@ -11,24 +11,24 @@ public class NodoConfiguration : IEntityTypeConfiguration<Nodo>
 {
     public void Configure(EntityTypeBuilder<Nodo> builder)
     {
-        builder.ToTable("nodos");
+        builder.ToTable("FastServer_Nodo");
 
         builder.HasKey(e => e.NodoId);
 
         builder.Property(e => e.NodoId)
-            .HasColumnName("nodo_id");
+            .HasColumnName("fastserver_nodo_id");
 
         builder.Property(e => e.MicroserviceMethodId)
-            .HasColumnName("microservice_method_id");
+            .HasColumnName("fastserver_microservice_method_id");
 
         builder.Property(e => e.MicroservicesClusterId)
-            .HasColumnName("microservices_cluster_id");
+            .HasColumnName("fastserver_microservices_cluster_id");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasOne(e => e.MicroserviceMethod)
@@ -44,8 +44,9 @@ public class NodoConfiguration : IEntityTypeConfiguration<Nodo>
         // Índice único compuesto para evitar duplicados
         builder.HasIndex(e => new { e.MicroserviceMethodId, e.MicroservicesClusterId })
             .IsUnique()
-            .HasDatabaseName("UX_Nodo_Method_Cluster");
+            .HasDatabaseName("UX_FastServer_Nodo_Method_Cluster");
 
-        builder.HasIndex(e => e.MicroservicesClusterId);
+        builder.HasIndex(e => e.MicroservicesClusterId)
+            .HasDatabaseName("IX_FastServer_Nodo_ClusterId");
     }
 }

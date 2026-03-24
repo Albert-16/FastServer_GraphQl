@@ -11,30 +11,30 @@ public class CoreConnectorCredentialConfiguration : IEntityTypeConfiguration<Cor
 {
     public void Configure(EntityTypeBuilder<CoreConnectorCredential> builder)
     {
-        builder.ToTable("core_connector_credentials");
+        builder.ToTable("FastServer_CoreConnector_Credential");
 
         builder.HasKey(e => e.CoreConnectorCredentialId);
 
         builder.Property(e => e.CoreConnectorCredentialId)
-            .HasColumnName("core_connector_credential_id");
+            .HasColumnName("fastserver_core_connector_credential_id");
 
         builder.Property(e => e.CoreConnectorCredentialUser)
-            .HasColumnName("core_connector_credential_user")
+            .HasColumnName("fastserver_core_connector_credential_user")
             .HasMaxLength(255);
 
         builder.Property(e => e.CoreConnectorCredentialPass)
-            .HasColumnName("core_connector_credential_pass")
+            .HasColumnName("fastserver_core_connector_credential_pass")
             .HasMaxLength(500);
 
         builder.Property(e => e.CoreConnectorCredentialKey)
-            .HasColumnName("core_connector_credential_key")
+            .HasColumnName("fastserver_core_connector_credential_key")
             .HasMaxLength(500);
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasMany(e => e.MicroserviceCoreConnectors)
@@ -45,6 +45,6 @@ public class CoreConnectorCredentialConfiguration : IEntityTypeConfiguration<Cor
         // Índices
         builder.HasIndex(e => e.CoreConnectorCredentialUser)
             .IsUnique()
-            .HasDatabaseName("UX_CoreConnectorCredential_User");
+            .HasDatabaseName("UX_FastServer_CoreConnector_Credential_User");
     }
 }

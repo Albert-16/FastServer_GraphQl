@@ -6,13 +6,13 @@ namespace FastServer.Infrastructure.Data.Configurations.Microservices;
 
 /// <summary>
 /// Configuración EF Core para FastServerCluster.
-/// Tabla: fastserver_clusters | PK: Guid v7 | Soft delete con DeleteAt
+/// Tabla: FastServer_Cluster | PK: Guid v7 | Soft delete con DeleteAt
 /// </summary>
 public class FastServerClusterConfiguration : IEntityTypeConfiguration<FastServerCluster>
 {
     public void Configure(EntityTypeBuilder<FastServerCluster> builder)
     {
-        builder.ToTable("fastserver_clusters");
+        builder.ToTable("FastServer_Cluster");
 
         builder.HasKey(e => e.FastServerClusterId);
 
@@ -46,15 +46,16 @@ public class FastServerClusterConfiguration : IEntityTypeConfiguration<FastServe
             .HasColumnName("fastserver_cluster_delete");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         builder.Property(e => e.DeleteAt)
-            .HasColumnName("delete_at");
+            .HasColumnName("fastserver_delete_at");
 
         // Índices
-        builder.HasIndex(e => e.FastServerClusterName);
+        builder.HasIndex(e => e.FastServerClusterName)
+            .HasDatabaseName("IX_FastServer_Cluster_Name");
     }
 }

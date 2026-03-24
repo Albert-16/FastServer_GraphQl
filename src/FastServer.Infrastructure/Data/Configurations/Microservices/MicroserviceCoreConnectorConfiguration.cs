@@ -11,24 +11,24 @@ public class MicroserviceCoreConnectorConfiguration : IEntityTypeConfiguration<M
 {
     public void Configure(EntityTypeBuilder<MicroserviceCoreConnector> builder)
     {
-        builder.ToTable("microservice_core_connector");
+        builder.ToTable("FastServer_Microservice_CoreConnector");
 
         builder.HasKey(e => e.MicroserviceCoreConnectorId);
 
         builder.Property(e => e.MicroserviceCoreConnectorId)
-            .HasColumnName("microservice_core_connector_id");
+            .HasColumnName("fastserver_microservice_core_connector_id");
 
         builder.Property(e => e.CoreConnectorCredentialId)
-            .HasColumnName("core_connector_credential_id");
+            .HasColumnName("fastserver_core_connector_credential_id");
 
         builder.Property(e => e.MicroserviceId)
-            .HasColumnName("microservice_id");
+            .HasColumnName("fastserver_microservice_id");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasOne(e => e.CoreConnectorCredential)
@@ -42,7 +42,9 @@ public class MicroserviceCoreConnectorConfiguration : IEntityTypeConfiguration<M
             .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
-        builder.HasIndex(e => e.MicroserviceId);
-        builder.HasIndex(e => e.CoreConnectorCredentialId);
+        builder.HasIndex(e => e.MicroserviceId)
+            .HasDatabaseName("IX_FastServer_Microservice_CoreConnector_MicroserviceId");
+        builder.HasIndex(e => e.CoreConnectorCredentialId)
+            .HasDatabaseName("IX_FastServer_Microservice_CoreConnector_CredentialId");
     }
 }

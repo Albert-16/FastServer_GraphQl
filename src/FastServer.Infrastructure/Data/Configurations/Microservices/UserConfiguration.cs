@@ -11,54 +11,54 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("users");
+        builder.ToTable("FastServer_User");
 
         builder.HasKey(e => e.UserId);
 
         builder.Property(e => e.UserId)
-            .HasColumnName("user_id");
+            .HasColumnName("fastserver_user_id");
 
         builder.Property(e => e.UserPeoplesoft)
-            .HasColumnName("user_peoplesoft")
+            .HasColumnName("fastserver_user_peoplesoft")
             .HasMaxLength(100);
 
         builder.Property(e => e.UserActive)
-            .HasColumnName("user_active");
+            .HasColumnName("fastserver_user_active");
 
         builder.Property(e => e.UserName)
-            .HasColumnName("user_name")
+            .HasColumnName("fastserver_user_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.UserEmail)
-            .HasColumnName("user_email")
+            .HasColumnName("fastserver_user_email")
             .HasMaxLength(255);
 
         builder.Property(e => e.PasswordHash)
-            .HasColumnName("password_hash")
+            .HasColumnName("fastserver_password_hash")
             .HasMaxLength(500);
 
         builder.Property(e => e.LastLogin)
-            .HasColumnName("last_login");
+            .HasColumnName("fastserver_last_login");
 
         builder.Property(e => e.PasswordChangedAt)
-            .HasColumnName("password_changed_at");
+            .HasColumnName("fastserver_password_changed_at");
 
         builder.Property(e => e.EmailConfirmed)
-            .HasColumnName("email_confirmed")
+            .HasColumnName("fastserver_email_confirmed")
             .HasDefaultValue(false);
 
         builder.Property(e => e.RefreshToken)
-            .HasColumnName("refresh_token")
+            .HasColumnName("fastserver_refresh_token")
             .HasMaxLength(500);
 
         builder.Property(e => e.RefreshTokenExpiryTime)
-            .HasColumnName("refresh_token_expiry_time");
+            .HasColumnName("fastserver_refresh_token_expiry_time");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasMany(e => e.ActivityLogs)
@@ -67,8 +67,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices
-        builder.HasIndex(e => e.UserEmail).IsUnique();
-        builder.HasIndex(e => e.UserPeoplesoft);
-        // Índice en UserActive eliminado - baja selectividad (booleano)
+        builder.HasIndex(e => e.UserEmail)
+            .IsUnique()
+            .HasDatabaseName("UX_FastServer_User_Email");
+        builder.HasIndex(e => e.UserPeoplesoft)
+            .HasDatabaseName("IX_FastServer_User_Peoplesoft");
     }
 }

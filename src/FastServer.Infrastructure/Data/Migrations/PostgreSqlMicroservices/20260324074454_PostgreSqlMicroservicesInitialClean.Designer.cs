@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 {
     [DbContext(typeof(PostgreSqlMicroservicesDbContext))]
-    [Migration("20260324055804_PostgreSqlMicroservicesInitialClean")]
+    [Migration("20260324074454_PostgreSqlMicroservicesInitialClean")]
     partial class PostgreSqlMicroservicesInitialClean
     {
         /// <inheritdoc />
@@ -30,53 +30,57 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("ActivityLogId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("activity_log_id");
+                        .HasColumnName("fastserver_activity_log_id");
 
                     b.Property<string>("ActivityLogDescription")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("activity_log_description");
+                        .HasColumnName("fastserver_activity_log_description");
 
                     b.Property<Guid?>("ActivityLogEntityId")
                         .HasColumnType("uuid")
-                        .HasColumnName("activity_log_entity_id");
+                        .HasColumnName("fastserver_activity_log_entity_id");
 
                     b.Property<string>("ActivityLogEntityName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("activity_log_entity_name");
+                        .HasColumnName("fastserver_activity_log_entity_name");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<Guid?>("EventTypeId")
                         .HasColumnType("uuid")
-                        .HasColumnName("event_type_id");
+                        .HasColumnName("fastserver_event_type_id");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("fastserver_user_id");
 
                     b.HasKey("ActivityLogId");
 
-                    b.HasIndex("ActivityLogEntityName");
+                    b.HasIndex("ActivityLogEntityName")
+                        .HasDatabaseName("IX_FastServer_ActivityLog_EntityName");
 
-                    b.HasIndex("CreateAt");
+                    b.HasIndex("CreateAt")
+                        .HasDatabaseName("IX_FastServer_ActivityLog_CreateAt");
 
-                    b.HasIndex("EventTypeId");
+                    b.HasIndex("EventTypeId")
+                        .HasDatabaseName("IX_FastServer_ActivityLog_EventTypeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_FastServer_ActivityLog_UserId");
 
                     b.HasIndex("UserId", "CreateAt")
                         .IsDescending(false, true)
-                        .HasDatabaseName("IX_ActivityLog_UserId_CreateAt_Desc");
+                        .HasDatabaseName("IX_FastServer_ActivityLog_UserId_CreateAt_Desc");
 
-                    b.ToTable("activity_logs", (string)null);
+                    b.ToTable("FastServer_ActivityLog", (string)null);
 
                     b.HasData(
                         new
@@ -108,38 +112,38 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("CoreConnectorCredentialId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("core_connector_credential_id");
+                        .HasColumnName("fastserver_core_connector_credential_id");
 
                     b.Property<string>("CoreConnectorCredentialKey")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("core_connector_credential_key");
+                        .HasColumnName("fastserver_core_connector_credential_key");
 
                     b.Property<string>("CoreConnectorCredentialPass")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("core_connector_credential_pass");
+                        .HasColumnName("fastserver_core_connector_credential_pass");
 
                     b.Property<string>("CoreConnectorCredentialUser")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("core_connector_credential_user");
+                        .HasColumnName("fastserver_core_connector_credential_user");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("CoreConnectorCredentialId");
 
                     b.HasIndex("CoreConnectorCredentialUser")
                         .IsUnique()
-                        .HasDatabaseName("UX_CoreConnectorCredential_User");
+                        .HasDatabaseName("UX_FastServer_CoreConnector_Credential_User");
 
-                    b.ToTable("core_connector_credentials", (string)null);
+                    b.ToTable("FastServer_CoreConnector_Credential", (string)null);
 
                     b.HasData(
                         new
@@ -167,26 +171,27 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("EventTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("event_type_id");
+                        .HasColumnName("fastserver_event_type_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<string>("EventTypeDescription")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("event_type_description");
+                        .HasColumnName("fastserver_event_type_description");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("EventTypeId");
 
-                    b.HasIndex("EventTypeDescription");
+                    b.HasIndex("EventTypeDescription")
+                        .HasDatabaseName("IX_FastServer_EventType_Description");
 
-                    b.ToTable("event_types", (string)null);
+                    b.ToTable("FastServer_EventType", (string)null);
 
                     b.HasData(
                         new
@@ -214,11 +219,11 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
                     b.Property<DateTimeOffset?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<DateTimeOffset?>("DeleteAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("delete_at");
+                        .HasColumnName("fastserver_delete_at");
 
                     b.Property<bool?>("FastServerClusterActive")
                         .HasColumnType("boolean")
@@ -255,13 +260,14 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
 
                     b.Property<DateTimeOffset?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("FastServerClusterId");
 
-                    b.HasIndex("FastServerClusterName");
+                    b.HasIndex("FastServerClusterName")
+                        .HasDatabaseName("IX_FastServer_Cluster_Name");
 
-                    b.ToTable("fastserver_clusters", (string)null);
+                    b.ToTable("FastServer_Cluster", (string)null);
 
                     b.HasData(
                         new
@@ -297,31 +303,33 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("MicroserviceCoreConnectorId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_core_connector_id");
+                        .HasColumnName("fastserver_microservice_core_connector_id");
 
                     b.Property<Guid?>("CoreConnectorCredentialId")
                         .HasColumnType("uuid")
-                        .HasColumnName("core_connector_credential_id");
+                        .HasColumnName("fastserver_core_connector_credential_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<Guid?>("MicroserviceId")
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_id");
+                        .HasColumnName("fastserver_microservice_id");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("MicroserviceCoreConnectorId");
 
-                    b.HasIndex("CoreConnectorCredentialId");
+                    b.HasIndex("CoreConnectorCredentialId")
+                        .HasDatabaseName("IX_FastServer_Microservice_CoreConnector_CredentialId");
 
-                    b.HasIndex("MicroserviceId");
+                    b.HasIndex("MicroserviceId")
+                        .HasDatabaseName("IX_FastServer_Microservice_CoreConnector_MicroserviceId");
 
-                    b.ToTable("microservice_core_connector", (string)null);
+                    b.ToTable("FastServer_Microservice_CoreConnector", (string)null);
 
                     b.HasData(
                         new
@@ -347,46 +355,48 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("MicroserviceMethodId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_method_id");
+                        .HasColumnName("fastserver_microservice_method_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<string>("HttpMethod")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("http_method");
+                        .HasColumnName("fastserver_http_method");
 
                     b.Property<Guid>("MicroserviceId")
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_id");
+                        .HasColumnName("fastserver_microservice_id");
 
                     b.Property<bool?>("MicroserviceMethodDelete")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservice_method_delete");
+                        .HasColumnName("fastserver_microservice_method_delete");
 
                     b.Property<string>("MicroserviceMethodName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("microservice_method_name");
+                        .HasColumnName("fastserver_microservice_method_name");
 
                     b.Property<string>("MicroserviceMethodUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("microservice_method_url");
+                        .HasColumnName("fastserver_microservice_method_url");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("MicroserviceMethodId");
 
-                    b.HasIndex("MicroserviceId");
+                    b.HasIndex("MicroserviceId")
+                        .HasDatabaseName("IX_FastServer_Microservice_Method_MicroserviceId");
 
-                    b.HasIndex("MicroserviceMethodName");
+                    b.HasIndex("MicroserviceMethodName")
+                        .HasDatabaseName("IX_FastServer_Microservice_Method_Name");
 
-                    b.ToTable("microservice_methods", (string)null);
+                    b.ToTable("FastServer_Microservice_Method", (string)null);
 
                     b.HasData(
                         new
@@ -418,53 +428,55 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("MicroserviceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_id");
+                        .HasColumnName("fastserver_microservice_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<DateTime?>("DeleteAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("delete_at");
+                        .HasColumnName("fastserver_delete_at");
 
                     b.Property<bool?>("MicroserviceActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservice_active");
+                        .HasColumnName("fastserver_microservice_active");
 
                     b.Property<bool?>("MicroserviceCoreConnection")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservice_core_connection");
+                        .HasColumnName("fastserver_microservice_core_connection");
 
                     b.Property<bool?>("MicroserviceDeleted")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservice_deleted");
+                        .HasColumnName("fastserver_microservice_deleted");
 
                     b.Property<string>("MicroserviceName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("microservice_name");
+                        .HasColumnName("fastserver_microservice_name");
 
                     b.Property<Guid?>("MicroserviceTypeId")
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_type_id");
+                        .HasColumnName("fastserver_microservice_type_id");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.Property<string>("SoapBase")
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)")
-                        .HasColumnName("soap_base");
+                        .HasColumnName("fastserver_soap_base");
 
                     b.HasKey("MicroserviceId");
 
-                    b.HasIndex("MicroserviceName");
+                    b.HasIndex("MicroserviceName")
+                        .HasDatabaseName("IX_FastServer_Microservice_Register_Name");
 
-                    b.HasIndex("MicroserviceTypeId");
+                    b.HasIndex("MicroserviceTypeId")
+                        .HasDatabaseName("IX_FastServer_Microservice_Register_TypeId");
 
-                    b.ToTable("microservice_registers", (string)null);
+                    b.ToTable("FastServer_Microservice_Register", (string)null);
 
                     b.HasData(
                         new
@@ -497,53 +509,54 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("MicroservicesClusterId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("microservices_cluster_id");
+                        .HasColumnName("fastserver_microservices_cluster_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<DateTime?>("DeleteAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("delete_at");
+                        .HasColumnName("fastserver_delete_at");
 
                     b.Property<bool?>("MicroservicesClusterActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservices_cluster_active");
+                        .HasColumnName("fastserver_microservices_cluster_active");
 
                     b.Property<bool?>("MicroservicesClusterDeleted")
                         .HasColumnType("boolean")
-                        .HasColumnName("microservices_cluster_deleted");
+                        .HasColumnName("fastserver_microservices_cluster_deleted");
 
                     b.Property<string>("MicroservicesClusterName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("microservices_cluster_name");
+                        .HasColumnName("fastserver_microservices_cluster_name");
 
                     b.Property<string>("MicroservicesClusterProtocol")
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)")
-                        .HasColumnName("microservices_cluster_protocol");
+                        .HasColumnName("fastserver_microservices_cluster_protocol");
 
                     b.Property<string>("MicroservicesClusterServerIp")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("microservices_cluster_server_ip");
+                        .HasColumnName("fastserver_microservices_cluster_server_ip");
 
                     b.Property<string>("MicroservicesClusterServerName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("microservices_cluster_server_name");
+                        .HasColumnName("fastserver_microservices_cluster_server_name");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("MicroservicesClusterId");
 
-                    b.HasIndex("MicroservicesClusterName");
+                    b.HasIndex("MicroservicesClusterName")
+                        .HasDatabaseName("IX_FastServer_Microservices_Cluster_Name");
 
-                    b.ToTable("microservices_clusters", (string)null);
+                    b.ToTable("FastServer_Microservices_Cluster", (string)null);
 
                     b.HasData(
                         new
@@ -577,31 +590,32 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("MicroservicesRegisterTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("microservices_register_type_id");
+                        .HasColumnName("fastserver_microservices_register_type_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<string>("MicroservicesRegisterTypeDescription")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("microservices_register_type_description");
+                        .HasColumnName("fastserver_microservices_register_type_description");
 
                     b.Property<string>("MicroservicesRegisterTypeName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("microservices_register_type_name");
+                        .HasColumnName("fastserver_microservices_register_type_name");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("MicroservicesRegisterTypeId");
 
-                    b.HasIndex("MicroservicesRegisterTypeName");
+                    b.HasIndex("MicroservicesRegisterTypeName")
+                        .HasDatabaseName("IX_FastServer_Microservices_RegisterType_Name");
 
-                    b.ToTable("microservices_register_types", (string)null);
+                    b.ToTable("FastServer_Microservices_RegisterType", (string)null);
 
                     b.HasData(
                         new
@@ -627,33 +641,34 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("NodoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("nodo_id");
+                        .HasColumnName("fastserver_nodo_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<Guid>("MicroserviceMethodId")
                         .HasColumnType("uuid")
-                        .HasColumnName("microservice_method_id");
+                        .HasColumnName("fastserver_microservice_method_id");
 
                     b.Property<Guid>("MicroservicesClusterId")
                         .HasColumnType("uuid")
-                        .HasColumnName("microservices_cluster_id");
+                        .HasColumnName("fastserver_microservices_cluster_id");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.HasKey("NodoId");
 
-                    b.HasIndex("MicroservicesClusterId");
+                    b.HasIndex("MicroservicesClusterId")
+                        .HasDatabaseName("IX_FastServer_Nodo_ClusterId");
 
                     b.HasIndex("MicroserviceMethodId", "MicroservicesClusterId")
                         .IsUnique()
-                        .HasDatabaseName("UX_Nodo_Method_Cluster");
+                        .HasDatabaseName("UX_FastServer_Nodo_Method_Cluster");
 
-                    b.ToTable("nodos", (string)null);
+                    b.ToTable("FastServer_Nodo", (string)null);
 
                     b.HasData(
                         new
@@ -679,71 +694,73 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlMicroservices
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("fastserver_user_id");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("create_at");
+                        .HasColumnName("fastserver_create_at");
 
                     b.Property<bool>("EmailConfirmed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("email_confirmed");
+                        .HasColumnName("fastserver_email_confirmed");
 
                     b.Property<DateTime?>("LastLogin")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login");
+                        .HasColumnName("fastserver_last_login");
 
                     b.Property<DateTime?>("ModifyAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("modify_at");
+                        .HasColumnName("fastserver_modify_at");
 
                     b.Property<DateTime?>("PasswordChangedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("password_changed_at");
+                        .HasColumnName("fastserver_password_changed_at");
 
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("password_hash");
+                        .HasColumnName("fastserver_password_hash");
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("refresh_token");
+                        .HasColumnName("fastserver_refresh_token");
 
                     b.Property<DateTime?>("RefreshTokenExpiryTime")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("refresh_token_expiry_time");
+                        .HasColumnName("fastserver_refresh_token_expiry_time");
 
                     b.Property<bool?>("UserActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("user_active");
+                        .HasColumnName("fastserver_user_active");
 
                     b.Property<string>("UserEmail")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("user_email");
+                        .HasColumnName("fastserver_user_email");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("user_name");
+                        .HasColumnName("fastserver_user_name");
 
                     b.Property<string>("UserPeoplesoft")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("user_peoplesoft");
+                        .HasColumnName("fastserver_user_peoplesoft");
 
                     b.HasKey("UserId");
 
                     b.HasIndex("UserEmail")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("UX_FastServer_User_Email");
 
-                    b.HasIndex("UserPeoplesoft");
+                    b.HasIndex("UserPeoplesoft")
+                        .HasDatabaseName("IX_FastServer_User_Peoplesoft");
 
-                    b.ToTable("users", (string)null);
+                    b.ToTable("FastServer_User", (string)null);
 
                     b.HasData(
                         new

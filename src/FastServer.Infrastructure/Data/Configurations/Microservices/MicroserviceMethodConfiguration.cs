@@ -11,36 +11,36 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
 {
     public void Configure(EntityTypeBuilder<MicroserviceMethod> builder)
     {
-        builder.ToTable("microservice_methods");
+        builder.ToTable("FastServer_Microservice_Method");
 
         builder.HasKey(e => e.MicroserviceMethodId);
 
         builder.Property(e => e.MicroserviceMethodId)
-            .HasColumnName("microservice_method_id");
+            .HasColumnName("fastserver_microservice_method_id");
 
         builder.Property(e => e.MicroserviceId)
-            .HasColumnName("microservice_id");
+            .HasColumnName("fastserver_microservice_id");
 
         builder.Property(e => e.MicroserviceMethodDelete)
-            .HasColumnName("microservice_method_delete");
+            .HasColumnName("fastserver_microservice_method_delete");
 
         builder.Property(e => e.MicroserviceMethodName)
-            .HasColumnName("microservice_method_name")
+            .HasColumnName("fastserver_microservice_method_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.MicroserviceMethodUrl)
-            .HasColumnName("microservice_method_url")
+            .HasColumnName("fastserver_microservice_method_url")
             .HasMaxLength(500);
 
         builder.Property(e => e.HttpMethod)
-            .HasColumnName("http_method")
+            .HasColumnName("fastserver_http_method")
             .HasMaxLength(50);
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasOne(e => e.MicroserviceRegister)
@@ -54,7 +54,9 @@ public class MicroserviceMethodConfiguration : IEntityTypeConfiguration<Microser
             .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
-        builder.HasIndex(e => e.MicroserviceId);
-        builder.HasIndex(e => e.MicroserviceMethodName);
+        builder.HasIndex(e => e.MicroserviceId)
+            .HasDatabaseName("IX_FastServer_Microservice_Method_MicroserviceId");
+        builder.HasIndex(e => e.MicroserviceMethodName)
+            .HasDatabaseName("IX_FastServer_Microservice_Method_Name");
     }
 }

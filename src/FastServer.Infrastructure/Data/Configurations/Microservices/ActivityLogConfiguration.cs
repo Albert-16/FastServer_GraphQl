@@ -11,35 +11,35 @@ public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
 {
     public void Configure(EntityTypeBuilder<ActivityLog> builder)
     {
-        builder.ToTable("activity_logs");
+        builder.ToTable("FastServer_ActivityLog");
 
         builder.HasKey(e => e.ActivityLogId);
 
         builder.Property(e => e.ActivityLogId)
-            .HasColumnName("activity_log_id");
+            .HasColumnName("fastserver_activity_log_id");
 
         builder.Property(e => e.EventTypeId)
-            .HasColumnName("event_type_id");
+            .HasColumnName("fastserver_event_type_id");
 
         builder.Property(e => e.ActivityLogEntityName)
-            .HasColumnName("activity_log_entity_name")
+            .HasColumnName("fastserver_activity_log_entity_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.ActivityLogEntityId)
-            .HasColumnName("activity_log_entity_id");
+            .HasColumnName("fastserver_activity_log_entity_id");
 
         builder.Property(e => e.ActivityLogDescription)
-            .HasColumnName("activity_log_description")
+            .HasColumnName("fastserver_activity_log_description")
             .HasMaxLength(2000);
 
         builder.Property(e => e.UserId)
-            .HasColumnName("user_id");
+            .HasColumnName("fastserver_user_id");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasOne(e => e.EventType)
@@ -53,14 +53,18 @@ public class ActivityLogConfiguration : IEntityTypeConfiguration<ActivityLog>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices simples
-        builder.HasIndex(e => e.EventTypeId);
-        builder.HasIndex(e => e.UserId);
-        builder.HasIndex(e => e.CreateAt);
-        builder.HasIndex(e => e.ActivityLogEntityName);
+        builder.HasIndex(e => e.EventTypeId)
+            .HasDatabaseName("IX_FastServer_ActivityLog_EventTypeId");
+        builder.HasIndex(e => e.UserId)
+            .HasDatabaseName("IX_FastServer_ActivityLog_UserId");
+        builder.HasIndex(e => e.CreateAt)
+            .HasDatabaseName("IX_FastServer_ActivityLog_CreateAt");
+        builder.HasIndex(e => e.ActivityLogEntityName)
+            .HasDatabaseName("IX_FastServer_ActivityLog_EntityName");
 
         // Índice compuesto para búsquedas por usuario con ordenamiento descendente
         builder.HasIndex(e => new { e.UserId, e.CreateAt })
             .IsDescending(false, true)
-            .HasDatabaseName("IX_ActivityLog_UserId_CreateAt_Desc");
+            .HasDatabaseName("IX_FastServer_ActivityLog_UserId_CreateAt_Desc");
     }
 }

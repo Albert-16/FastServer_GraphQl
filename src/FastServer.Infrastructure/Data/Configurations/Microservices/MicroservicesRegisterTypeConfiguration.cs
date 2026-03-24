@@ -11,26 +11,26 @@ public class MicroservicesRegisterTypeConfiguration : IEntityTypeConfiguration<M
 {
     public void Configure(EntityTypeBuilder<MicroservicesRegisterType> builder)
     {
-        builder.ToTable("microservices_register_types");
+        builder.ToTable("FastServer_Microservices_RegisterType");
 
         builder.HasKey(e => e.MicroservicesRegisterTypeId);
 
         builder.Property(e => e.MicroservicesRegisterTypeId)
-            .HasColumnName("microservices_register_type_id");
+            .HasColumnName("fastserver_microservices_register_type_id");
 
         builder.Property(e => e.MicroservicesRegisterTypeName)
-            .HasColumnName("microservices_register_type_name")
+            .HasColumnName("fastserver_microservices_register_type_name")
             .HasMaxLength(100);
 
         builder.Property(e => e.MicroservicesRegisterTypeDescription)
-            .HasColumnName("microservices_register_type_description")
+            .HasColumnName("fastserver_microservices_register_type_description")
             .HasMaxLength(500);
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasMany(e => e.MicroserviceRegisters)
@@ -39,6 +39,7 @@ public class MicroservicesRegisterTypeConfiguration : IEntityTypeConfiguration<M
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices
-        builder.HasIndex(e => e.MicroservicesRegisterTypeName);
+        builder.HasIndex(e => e.MicroservicesRegisterTypeName)
+            .HasDatabaseName("IX_FastServer_Microservices_RegisterType_Name");
     }
 }

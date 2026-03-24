@@ -11,22 +11,22 @@ public class EventTypeConfiguration : IEntityTypeConfiguration<EventType>
 {
     public void Configure(EntityTypeBuilder<EventType> builder)
     {
-        builder.ToTable("event_types");
+        builder.ToTable("FastServer_EventType");
 
         builder.HasKey(e => e.EventTypeId);
 
         builder.Property(e => e.EventTypeId)
-            .HasColumnName("event_type_id");
+            .HasColumnName("fastserver_event_type_id");
 
         builder.Property(e => e.EventTypeDescription)
-            .HasColumnName("event_type_description")
+            .HasColumnName("fastserver_event_type_description")
             .HasMaxLength(500);
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         // Relaciones
         builder.HasMany(e => e.ActivityLogs)
@@ -35,6 +35,7 @@ public class EventTypeConfiguration : IEntityTypeConfiguration<EventType>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Índices
-        builder.HasIndex(e => e.EventTypeDescription);
+        builder.HasIndex(e => e.EventTypeDescription)
+            .HasDatabaseName("IX_FastServer_EventType_Description");
     }
 }

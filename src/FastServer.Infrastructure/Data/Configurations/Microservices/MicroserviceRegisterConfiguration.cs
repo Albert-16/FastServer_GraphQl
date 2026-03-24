@@ -11,41 +11,41 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
 {
     public void Configure(EntityTypeBuilder<MicroserviceRegister> builder)
     {
-        builder.ToTable("microservice_registers");
+        builder.ToTable("FastServer_Microservice_Register");
 
         builder.HasKey(e => e.MicroserviceId);
 
         builder.Property(e => e.MicroserviceId)
-            .HasColumnName("microservice_id");
+            .HasColumnName("fastserver_microservice_id");
 
         builder.Property(e => e.MicroserviceName)
-            .HasColumnName("microservice_name")
+            .HasColumnName("fastserver_microservice_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.MicroserviceActive)
-            .HasColumnName("microservice_active");
+            .HasColumnName("fastserver_microservice_active");
 
         builder.Property(e => e.MicroserviceDeleted)
-            .HasColumnName("microservice_deleted");
+            .HasColumnName("fastserver_microservice_deleted");
 
         builder.Property(e => e.MicroserviceCoreConnection)
-            .HasColumnName("microservice_core_connection");
+            .HasColumnName("fastserver_microservice_core_connection");
 
         builder.Property(e => e.SoapBase)
-            .HasColumnName("soap_base")
+            .HasColumnName("fastserver_soap_base")
             .HasMaxLength(250);
 
         builder.Property(e => e.MicroserviceTypeId)
-            .HasColumnName("microservice_type_id");
+            .HasColumnName("fastserver_microservice_type_id");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         builder.Property(e => e.DeleteAt)
-            .HasColumnName("delete_at");
+            .HasColumnName("fastserver_delete_at");
 
         // Relaciones
         builder.HasOne(e => e.MicroserviceType)
@@ -64,7 +64,9 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
-        builder.HasIndex(e => e.MicroserviceName);
-        builder.HasIndex(e => e.MicroserviceTypeId);
+        builder.HasIndex(e => e.MicroserviceName)
+            .HasDatabaseName("IX_FastServer_Microservice_Register_Name");
+        builder.HasIndex(e => e.MicroserviceTypeId)
+            .HasDatabaseName("IX_FastServer_Microservice_Register_TypeId");
     }
 }

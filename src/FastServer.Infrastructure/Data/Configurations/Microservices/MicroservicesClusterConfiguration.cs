@@ -11,43 +11,43 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
 {
     public void Configure(EntityTypeBuilder<MicroservicesCluster> builder)
     {
-        builder.ToTable("microservices_clusters");
+        builder.ToTable("FastServer_Microservices_Cluster");
 
         builder.HasKey(e => e.MicroservicesClusterId);
 
         builder.Property(e => e.MicroservicesClusterId)
-            .HasColumnName("microservices_cluster_id");
+            .HasColumnName("fastserver_microservices_cluster_id");
 
         builder.Property(e => e.MicroservicesClusterName)
-            .HasColumnName("microservices_cluster_name")
+            .HasColumnName("fastserver_microservices_cluster_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.MicroservicesClusterServerName)
-            .HasColumnName("microservices_cluster_server_name")
+            .HasColumnName("fastserver_microservices_cluster_server_name")
             .HasMaxLength(255);
 
         builder.Property(e => e.MicroservicesClusterServerIp)
-            .HasColumnName("microservices_cluster_server_ip")
+            .HasColumnName("fastserver_microservices_cluster_server_ip")
             .HasMaxLength(50);
 
         builder.Property(e => e.MicroservicesClusterProtocol)
-            .HasColumnName("microservices_cluster_protocol")
+            .HasColumnName("fastserver_microservices_cluster_protocol")
             .HasMaxLength(250);
 
         builder.Property(e => e.MicroservicesClusterActive)
-            .HasColumnName("microservices_cluster_active");
+            .HasColumnName("fastserver_microservices_cluster_active");
 
         builder.Property(e => e.MicroservicesClusterDeleted)
-            .HasColumnName("microservices_cluster_deleted");
+            .HasColumnName("fastserver_microservices_cluster_deleted");
 
         builder.Property(e => e.CreateAt)
-            .HasColumnName("create_at");
+            .HasColumnName("fastserver_create_at");
 
         builder.Property(e => e.ModifyAt)
-            .HasColumnName("modify_at");
+            .HasColumnName("fastserver_modify_at");
 
         builder.Property(e => e.DeleteAt)
-            .HasColumnName("delete_at");
+            .HasColumnName("fastserver_delete_at");
 
         // Relaciones
         builder.HasMany(e => e.Nodos)
@@ -56,6 +56,7 @@ public class MicroservicesClusterConfiguration : IEntityTypeConfiguration<Micros
             .OnDelete(DeleteBehavior.Cascade);
 
         // Índices
-        builder.HasIndex(e => e.MicroservicesClusterName);
+        builder.HasIndex(e => e.MicroservicesClusterName)
+            .HasDatabaseName("IX_FastServer_Microservices_Cluster_Name");
     }
 }
