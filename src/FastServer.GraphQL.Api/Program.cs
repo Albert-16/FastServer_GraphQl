@@ -177,7 +177,7 @@ builder.Services
     .AddSorting()                                // Habilita ordenamiento en queries
     .AddProjections()                            // Habilita proyecciones para optimizar queries
 
-    // TODO(human): Configuración global de paginación - ajustar valores según necesidades del proyecto
+    // Configuración global de paginación (cursor-based, Relay spec)
     .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
     {
         DefaultPageSize = 10,
