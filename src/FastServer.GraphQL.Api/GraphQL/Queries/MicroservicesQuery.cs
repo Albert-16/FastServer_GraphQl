@@ -20,7 +20,7 @@ public class MicroservicesQuery
     // ========================================
 
     [GraphQLDescription("Obtiene todos los microservicios con paginación, filtrado y ordenamiento")]
-    [UsePaging]
+    [UsePaging(IncludeTotalCount = true)]
     [UseProjection]
     [UseFiltering]
     [UseSorting]
