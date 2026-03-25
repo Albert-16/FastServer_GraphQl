@@ -22,9 +22,10 @@ public class MicroservicesMutation
         [GraphQLDescription("Indica si tiene conexión al Core (por defecto: false)")] bool coreConnection = false,
         [GraphQLDescription("URL base SOAP del microservicio (opcional)")] string? soapBase = null,
         [GraphQLDescription("ID del tipo de microservicio (opcional)")] Guid? microserviceTypeId = null,
+        [GraphQLDescription("ID del usuario asociado (opcional)")] Guid? fastServerUserId = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.CreateAsync(name, active, coreConnection, soapBase, microserviceTypeId, cancellationToken);
+        return await service.CreateAsync(name, active, coreConnection, soapBase, microserviceTypeId, fastServerUserId, cancellationToken);
     }
 
     [GraphQLDescription("Actualiza un registro de microservicio existente. Solo se modifican los campos proporcionados")]
@@ -36,9 +37,10 @@ public class MicroservicesMutation
         [GraphQLDescription("Nueva conexión al Core (opcional)")] bool? coreConnection = null,
         [GraphQLDescription("Nueva URL base SOAP (opcional)")] string? soapBase = null,
         [GraphQLDescription("Nuevo ID del tipo de microservicio (opcional)")] Guid? microserviceTypeId = null,
+        [GraphQLDescription("Nuevo ID del usuario asociado (opcional)")] Guid? fastServerUserId = null,
         CancellationToken cancellationToken = default)
     {
-        return await service.UpdateAsync(id, name, active, coreConnection, soapBase, microserviceTypeId, cancellationToken);
+        return await service.UpdateAsync(id, name, active, coreConnection, soapBase, microserviceTypeId, fastServerUserId, cancellationToken);
     }
 
     [GraphQLDescription("Elimina lógicamente un microservicio (soft delete). Retorna true si se eliminó correctamente")]

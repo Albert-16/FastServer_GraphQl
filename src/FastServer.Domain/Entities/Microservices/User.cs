@@ -62,4 +62,5 @@ public class User : BaseMicroserviceEntity
 
     // Navegación
     public virtual ICollection<ActivityLog> ActivityLogs { get; set; } = new List<ActivityLog>();
+    public virtual ICollection<MicroserviceRegister> MicroserviceRegisters { get; set; } = new List<MicroserviceRegister>();
 }

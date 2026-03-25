@@ -15,8 +15,10 @@ public class MicroserviceRegisterDto
     public DateTime? CreateAt { get; set; }
     public DateTime? ModifyAt { get; set; }
     public DateTime? DeleteAt { get; set; }
+    public Guid? FastServerUserId { get; set; }
 
     // Relaciones
+    public UserDto? User { get; set; }
     public MicroservicesRegisterTypeDto? MicroserviceType { get; set; }
     public List<MicroserviceCoreConnectorDto>? CoreConnectors { get; set; }
 }

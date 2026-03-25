@@ -12,6 +12,7 @@ public class MicroserviceRegisterCreatedEvent
     public bool? MicroserviceCoreConnection { get; set; }
     public string? SoapBase { get; set; }
     public Guid? MicroserviceTypeId { get; set; }
+    public Guid? FastServerUserId { get; set; }
     public DateTime? DeleteAt { get; set; }
     public DateTime CreatedAt { get; set; }
 }

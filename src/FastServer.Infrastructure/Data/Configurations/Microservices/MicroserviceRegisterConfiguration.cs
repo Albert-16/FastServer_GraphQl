@@ -47,7 +47,15 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
         builder.Property(e => e.DeleteAt)
             .HasColumnName("fastserver_delete_at");
 
+        builder.Property(e => e.FastServerUserId)
+            .HasColumnName("fastserver_user_id");
+
         // Relaciones
+        builder.HasOne(e => e.User)
+            .WithMany(u => u.MicroserviceRegisters)
+            .HasForeignKey(e => e.FastServerUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(e => e.MicroserviceType)
             .WithMany(t => t.MicroserviceRegisters)
             .HasForeignKey(e => e.MicroserviceTypeId)
@@ -68,5 +76,7 @@ public class MicroserviceRegisterConfiguration : IEntityTypeConfiguration<Micros
             .HasDatabaseName("IX_FastServer_Microservice_Register_Name");
         builder.HasIndex(e => e.MicroserviceTypeId)
             .HasDatabaseName("IX_FastServer_Microservice_Register_TypeId");
+        builder.HasIndex(e => e.FastServerUserId)
+            .HasDatabaseName("IX_FastServer_Microservice_Register_UserId");
     }
 }

@@ -35,6 +35,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
     {
         var entity = await _context.MicroserviceRegisters
             .AsNoTracking()
+            .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.MicroserviceId == id, cancellationToken);
         return entity == null ? null : _mapper.Map<MicroserviceRegisterDto>(entity);
     }
@@ -44,6 +45,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
     {
         var entities = await _context.MicroserviceRegisters
             .AsNoTracking()
+            .Include(x => x.User)
             .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
     }
@@ -53,30 +55,10 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
     {
         var entities = await _context.MicroserviceRegisters
             .AsNoTracking()
+            .Include(x => x.User)
             .Where(m => m.MicroserviceActive == true && m.MicroserviceDeleted != true)
             .ToListAsync(cancellationToken);
         return _mapper.Map<List<MicroserviceRegisterDto>>(entities);
-    }
-
-    public async Task<PaginatedResultDto<MicroserviceRegisterDto>> GetAllPaginatedAsync(
-        PaginationParamsDto pagination, CancellationToken ct = default)
-    {
-        int totalCount = await _context.MicroserviceRegisters.CountAsync(ct);
-        var items = await _context.MicroserviceRegisters
-            .AsNoTracking()
-            .Include(x => x.MicroserviceType)
-            .OrderByDescending(x => x.CreateAt)
-            .Skip(pagination.Skip)
-            .Take(pagination.PageSize)
-            .ToListAsync(ct);
-
-        return new PaginatedResultDto<MicroserviceRegisterDto>
-        {
-            Items = _mapper.Map<IEnumerable<MicroserviceRegisterDto>>(items),
-            TotalCount = totalCount,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize
-        };
     }
 
     public async Task<MicroserviceRegisterDto> CreateAsync(
@@ -85,6 +67,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
         bool coreConnection,
         string? soapBase,
         Guid? microserviceTypeId,
+        Guid? fastServerUserId,
         CancellationToken cancellationToken = default)
     {
         var entity = new MicroserviceRegister
@@ -96,6 +79,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
             MicroserviceCoreConnection = coreConnection,
             SoapBase = soapBase,
             MicroserviceTypeId = microserviceTypeId,
+            FastServerUserId = fastServerUserId,
             CreateAt = DateTime.UtcNow,
             ModifyAt = DateTime.UtcNow
         };
@@ -115,6 +99,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
             MicroserviceCoreConnection = result.MicroserviceCoreConnection,
             SoapBase = result.SoapBase,
             MicroserviceTypeId = result.MicroserviceTypeId,
+            FastServerUserId = result.FastServerUserId,
             DeleteAt = result.DeleteAt,
             CreatedAt = DateTime.UtcNow
         };
@@ -130,6 +115,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
         bool? coreConnection,
         string? soapBase,
         Guid? microserviceTypeId,
+        Guid? fastServerUserId,
         CancellationToken cancellationToken = default)
     {
         var entity = await _context.MicroserviceRegisters
@@ -141,6 +127,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
         if (coreConnection.HasValue) entity.MicroserviceCoreConnection = coreConnection.Value;
         if (soapBase != null) entity.SoapBase = soapBase;
         if (microserviceTypeId.HasValue) entity.MicroserviceTypeId = microserviceTypeId;
+        if (fastServerUserId.HasValue) entity.FastServerUserId = fastServerUserId;
         entity.ModifyAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -157,6 +144,7 @@ public class MicroserviceRegisterService : IMicroserviceRegisterService
             MicroserviceCoreConnection = result.MicroserviceCoreConnection,
             SoapBase = result.SoapBase,
             MicroserviceTypeId = result.MicroserviceTypeId,
+            FastServerUserId = result.FastServerUserId,
             DeleteAt = result.DeleteAt,
             UpdatedAt = DateTime.UtcNow
         };
