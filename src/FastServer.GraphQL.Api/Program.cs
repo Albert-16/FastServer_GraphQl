@@ -147,7 +147,6 @@ builder.Services
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.FastServerClusterType>()
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.NodoType>()
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.MicroservicesRegisterTypeType>()
-    .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.PaginatedMicroserviceRegisterType>()
 
     // Tipos de input (para recibir datos en mutations)
     .AddType<CreateLogServicesHeaderInputType>()
@@ -177,6 +176,14 @@ builder.Services
     .AddFiltering()                              // Habilita filtrado en queries
     .AddSorting()                                // Habilita ordenamiento en queries
     .AddProjections()                            // Habilita proyecciones para optimizar queries
+
+    // TODO(human): Configuración global de paginación - ajustar valores según necesidades del proyecto
+    .SetPagingOptions(new HotChocolate.Types.Pagination.PagingOptions
+    {
+        DefaultPageSize = 10,
+        MaxPageSize = 50,
+        IncludeTotalCount = true
+    })
 
     // Suscripciones en tiempo real (in-memory)
     .AddInMemorySubscriptions()                  // Sistema de pub/sub en memoria para suscripciones GraphQL
