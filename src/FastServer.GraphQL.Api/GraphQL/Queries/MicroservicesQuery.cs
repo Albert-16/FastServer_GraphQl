@@ -7,6 +7,7 @@ using FastServer.Domain.Entities.Microservices;
 using FastServer.GraphQL.Api.GraphQL.Queries;
 using FastServer.GraphQL.Api.GraphQL.Types;
 using HotChocolate;
+using HotChocolate.Data;
 using HotChocolate.Types;
 
 namespace FastServer.GraphQL.Api.GraphQL.Queries;
@@ -18,18 +19,15 @@ public class MicroservicesQuery
     // MICROSERVICE REGISTERS
     // ========================================
 
-    [GraphQLDescription("Obtiene todos los microservicios con paginación")]
-    public async Task<PaginatedResultDto<MicroserviceRegisterDto>> GetAllMicroservices(
-        [Service] IMicroserviceRegisterService service,
-        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
-        CancellationToken cancellationToken = default)
+    [GraphQLDescription("Obtiene todos los microservicios con paginación, filtrado y ordenamiento")]
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<MicroserviceRegister> GetAllMicroservices(
+        [Service] IMicroservicesDbContext context)
     {
-        var paginationParams = new PaginationParamsDto
-        {
-            PageNumber = pagination?.PageNumber ?? 1,
-            PageSize = pagination?.PageSize ?? 10
-        };
-        return await service.GetAllPaginatedAsync(paginationParams, cancellationToken);
+        return context.MicroserviceRegisters;
     }
 
     [GraphQLDescription("Obtiene los microservicios activos desde FastServer (PostgreSQL)")]

@@ -29,7 +29,8 @@ public class MicroservicesMappingProfile : Profile
         // MicroserviceRegister
         CreateMap<MicroserviceRegister, MicroserviceRegisterDto>()
             .ForMember(dest => dest.CoreConnectors, opt => opt.MapFrom(src => src.MicroserviceCoreConnectors))
-            .ForMember(dest => dest.MicroserviceType, opt => opt.MapFrom(src => src.MicroserviceType));
+            .ForMember(dest => dest.MicroserviceType, opt => opt.MapFrom(src => src.MicroserviceType))
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
 
         // MicroserviceMethod
         CreateMap<MicroserviceMethod, MicroserviceMethodDto>()

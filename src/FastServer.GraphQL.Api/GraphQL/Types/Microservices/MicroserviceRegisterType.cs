@@ -53,6 +53,14 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
 
+        descriptor.Field(f => f.FastServerUserId)
+            .Type<UuidType>()
+            .Description("ID del usuario asociado");
+
+        descriptor.Field(f => f.User)
+            .Type<UserType>()
+            .Description("Usuario asociado al microservicio");
+
         descriptor.Field(f => f.MicroserviceType)
             .Type<MicroservicesRegisterTypeType>()
             .Description("Tipo de registro del microservicio");

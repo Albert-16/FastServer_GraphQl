@@ -45,7 +45,13 @@ public class MicroserviceRegister : BaseMicroserviceEntity
     /// </summary>
     public DateTime? DeleteAt { get; set; }
 
+    /// <summary>
+    /// ID del usuario asociado (FK a User)
+    /// </summary>
+    public Guid? FastServerUserId { get; set; }
+
     // Navegación
+    public virtual User? User { get; set; }
     public virtual MicroservicesRegisterType? MicroserviceType { get; set; }
     public virtual ICollection<MicroserviceCoreConnector> MicroserviceCoreConnectors { get; set; } = new List<MicroserviceCoreConnector>();
     public virtual ICollection<MicroserviceMethod> MicroserviceMethods { get; set; } = new List<MicroserviceMethod>();
