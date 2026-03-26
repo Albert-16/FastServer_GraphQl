@@ -10,6 +10,7 @@ public class MicroserviceMethodType : ObjectType<MicroserviceMethod>
 {
     protected override void Configure(IObjectTypeDescriptor<MicroserviceMethod> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("MicroserviceMethod");
         descriptor.Description("Método/endpoint de un microservicio");
 
@@ -44,10 +45,6 @@ public class MicroserviceMethodType : ObjectType<MicroserviceMethod>
         descriptor.Field(f => f.ModifyAt)
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
-
-        descriptor.Field(f => f.MicroserviceRegister)
-            .Type<MicroserviceRegisterType>()
-            .Description("Microservicio al que pertenece");
 
         descriptor.Field(f => f.Nodos)
             .Type<ListType<NodoType>>()

@@ -34,28 +34,6 @@ public class LogServicesContentService : ILogServicesContentService
         _eventPublisher = eventPublisher;
     }
 
-    public async Task<PaginatedResultDto<LogServicesContentDto>> GetAllAsync(
-        PaginationParamsDto pagination,
-        CancellationToken cancellationToken = default)
-    {
-        int totalCount = await _context.LogServicesContents.CountAsync(cancellationToken);
-
-        List<LogServicesContent> entities = await _context.LogServicesContents
-            .AsNoTracking()
-            .OrderByDescending(x => x.LogServicesDate)
-            .Skip(pagination.Skip)
-            .Take(pagination.PageSize)
-            .ToListAsync(cancellationToken);
-
-        return new PaginatedResultDto<LogServicesContentDto>
-        {
-            Items = _mapper.Map<IEnumerable<LogServicesContentDto>>(entities),
-            TotalCount = totalCount,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize
-        };
-    }
-
     public async Task<LogServicesContentDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         LogServicesContent? entity = await _context.LogServicesContents

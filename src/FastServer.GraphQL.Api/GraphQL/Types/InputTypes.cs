@@ -158,30 +158,6 @@ public class BulkUpdateLogServicesContentInput
 }
 
 /// <summary>
-/// Input para filtrar logs
-/// </summary>
-public class LogFilterInput
-{
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
-    public LogState? State { get; set; }
-    public string? MicroserviceName { get; set; }
-    public string? UserId { get; set; }
-    public string? TransactionId { get; set; }
-    public string? HttpMethod { get; set; }
-    public bool? HasErrors { get; set; }
-}
-
-/// <summary>
-/// Input para paginación
-/// </summary>
-public class PaginationInput
-{
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
-}
-
-/// <summary>
 /// Tipos de input para GraphQL
 /// </summary>
 public class CreateLogServicesHeaderInputType : InputObjectType<CreateLogServicesHeaderInput>
@@ -217,24 +193,6 @@ public class CreateLogServicesContentInputType : InputObjectType<CreateLogServic
     {
         descriptor.Name("CreateLogServicesContentInput");
         descriptor.Description("Input para crear contenido de log");
-    }
-}
-
-public class LogFilterInputType : InputObjectType<LogFilterInput>
-{
-    protected override void Configure(IInputObjectTypeDescriptor<LogFilterInput> descriptor)
-    {
-        descriptor.Name("LogFilterInput");
-        descriptor.Description("Input para filtrar logs");
-    }
-}
-
-public class PaginationInputType : InputObjectType<PaginationInput>
-{
-    protected override void Configure(IInputObjectTypeDescriptor<PaginationInput> descriptor)
-    {
-        descriptor.Name("PaginationInput");
-        descriptor.Description("Input para paginación");
     }
 }
 

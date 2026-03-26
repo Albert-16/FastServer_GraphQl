@@ -11,7 +11,6 @@ public class LogServicesHeaderType : ObjectType<LogServicesHeaderDto>
 {
     protected override void Configure(IObjectTypeDescriptor<LogServicesHeaderDto> descriptor)
     {
-        descriptor.Name("LogServicesHeader");
         descriptor.Description("Cabecera de logs de servicios FastServer");
 
         descriptor.Field(x => x.LogId)
@@ -103,7 +102,6 @@ public class LogMicroserviceType : ObjectType<LogMicroserviceDto>
 {
     protected override void Configure(IObjectTypeDescriptor<LogMicroserviceDto> descriptor)
     {
-        descriptor.Name("LogMicroservice");
         descriptor.Description("Log de microservicio");
 
         descriptor.Field(x => x.LogMicroserviceId)
@@ -131,7 +129,6 @@ public class LogServicesContentType : ObjectType<LogServicesContentDto>
 {
     protected override void Configure(IObjectTypeDescriptor<LogServicesContentDto> descriptor)
     {
-        descriptor.Name("LogServicesContent");
         descriptor.Description("Contenido de log de servicios");
 
         descriptor.Field(x => x.LogId)
@@ -308,42 +305,3 @@ public class BulkInsertLogServicesContentResultType : ObjectType<BulkInsertResul
     }
 }
 
-/// <summary>
-/// Tipo GraphQL para resultados paginados
-/// </summary>
-public class PaginatedLogServicesHeaderType : ObjectType<PaginatedResultDto<LogServicesHeaderDto>>
-{
-    protected override void Configure(IObjectTypeDescriptor<PaginatedResultDto<LogServicesHeaderDto>> descriptor)
-    {
-        descriptor.Name("PaginatedLogServicesHeader");
-        descriptor.Description("Resultado paginado de logs de servicios");
-
-        descriptor.Field(x => x.Items)
-            .Name("items")
-            .Description("Lista de logs");
-
-        descriptor.Field(x => x.TotalCount)
-            .Name("totalCount")
-            .Description("Total de registros");
-
-        descriptor.Field(x => x.PageNumber)
-            .Name("pageNumber")
-            .Description("Número de página actual");
-
-        descriptor.Field(x => x.PageSize)
-            .Name("pageSize")
-            .Description("Tamaño de página");
-
-        descriptor.Field(x => x.TotalPages)
-            .Name("totalPages")
-            .Description("Total de páginas");
-
-        descriptor.Field(x => x.HasPreviousPage)
-            .Name("hasPreviousPage")
-            .Description("Indica si hay página anterior");
-
-        descriptor.Field(x => x.HasNextPage)
-            .Name("hasNextPage")
-            .Description("Indica si hay página siguiente");
-    }
-}

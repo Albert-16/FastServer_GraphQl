@@ -10,6 +10,7 @@ public class MicroservicesRegisterTypeType : ObjectType<MicroservicesRegisterTyp
 {
     protected override void Configure(IObjectTypeDescriptor<MicroservicesRegisterType> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("MicroservicesRegisterType");
         descriptor.Description("Tipo de registro de microservicio");
 
@@ -33,8 +34,5 @@ public class MicroservicesRegisterTypeType : ObjectType<MicroservicesRegisterTyp
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
 
-        descriptor.Field(f => f.MicroserviceRegisters)
-            .Type<ListType<MicroserviceRegisterType>>()
-            .Description("Microservicios de este tipo");
     }
 }

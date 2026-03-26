@@ -1,6 +1,7 @@
 using FastServer.Application.DTOs;
 using FastServer.Application.Interfaces;
-using FastServer.GraphQL.Api.GraphQL.Types;
+using FastServer.Domain.Entities;
+using HotChocolate.Data;
 
 namespace FastServer.GraphQL.Api.GraphQL.Queries;
 
@@ -35,52 +36,17 @@ public class LogServicesQuery
     }
 
     /// <summary>
-    /// Obtiene todos los logs paginados
+    /// Obtiene todos los logs con paginación, filtrado y ordenamiento
     /// </summary>
-    [GraphQLDescription("Obtiene todos los logs de servicios con paginación desde FastServer_Logs (PostgreSQL)")]
-    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetAllLogs(
-        [Service] ILogServicesHeaderService service,
-        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
-        CancellationToken cancellationToken = default)
+    [GraphQLDescription("Obtiene todos los logs de servicios con paginación, filtrado y ordenamiento desde FastServer_Logs (PostgreSQL)")]
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<LogServicesHeader> GetAllLogs(
+        [Service] ILogsDbContext context)
     {
-        var paginationParams = new PaginationParamsDto
-        {
-            PageNumber = pagination?.PageNumber ?? 1,
-            PageSize = pagination?.PageSize ?? 10
-        };
-
-        return await service.GetAllAsync(paginationParams, cancellationToken);
-    }
-
-    /// <summary>
-    /// Obtiene logs filtrados
-    /// </summary>
-    [GraphQLDescription("Obtiene logs de servicios filtrados con paginación desde FastServer_Logs (PostgreSQL)")]
-    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetLogsByFilter(
-        [Service] ILogServicesHeaderService service,
-        [GraphQLDescription("Filtros a aplicar")] LogFilterInput filter,
-        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
-        CancellationToken cancellationToken = default)
-    {
-        var filterDto = new LogFilterDto
-        {
-            StartDate = filter.StartDate,
-            EndDate = filter.EndDate,
-            State = filter.State,
-            MicroserviceName = filter.MicroserviceName,
-            UserId = filter.UserId,
-            TransactionId = filter.TransactionId,
-            HttpMethod = filter.HttpMethod,
-            HasErrors = filter.HasErrors
-        };
-
-        var paginationParams = new PaginationParamsDto
-        {
-            PageNumber = pagination?.PageNumber ?? 1,
-            PageSize = pagination?.PageSize ?? 10
-        };
-
-        return await service.GetByFilterAsync(filterDto, paginationParams, cancellationToken);
+        return context.LogServicesHeaders;
     }
 
     /// <summary>
@@ -134,21 +100,17 @@ public class LogMicroserviceQuery
 public class LogServicesContentQuery
 {
     /// <summary>
-    /// Obtiene todos los contenidos de log paginados
+    /// Obtiene todos los contenidos de log con paginación, filtrado y ordenamiento
     /// </summary>
-    [GraphQLDescription("Obtiene todos los contenidos de log con paginación desde FastServer_Logs (PostgreSQL)")]
-    public async Task<PaginatedResultDto<LogServicesContentDto>> GetAllLogContents(
-        [Service] ILogServicesContentService service,
-        [GraphQLDescription("Parámetros de paginación")] PaginationInput? pagination = null,
-        CancellationToken cancellationToken = default)
+    [GraphQLDescription("Obtiene todos los contenidos de log con paginación, filtrado y ordenamiento desde FastServer_Logs (PostgreSQL)")]
+    [UsePaging(IncludeTotalCount = true)]
+    [UseProjection]
+    [UseFiltering]
+    [UseSorting]
+    public IQueryable<LogServicesContent> GetAllLogContents(
+        [Service] ILogsDbContext context)
     {
-        var paginationParams = new PaginationParamsDto
-        {
-            PageNumber = pagination?.PageNumber ?? 1,
-            PageSize = pagination?.PageSize ?? 10
-        };
-
-        return await service.GetAllAsync(paginationParams, cancellationToken);
+        return context.LogServicesContents;
     }
 
     /// <summary>

@@ -10,6 +10,7 @@ public class CoreConnectorCredentialType : ObjectType<CoreConnectorCredential>
 {
     protected override void Configure(IObjectTypeDescriptor<CoreConnectorCredential> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("CoreConnectorCredential");
         descriptor.Description("Credenciales para conectores del core");
 
@@ -33,8 +34,5 @@ public class CoreConnectorCredentialType : ObjectType<CoreConnectorCredential>
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
 
-        descriptor.Field(f => f.MicroserviceCoreConnectors)
-            .Type<ListType<MicroserviceCoreConnectorType>>()
-            .Description("Conectores que usan esta credencial");
     }
 }

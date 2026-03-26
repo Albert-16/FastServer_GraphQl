@@ -78,69 +78,6 @@ public class LogServicesHeaderService : ILogServicesHeaderService
         return entity == null ? null : _mapper.Map<LogServicesHeaderDto>(entity);
     }
 
-    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetAllAsync(PaginationParamsDto pagination, CancellationToken cancellationToken = default)
-    {
-        var totalCount = await _context.LogServicesHeaders.CountAsync(cancellationToken);
-
-        var entities = await _context.LogServicesHeaders
-            .AsNoTracking()
-            .Skip(pagination.Skip)
-            .Take(pagination.PageSize)
-            .ToListAsync(cancellationToken);
-
-        return new PaginatedResultDto<LogServicesHeaderDto>
-        {
-            Items = _mapper.Map<IEnumerable<LogServicesHeaderDto>>(entities),
-            TotalCount = totalCount,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize
-        };
-    }
-
-    public async Task<PaginatedResultDto<LogServicesHeaderDto>> GetByFilterAsync(LogFilterDto filter, PaginationParamsDto pagination, CancellationToken cancellationToken = default)
-    {
-        var query = _context.LogServicesHeaders.AsNoTracking();
-
-        if (filter.StartDate.HasValue)
-            query = query.Where(x => x.LogDateIn >= filter.StartDate.Value);
-
-        if (filter.EndDate.HasValue)
-            query = query.Where(x => x.LogDateIn <= filter.EndDate.Value);
-
-        if (filter.State.HasValue)
-            query = query.Where(x => x.LogState == filter.State.Value);
-
-        if (!string.IsNullOrEmpty(filter.MicroserviceName))
-            query = query.Where(x => x.MicroserviceName != null && x.MicroserviceName.Contains(filter.MicroserviceName));
-
-        if (!string.IsNullOrEmpty(filter.UserId))
-            query = query.Where(x => x.UserId == filter.UserId);
-
-        if (!string.IsNullOrEmpty(filter.TransactionId))
-            query = query.Where(x => x.TransactionId == filter.TransactionId);
-
-        if (!string.IsNullOrEmpty(filter.HttpMethod))
-            query = query.Where(x => x.HttpMethod == filter.HttpMethod);
-
-        if (filter.HasErrors.HasValue && filter.HasErrors.Value)
-            query = query.Where(x => x.ErrorCode != null);
-
-        var totalCount = await query.CountAsync(cancellationToken);
-        var entities = await query
-            .OrderByDescending(x => x.LogDateIn)
-            .Skip(pagination.Skip)
-            .Take(pagination.PageSize)
-            .ToListAsync(cancellationToken);
-
-        return new PaginatedResultDto<LogServicesHeaderDto>
-        {
-            Items = _mapper.Map<IEnumerable<LogServicesHeaderDto>>(entities),
-            TotalCount = totalCount,
-            PageNumber = pagination.PageNumber,
-            PageSize = pagination.PageSize
-        };
-    }
-
     public async Task<BulkInsertResultDto<LogServicesHeaderDto>> CreateBulkAsync(
         IEnumerable<CreateLogServicesHeaderDto> dtos,
         CancellationToken cancellationToken = default)

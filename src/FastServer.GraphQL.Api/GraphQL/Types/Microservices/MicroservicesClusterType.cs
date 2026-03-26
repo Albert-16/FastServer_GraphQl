@@ -10,6 +10,7 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
 {
     protected override void Configure(IObjectTypeDescriptor<MicroservicesCluster> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("MicroservicesCluster");
         descriptor.Description("Cluster de microservicios");
 
@@ -53,8 +54,5 @@ public class MicroservicesClusterType : ObjectType<MicroservicesCluster>
             .Type<DateTimeType>()
             .Description("Fecha de eliminación");
 
-        descriptor.Field(f => f.Nodos)
-            .Type<ListType<NodoType>>()
-            .Description("Nodos (relaciones con métodos)");
     }
 }

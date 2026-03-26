@@ -10,6 +10,7 @@ public class EventTypeType : ObjectType<EventType>
 {
     protected override void Configure(IObjectTypeDescriptor<EventType> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("EventType");
         descriptor.Description("Tipo de evento para logs de actividad");
 
@@ -29,8 +30,5 @@ public class EventTypeType : ObjectType<EventType>
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
 
-        descriptor.Field(f => f.ActivityLogs)
-            .Type<ListType<ActivityLogType>>()
-            .Description("Logs de actividad de este tipo");
     }
 }

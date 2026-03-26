@@ -10,6 +10,7 @@ public class UserType : ObjectType<User>
 {
     protected override void Configure(IObjectTypeDescriptor<User> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("User");
         descriptor.Description("Usuario del sistema");
 
@@ -41,8 +42,5 @@ public class UserType : ObjectType<User>
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
 
-        descriptor.Field(f => f.ActivityLogs)
-            .Type<ListType<ActivityLogType>>()
-            .Description("Logs de actividad del usuario");
     }
 }

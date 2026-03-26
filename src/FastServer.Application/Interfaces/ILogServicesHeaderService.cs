@@ -9,8 +9,6 @@ public interface ILogServicesHeaderService
 {
     Task<LogServicesHeaderDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
     Task<LogServicesHeaderDto?> GetWithDetailsAsync(long id, CancellationToken cancellationToken = default);
-    Task<PaginatedResultDto<LogServicesHeaderDto>> GetAllAsync(PaginationParamsDto pagination, CancellationToken cancellationToken = default);
-    Task<PaginatedResultDto<LogServicesHeaderDto>> GetByFilterAsync(LogFilterDto filter, PaginationParamsDto pagination, CancellationToken cancellationToken = default);
     Task<LogServicesHeaderDto> CreateAsync(CreateLogServicesHeaderDto dto, CancellationToken cancellationToken = default);
     Task<BulkInsertResultDto<LogServicesHeaderDto>> CreateBulkAsync(IEnumerable<CreateLogServicesHeaderDto> dtos, CancellationToken cancellationToken = default);
     Task<LogServicesHeaderDto> UpdateAsync(UpdateLogServicesHeaderDto dto, CancellationToken cancellationToken = default);

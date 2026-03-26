@@ -10,6 +10,7 @@ public class FastServerClusterType : ObjectType<FastServerCluster>
 {
     protected override void Configure(IObjectTypeDescriptor<FastServerCluster> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("FastServerCluster");
         descriptor.Description("Cluster de FastServer — representa un nodo/instancia del servidor");
 

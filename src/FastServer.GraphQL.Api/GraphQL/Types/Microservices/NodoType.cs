@@ -10,6 +10,7 @@ public class NodoType : ObjectType<Nodo>
 {
     protected override void Configure(IObjectTypeDescriptor<Nodo> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("Nodo");
         descriptor.Description("Nodo de relación entre método y cluster");
 
@@ -32,10 +33,6 @@ public class NodoType : ObjectType<Nodo>
         descriptor.Field(f => f.ModifyAt)
             .Type<DateTimeType>()
             .Description("Fecha de última modificación");
-
-        descriptor.Field(f => f.MicroserviceMethod)
-            .Type<MicroserviceMethodType>()
-            .Description("Método de microservicio asociado");
 
         descriptor.Field(f => f.MicroservicesCluster)
             .Type<MicroservicesClusterType>()

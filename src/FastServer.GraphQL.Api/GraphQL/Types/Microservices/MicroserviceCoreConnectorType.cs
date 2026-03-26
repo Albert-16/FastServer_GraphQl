@@ -10,6 +10,7 @@ public class MicroserviceCoreConnectorType : ObjectType<MicroserviceCoreConnecto
 {
     protected override void Configure(IObjectTypeDescriptor<MicroserviceCoreConnector> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("MicroserviceCoreConnector");
         descriptor.Description("Conector entre microservicio y core");
 
@@ -28,10 +29,6 @@ public class MicroserviceCoreConnectorType : ObjectType<MicroserviceCoreConnecto
         descriptor.Field(f => f.CoreConnectorCredential)
             .Type<CoreConnectorCredentialType>()
             .Description("Credencial asociada");
-
-        descriptor.Field(f => f.MicroserviceRegister)
-            .Type<MicroserviceRegisterType>()
-            .Description("Microservicio asociado");
 
         descriptor.Field(f => f.CreateAt)
             .Type<DateTimeType>()

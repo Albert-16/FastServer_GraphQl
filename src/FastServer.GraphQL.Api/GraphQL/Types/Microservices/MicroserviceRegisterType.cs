@@ -10,6 +10,7 @@ public class MicroserviceRegisterType : ObjectType<MicroserviceRegister>
 {
     protected override void Configure(IObjectTypeDescriptor<MicroserviceRegister> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("MicroserviceRegister");
         descriptor.Description("Registro de microservicio");
 

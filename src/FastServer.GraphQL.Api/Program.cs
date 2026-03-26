@@ -133,7 +133,6 @@ builder.Services
     .AddType<LogServicesHeaderType>()
     .AddType<LogMicroserviceType>()
     .AddType<LogServicesContentType>()
-    .AddType<PaginatedLogServicesHeaderType>()
 
     // Tipos de microservicios (NUEVO)
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.EventTypeType>()
@@ -153,8 +152,6 @@ builder.Services
     .AddType<UpdateLogServicesHeaderInputType>()
     .AddType<CreateLogMicroserviceInputType>()
     .AddType<CreateLogServicesContentInputType>()
-    .AddType<LogFilterInputType>()
-    .AddType<PaginationInputType>()
     .AddType<BulkCreateLogServicesHeaderInputType>()
     .AddType<BulkCreateLogMicroserviceInputType>()
     .AddType<BulkCreateLogServicesContentInputType>()

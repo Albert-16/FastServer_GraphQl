@@ -10,6 +10,7 @@ public class ActivityLogType : ObjectType<ActivityLog>
 {
     protected override void Configure(IObjectTypeDescriptor<ActivityLog> descriptor)
     {
+        descriptor.BindFieldsExplicitly();
         descriptor.Name("ActivityLog");
         descriptor.Description("Log de actividad del sistema");
 
@@ -40,10 +41,6 @@ public class ActivityLogType : ObjectType<ActivityLog>
         descriptor.Field(f => f.EventType)
             .Type<EventTypeType>()
             .Description("Tipo de evento asociado");
-
-        descriptor.Field(f => f.User)
-            .Type<UserType>()
-            .Description("Usuario que realizó la actividad");
 
         descriptor.Field(f => f.CreateAt)
             .Type<DateTimeType>()
