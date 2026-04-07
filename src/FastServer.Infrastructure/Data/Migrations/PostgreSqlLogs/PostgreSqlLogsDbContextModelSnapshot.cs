@@ -52,6 +52,10 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                         .HasColumnType("text")
                         .HasColumnName("fastserver_logmicroservice_text");
 
+                    b.Property<long?>("RequestId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("fastserver_log_requestid");
+
                     b.HasKey("LogMicroserviceId");
 
                     b.HasIndex("LogId")
@@ -110,6 +114,10 @@ namespace FastServer.Infrastructure.Data.Migrations.PostgreSqlLogs
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("fastserver_logmicroservice_text");
+
+                    b.Property<long?>("RequestId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("fastserver_log_requestid");
 
                     b.HasKey("LogMicroserviceId");
 

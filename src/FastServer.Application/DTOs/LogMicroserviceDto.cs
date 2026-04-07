@@ -11,6 +11,7 @@ public record LogMicroserviceDto
     public DateTime? LogDate { get; init; }
     public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
+    public long? RequestId { get; init; }
 }
 
 /// <summary>
@@ -23,6 +24,7 @@ public record CreateLogMicroserviceDto
     public DateTime? LogDate { get; init; }
     public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
+    public long? RequestId { get; init; }
 }
 
 /// <summary>
@@ -35,4 +37,5 @@ public record UpdateLogMicroserviceDto
     public DateTime? LogDate { get; init; }
     public string? LogLevel { get; init; }
     public string? LogMicroserviceText { get; init; }
+    public long? RequestId { get; init; }
 }

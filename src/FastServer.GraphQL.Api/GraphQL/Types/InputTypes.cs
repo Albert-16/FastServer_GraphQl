@@ -63,6 +63,7 @@ public class CreateLogMicroserviceInput
     public DateTime? LogDate { get; set; }
     public string? LogLevel { get; set; }
     public string? LogMicroserviceText { get; set; }
+    public long? RequestId { get; set; }
 }
 
 /// <summary>
@@ -106,6 +107,7 @@ public class UpdateLogMicroserviceInput
     public DateTime? LogDate { get; set; }
     public string? LogLevel { get; set; }
     public string? LogMicroserviceText { get; set; }
+    public long? RequestId { get; set; }
 }
 
 /// <summary>

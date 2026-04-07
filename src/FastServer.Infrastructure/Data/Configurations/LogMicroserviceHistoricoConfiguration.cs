@@ -42,6 +42,10 @@ public class LogMicroserviceHistoricoConfiguration : IEntityTypeConfiguration<Lo
             .HasColumnType("text")
             .IsRequired();
 
+        builder.Property(e => e.RequestId)
+            .HasColumnName("fastserver_log_requestid")
+            .HasColumnType("bigint");
+
         builder.HasIndex(e => e.LogId)
             .HasDatabaseName("IX_FastServer_LogMicroservice_Historico_LogId");
     }

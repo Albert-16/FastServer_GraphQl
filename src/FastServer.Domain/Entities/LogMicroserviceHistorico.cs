@@ -34,4 +34,9 @@ public class LogMicroserviceHistorico
     /// Texto del log del microservicio
     /// </summary>
     public string LogMicroserviceText { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Identificador de la solicitud HTTP asociada al log
+    /// </summary>
+    public long? RequestId { get; set; }
 }

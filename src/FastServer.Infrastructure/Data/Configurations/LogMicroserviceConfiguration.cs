@@ -41,6 +41,10 @@ public class LogMicroserviceConfiguration : IEntityTypeConfiguration<LogMicroser
             .HasColumnName("fastserver_logmicroservice_text")
             .HasColumnType("text");
 
+        builder.Property(e => e.RequestId)
+            .HasColumnName("fastserver_log_requestid")
+            .HasColumnType("bigint");
+
         builder.HasIndex(e => e.LogId)
             .HasDatabaseName("IX_FastServer_LogMicroservice_LogId");
     }

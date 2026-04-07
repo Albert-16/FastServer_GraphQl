@@ -164,6 +164,7 @@ public class LogMicroserviceService : ILogMicroserviceService
                             LogDate = result.LogDate,
                             LogLevel = result.LogLevel,
                             LogMicroserviceText = result.LogMicroserviceText,
+                            RequestId = result.RequestId,
                             CreatedAt = DateTime.UtcNow
                         });
                     }
@@ -222,6 +223,7 @@ public class LogMicroserviceService : ILogMicroserviceService
             LogDate = result.LogDate,
             LogLevel = result.LogLevel,
             LogMicroserviceText = result.LogMicroserviceText,
+            RequestId = result.RequestId,
             CreatedAt = DateTime.UtcNow
         });
 
@@ -244,6 +246,8 @@ public class LogMicroserviceService : ILogMicroserviceService
             entity.LogLevel = dto.LogLevel;
         if (dto.LogMicroserviceText != null)
             entity.LogMicroserviceText = dto.LogMicroserviceText;
+        if (dto.RequestId.HasValue)
+            entity.RequestId = dto.RequestId.Value;
 
         _context.LogMicroservices.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
@@ -256,6 +260,7 @@ public class LogMicroserviceService : ILogMicroserviceService
             LogDate = entity.LogDate,
             LogLevel = entity.LogLevel,
             LogMicroserviceText = entity.LogMicroserviceText,
+            RequestId = entity.RequestId,
             CreatedAt = DateTime.UtcNow
         });
 
@@ -356,6 +361,8 @@ public class LogMicroserviceService : ILogMicroserviceService
                         entity.LogLevel = dto.LogLevel;
                     if (dto.LogMicroserviceText != null)
                         entity.LogMicroserviceText = dto.LogMicroserviceText;
+                    if (dto.RequestId.HasValue)
+                        entity.RequestId = dto.RequestId.Value;
 
                     _context.LogMicroservices.Update(entity);
                     updatedList.Add(entity);
@@ -381,6 +388,7 @@ public class LogMicroserviceService : ILogMicroserviceService
                             LogDate = result.LogDate,
                             LogLevel = result.LogLevel,
                             LogMicroserviceText = result.LogMicroserviceText,
+                            RequestId = result.RequestId,
                             CreatedAt = DateTime.UtcNow
                         });
                     }

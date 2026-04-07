@@ -11,6 +11,7 @@ public class LogMicroserviceCreatedEvent
     public DateTime? LogDate { get; set; }
     public string? LogLevel { get; set; }
     public string? LogMicroserviceText { get; set; }
+    public long? RequestId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? ModifyAt { get; set; }
 }
