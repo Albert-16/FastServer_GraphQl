@@ -107,6 +107,8 @@ builder.Services
     .AddTypeExtension<LogServicesQuery>()        // Queries para LogServicesHeader
     .AddTypeExtension<LogMicroserviceQuery>()    // Queries para LogMicroservice
     .AddTypeExtension<LogServicesContentQuery>() // Queries para LogServicesContent
+    .AddTypeExtension<LogServicesHeaderHistoricoQuery>()  // Queries para LogServicesHeaderHistorico (solo lectura)
+    .AddTypeExtension<LogServicesContentHistoricoQuery>() // Queries para LogServicesContentHistorico (solo lectura)
     .AddTypeExtension<MicroservicesQuery>()      // Queries para Microservicios (NUEVO)
 
     // Extensiones de mutations (se unen al tipo Mutation raíz)
@@ -133,6 +135,8 @@ builder.Services
     .AddType<LogServicesHeaderType>()
     .AddType<LogMicroserviceType>()
     .AddType<LogServicesContentType>()
+    .AddType<LogServicesHeaderHistoricoType>()
+    .AddType<LogServicesContentHistoricoType>()
 
     // Tipos de microservicios (NUEVO)
     .AddType<FastServer.GraphQL.Api.GraphQL.Types.Microservices.EventTypeType>()

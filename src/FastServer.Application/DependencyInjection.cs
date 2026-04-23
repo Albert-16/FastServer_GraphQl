@@ -20,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<ILogServicesHeaderService, LogServicesHeaderService>();
         services.AddScoped<ILogMicroserviceService, LogMicroserviceService>();
         services.AddScoped<ILogServicesContentService, LogServicesContentService>();
+        services.AddScoped<ILogServicesHeaderHistoricoService, LogServicesHeaderHistoricoService>();
+        services.AddScoped<ILogServicesContentHistoricoService, LogServicesContentHistoricoService>();
 
         // Event Publishers para suscripciones
         services.AddScoped<ILogEventPublisher, LogEventPublisher>();
